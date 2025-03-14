@@ -277,7 +277,7 @@ const ExerciseLibrary = () => {
                       maxWidth={1500}
                       maxHeight={1500}
                       aspectRatio={1}
-                      helpText="Square images work best (1:1 ratio). Images will be optimized automatically."
+                      helpText="Square images work best (1:1 ratio). Non-square images will be auto-cropped from the center."
                     />
                   </div>
                   

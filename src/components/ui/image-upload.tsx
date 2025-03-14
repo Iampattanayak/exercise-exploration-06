@@ -68,37 +68,54 @@ export function ImageUpload({
           message = `Image dimensions are too large. Maximum: ${maxWidth}x${maxHeight}px`;
         }
         
-        if (aspectRatio && Math.abs(img.width / img.height - aspectRatio) > 0.1) {
-          validImage = false;
-          message = `Image aspect ratio should be approximately ${aspectRatio}:1`;
-        }
-        
         if (!validImage) {
           toast.error(message);
           return;
         }
         
-        // Create resized image if needed
+        // Create canvas for the processed image
         const canvas = document.createElement("canvas");
-        let newWidth = img.width;
-        let newHeight = img.height;
+        let sourceX = 0;
+        let sourceY = 0;
+        let sourceWidth = img.width;
+        let sourceHeight = img.height;
+        let targetWidth = img.width;
+        let targetHeight = img.height;
+        
+        // Apply auto-cropping if aspect ratio is required
+        if (aspectRatio) {
+          if (img.width / img.height > aspectRatio) {
+            // Image is wider than target aspect ratio, crop sides
+            sourceWidth = img.height * aspectRatio;
+            sourceX = (img.width - sourceWidth) / 2; // Center horizontally
+          } else if (img.width / img.height < aspectRatio) {
+            // Image is taller than target aspect ratio, crop top/bottom
+            sourceHeight = img.width / aspectRatio;
+            sourceY = (img.height - sourceHeight) / 2; // Center vertically
+          }
+        }
         
         // Resize if larger than max dimensions
-        if (newWidth > maxWidth) {
-          newHeight = (newHeight * maxWidth) / newWidth;
-          newWidth = maxWidth;
+        if (targetWidth > maxWidth) {
+          targetHeight = (targetHeight * maxWidth) / targetWidth;
+          targetWidth = maxWidth;
         }
         
-        if (newHeight > maxHeight) {
-          newWidth = (newWidth * maxHeight) / newHeight;
-          newHeight = maxHeight;
+        if (targetHeight > maxHeight) {
+          targetWidth = (targetWidth * maxHeight) / targetHeight;
+          targetHeight = maxHeight;
         }
         
-        canvas.width = newWidth;
-        canvas.height = newHeight;
+        // Set canvas size to the target dimensions
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
         
         const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0, newWidth, newHeight);
+        ctx?.drawImage(
+          img, 
+          sourceX, sourceY, sourceWidth, sourceHeight, // Source rectangle
+          0, 0, targetWidth, targetHeight // Destination rectangle
+        );
         
         const optimizedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
         setPreview(optimizedDataUrl);
@@ -200,6 +217,7 @@ export function ImageUpload({
                 {aspectRatio && (
                   <p className="text-xs text-muted-foreground">
                     Aspect ratio: {aspectRatio}:1 (recommended)
+                    {aspectRatio === 1 && " • Images will be auto-cropped if needed"}
                   </p>
                 )}
               </div>
