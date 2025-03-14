@@ -45,7 +45,8 @@ export function useExerciseData() {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
       toast.success('Exercise added successfully');
     },
-    onError: (error) => {
+    onError: (error: Error) => {
+      console.error('Mutation error:', error);
       toast.error(`Failed to add exercise: ${error.message}`);
     }
   });
@@ -56,7 +57,8 @@ export function useExerciseData() {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
       toast.success('Exercise updated successfully');
     },
-    onError: (error) => {
+    onError: (error: Error) => {
+      console.error('Mutation error:', error);
       toast.error(`Failed to update exercise: ${error.message}`);
     }
   });
@@ -67,7 +69,8 @@ export function useExerciseData() {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
       toast.success('Exercise deleted successfully');
     },
-    onError: (error) => {
+    onError: (error: Error) => {
+      console.error('Mutation error:', error);
       toast.error(`Failed to delete exercise: ${error.message}`);
     }
   });
@@ -95,8 +98,14 @@ export function useExerciseData() {
       
       // If there's an uploaded image, process it
       if (uploadedImage) {
-        const result = await uploadExerciseImage(uploadedImage);
-        imageUrl = result.url;
+        try {
+          const result = await uploadExerciseImage(uploadedImage);
+          imageUrl = result.url;
+          console.log('Image uploaded successfully:', result);
+        } catch (uploadError) {
+          console.error('Error uploading image:', uploadError);
+          toast.error('Failed to upload image, but will continue with exercise creation');
+        }
       }
       
       // Create the exercise object
@@ -107,6 +116,8 @@ export function useExerciseData() {
         category: exerciseData.category || '',
         imageUrl: imageUrl
       };
+      
+      console.log('Creating exercise with data:', exercise);
       
       // Save to database
       await createExerciseMutation.mutateAsync(exercise);
@@ -128,8 +139,13 @@ export function useExerciseData() {
       
       // If there's an uploaded image, process it
       if (uploadedImage) {
-        const result = await uploadExerciseImage(uploadedImage);
-        imageUrl = result.url;
+        try {
+          const result = await uploadExerciseImage(uploadedImage);
+          imageUrl = result.url;
+        } catch (uploadError) {
+          console.error('Error uploading image:', uploadError);
+          toast.error('Failed to upload image, but will continue with exercise update');
+        }
       }
       
       // Create the exercise object

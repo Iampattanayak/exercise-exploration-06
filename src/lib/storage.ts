@@ -13,22 +13,23 @@ export const uploadExerciseImage = async (
     const filePath = `${folderName}/${fileName}`;
     
     // Upload the file to Supabase Storage
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError, data } = await supabase.storage
       .from('exercise-images')
       .upload(filePath, file);
       
     if (uploadError) {
+      console.error('Error uploading image:', uploadError);
       throw uploadError;
     }
     
     // Get the public URL for the file
-    const { data } = supabase.storage
+    const { data: urlData } = supabase.storage
       .from('exercise-images')
       .getPublicUrl(filePath);
     
     return {
       path: filePath,
-      url: data.publicUrl
+      url: urlData.publicUrl
     };
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -38,12 +39,17 @@ export const uploadExerciseImage = async (
 
 export const deleteExerciseImage = async (filePath: string): Promise<void> => {
   try {
+    // Extract the path without the bucket name, if present
+    const pathParts = filePath.split('/');
+    const actualPath = pathParts.length > 1 ? pathParts.slice(pathParts.length - 2).join('/') : filePath;
+    
     // Remove the file from Supabase Storage
     const { error } = await supabase.storage
       .from('exercise-images')
-      .remove([filePath]);
+      .remove([actualPath]);
       
     if (error) {
+      console.error('Error deleting image:', error);
       throw error;
     }
   } catch (error) {
