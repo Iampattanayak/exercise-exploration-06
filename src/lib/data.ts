@@ -1,5 +1,7 @@
 import { Category, Exercise, Workout, WorkoutExercise, ExerciseSet } from './types';
 import { format, addDays, subDays } from 'date-fns';
+import * as db from './db';
+import { toast } from 'sonner';
 
 // Exercise Categories
 export const categories: Category[] = [
@@ -135,7 +137,6 @@ const lastWeek = format(subDays(today, 7), 'yyyy-MM-dd');
 
 // Workouts
 export const workouts: Workout[] = [
-  // Today's workouts
   {
     id: 'workout-1',
     name: 'Morning Chest & Triceps',
@@ -149,7 +150,6 @@ export const workouts: Workout[] = [
     progress: 0
   },
   
-  // Upcoming workouts
   {
     id: 'workout-2',
     name: 'Leg Day',
@@ -187,7 +187,6 @@ export const workouts: Workout[] = [
     completed: false
   },
   
-  // Recent completed workouts
   {
     id: 'workout-5',
     name: 'Full Body Strength',
@@ -226,69 +225,185 @@ export const workouts: Workout[] = [
   }
 ];
 
+// Initialize the database with seed data
+const initDatabase = async () => {
+  try {
+    await db.initializeWithSeedData(exercises, categories, workouts);
+  } catch (error) {
+    console.error('Error initializing database:', error);
+  }
+};
+
+// Initialize database on page load
+initDatabase();
+
+// Local cache of data
+let exercisesCache: Exercise[] = [];
+let categoriesCache: Category[] = [];
+let workoutsCache: Workout[] = [];
+
+// Load cached data from database
+const loadCachedData = async () => {
+  try {
+    const dbExercises = await db.getAllExercises();
+    const dbCategories = await db.getAllCategories();
+    const dbWorkouts = await db.getAllWorkouts();
+    
+    // Only update cache if we got data from the database
+    if (dbExercises.length > 0) exercisesCache = dbExercises;
+    if (dbCategories.length > 0) categoriesCache = dbCategories;
+    if (dbWorkouts.length > 0) workoutsCache = dbWorkouts;
+    
+    console.log('Data loaded from database');
+  } catch (error) {
+    console.error('Error loading data from database:', error);
+  }
+};
+
+// Load data immediately
+loadCachedData();
+
 // Utility functions for workout data management
-export const getWorkoutsByDate = (date: string): Workout[] => {
-  return workouts.filter(workout => workout.date === date);
+export const getWorkoutsByDate = async (date: string): Promise<Workout[]> => {
+  try {
+    return await db.getWorkoutsByDate(date);
+  } catch (error) {
+    console.error('Error getting workouts by date:', error);
+    return workoutsCache.filter(workout => workout.date === date);
+  }
 };
 
-export const getWorkoutById = (id: string): Workout | undefined => {
-  return workouts.find(workout => workout.id === id);
+export const getWorkoutById = async (id: string): Promise<Workout | undefined> => {
+  try {
+    return await db.getWorkoutById(id);
+  } catch (error) {
+    console.error('Error getting workout by ID:', error);
+    return workoutsCache.find(workout => workout.id === id);
+  }
 };
 
-export const getExerciseById = (id: string): Exercise | undefined => {
-  return exercises.find(ex => ex.id === id);
+export const getExerciseById = async (id: string): Promise<Exercise | undefined> => {
+  try {
+    return await db.getExerciseById(id);
+  } catch (error) {
+    console.error('Error getting exercise by ID:', error);
+    return exercisesCache.find(ex => ex.id === id);
+  }
 };
 
-export const getCategoryById = (id: string): Category | undefined => {
-  return categories.find(category => category.id === id);
+export const getCategoryById = async (id: string): Promise<Category | undefined> => {
+  try {
+    return await db.getCategoryById(id);
+  } catch (error) {
+    console.error('Error getting category by ID:', error);
+    return categoriesCache.find(category => category.id === id);
+  }
 };
 
-export const getTodayWorkouts = (): Workout[] => {
+export const getTodayWorkouts = async (): Promise<Workout[]> => {
   return getWorkoutsByDate(format(new Date(), 'yyyy-MM-dd'));
 };
 
-export const getUpcomingWorkouts = (): Workout[] => {
-  const today = format(new Date(), 'yyyy-MM-dd');
-  return workouts
-    .filter(workout => workout.date > today && !workout.completed)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 5);
-};
-
-export const getRecentWorkouts = (): Workout[] => {
-  const today = format(new Date(), 'yyyy-MM-dd');
-  return workouts
-    .filter(workout => workout.date <= today)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5);
-};
-
-export const updateWorkout = (updatedWorkout: Workout): void => {
-  const index = workouts.findIndex(w => w.id === updatedWorkout.id);
-  if (index !== -1) {
-    workouts[index] = updatedWorkout;
+export const getUpcomingWorkouts = async (): Promise<Workout[]> => {
+  try {
+    const allWorkouts = await db.getAllWorkouts();
+    const today = format(new Date(), 'yyyy-MM-dd');
+    return allWorkouts
+      .filter(workout => workout.date > today && !workout.completed)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 5);
+  } catch (error) {
+    console.error('Error getting upcoming workouts:', error);
+    return workoutsCache
+      .filter(workout => workout.date > format(new Date(), 'yyyy-MM-dd') && !workout.completed)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 5);
   }
 };
 
-export const addWorkout = (workout: Workout): void => {
-  workouts.push(workout);
-};
-
-export const deleteWorkout = (id: string): void => {
-  const index = workouts.findIndex(w => w.id === id);
-  if (index !== -1) {
-    workouts.splice(index, 1);
+export const getRecentWorkouts = async (): Promise<Workout[]> => {
+  try {
+    const allWorkouts = await db.getAllWorkouts();
+    const today = format(new Date(), 'yyyy-MM-dd');
+    return allWorkouts
+      .filter(workout => workout.date <= today)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5);
+  } catch (error) {
+    console.error('Error getting recent workouts:', error);
+    return workoutsCache
+      .filter(workout => workout.date <= format(new Date(), 'yyyy-MM-dd'))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5);
   }
 };
 
-export const addExercise = (exercise: Exercise): void => {
-  exercises.push(exercise);
+export const updateWorkout = async (updatedWorkout: Workout): Promise<void> => {
+  try {
+    await db.saveWorkout(updatedWorkout);
+    // Update local cache
+    const index = workoutsCache.findIndex(w => w.id === updatedWorkout.id);
+    if (index !== -1) {
+      workoutsCache[index] = updatedWorkout;
+    }
+    toast.success("Workout updated successfully");
+  } catch (error) {
+    console.error('Error updating workout:', error);
+    toast.error("Failed to update workout");
+  }
 };
 
-export const deleteExercise = (id: string): void => {
-  const index = exercises.findIndex(e => e.id === id);
-  if (index !== -1) {
-    exercises.splice(index, 1);
+export const addWorkout = async (workout: Workout): Promise<void> => {
+  try {
+    await db.saveWorkout(workout);
+    // Update local cache
+    workoutsCache.push(workout);
+    toast.success("Workout added successfully");
+  } catch (error) {
+    console.error('Error adding workout:', error);
+    toast.error("Failed to add workout");
+  }
+};
+
+export const deleteWorkout = async (id: string): Promise<void> => {
+  try {
+    await db.deleteWorkout(id);
+    // Update local cache
+    const index = workoutsCache.findIndex(w => w.id === id);
+    if (index !== -1) {
+      workoutsCache.splice(index, 1);
+    }
+    toast.success("Workout deleted successfully");
+  } catch (error) {
+    console.error('Error deleting workout:', error);
+    toast.error("Failed to delete workout");
+  }
+};
+
+export const addExercise = async (exercise: Exercise): Promise<void> => {
+  try {
+    await db.saveExercise(exercise);
+    // Update local cache
+    exercisesCache.push(exercise);
+    toast.success(`Exercise "${exercise.name}" added successfully`);
+  } catch (error) {
+    console.error('Error adding exercise:', error);
+    toast.error("Failed to add exercise");
+  }
+};
+
+export const deleteExercise = async (id: string): Promise<void> => {
+  try {
+    await db.deleteExercise(id);
+    // Update local cache
+    const index = exercisesCache.findIndex(e => e.id === id);
+    if (index !== -1) {
+      exercisesCache.splice(index, 1);
+    }
+    toast.success("Exercise deleted successfully");
+  } catch (error) {
+    console.error('Error deleting exercise:', error);
+    toast.error("Failed to delete exercise");
   }
 };
 
@@ -300,27 +415,102 @@ export const generateExerciseId = (): string => {
   return `exercise-${Date.now()}`;
 };
 
-export const updateExercise = (updatedExercise: Exercise): void => {
-  const index = exercises.findIndex(e => e.id === updatedExercise.id);
-  if (index !== -1) {
-    exercises[index] = updatedExercise;
+export const updateExercise = async (updatedExercise: Exercise): Promise<void> => {
+  try {
+    await db.saveExercise(updatedExercise);
+    // Update local cache
+    const index = exercisesCache.findIndex(e => e.id === updatedExercise.id);
+    if (index !== -1) {
+      exercisesCache[index] = updatedExercise;
+    }
+    toast.success(`Exercise "${updatedExercise.name}" updated successfully`);
+  } catch (error) {
+    console.error('Error updating exercise:', error);
+    toast.error("Failed to update exercise");
   }
 };
 
-export const updateCategory = (updatedCategory: Category): void => {
-  const index = categories.findIndex(c => c.id === updatedCategory.id);
-  if (index !== -1) {
-    categories[index] = updatedCategory;
+export const updateCategory = async (updatedCategory: Category): Promise<void> => {
+  try {
+    await db.saveCategory(updatedCategory);
+    // Update local cache
+    const index = categoriesCache.findIndex(c => c.id === updatedCategory.id);
+    if (index !== -1) {
+      categoriesCache[index] = updatedCategory;
+    }
+    toast.success(`Category "${updatedCategory.name}" updated successfully`);
+  } catch (error) {
+    console.error('Error updating category:', error);
+    toast.error("Failed to update category");
   }
 };
 
-export const addCategory = (category: Category): void => {
-  categories.push(category);
+export const addCategory = async (category: Category): Promise<void> => {
+  try {
+    await db.saveCategory(category);
+    // Update local cache
+    categoriesCache.push(category);
+    toast.success(`Category "${category.name}" added successfully`);
+  } catch (error) {
+    console.error('Error adding category:', error);
+    toast.error("Failed to add category");
+  }
 };
 
-export const deleteCategory = (id: string): void => {
-  const index = categories.findIndex(c => c.id === id);
-  if (index !== -1) {
-    categories.splice(index, 1);
+export const deleteCategory = async (id: string): Promise<void> => {
+  try {
+    await db.deleteCategory(id);
+    // Update local cache
+    const index = categoriesCache.findIndex(c => c.id === id);
+    if (index !== -1) {
+      categoriesCache.splice(index, 1);
+    }
+    toast.success("Category deleted successfully");
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    toast.error("Failed to delete category");
+  }
+};
+
+// Export the cached data for immediate use (before async fetches)
+export const getAllExercises = async (): Promise<Exercise[]> => {
+  try {
+    const dbExercises = await db.getAllExercises();
+    if (dbExercises.length > 0) {
+      exercisesCache = dbExercises; // Update cache
+      return dbExercises;
+    }
+    return exercisesCache.length > 0 ? exercisesCache : exercises;
+  } catch (error) {
+    console.error('Error getting all exercises:', error);
+    return exercisesCache.length > 0 ? exercisesCache : exercises;
+  }
+};
+
+export const getAllCategories = async (): Promise<Category[]> => {
+  try {
+    const dbCategories = await db.getAllCategories();
+    if (dbCategories.length > 0) {
+      categoriesCache = dbCategories; // Update cache
+      return dbCategories;
+    }
+    return categoriesCache.length > 0 ? categoriesCache : categories;
+  } catch (error) {
+    console.error('Error getting all categories:', error);
+    return categoriesCache.length > 0 ? categoriesCache : categories;
+  }
+};
+
+export const getAllWorkouts = async (): Promise<Workout[]> => {
+  try {
+    const dbWorkouts = await db.getAllWorkouts();
+    if (dbWorkouts.length > 0) {
+      workoutsCache = dbWorkouts; // Update cache
+      return dbWorkouts;
+    }
+    return workoutsCache.length > 0 ? workoutsCache : workouts;
+  } catch (error) {
+    console.error('Error getting all workouts:', error);
+    return workoutsCache.length > 0 ? workoutsCache : workouts;
   }
 };

@@ -1,6 +1,15 @@
 
-import React, { useState } from 'react';
-import { exercises, categories, addExercise, updateExercise, deleteExercise, addCategory, updateCategory, deleteCategory } from '@/lib/data';
+import React, { useState, useEffect } from 'react';
+import { 
+  getAllExercises, 
+  getAllCategories, 
+  addExercise, 
+  updateExercise, 
+  deleteExercise, 
+  addCategory, 
+  updateCategory, 
+  deleteCategory 
+} from '@/lib/data';
 import { Exercise, Category } from '@/lib/types';
 import PageContainer from '@/components/layout/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
@@ -9,7 +18,7 @@ import CategoryFilter from '@/components/exercises/CategoryFilter';
 import SearchBar from '@/components/exercises/SearchBar';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Settings } from 'lucide-react';
+import { Plus, Settings, Loader } from 'lucide-react';
 import { 
   Dialog, 
   DialogContent, 
@@ -38,6 +47,11 @@ const ExerciseLibrary = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('exercises');
   
+  // State for exercises and categories
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   // Form states for adding new exercise
   const [newExercise, setNewExercise] = useState({
     name: '',
@@ -48,6 +62,27 @@ const ExerciseLibrary = () => {
   
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Load exercises and categories from database
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const exercisesData = await getAllExercises();
+        const categoriesData = await getAllCategories();
+        
+        setExercises(exercisesData);
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        toast.error('Failed to load data from database');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
+  }, []);
 
   // Filter exercises based on search term and selected category
   const filteredExercises = exercises.filter((exercise: Exercise) => {
@@ -84,7 +119,7 @@ const ExerciseLibrary = () => {
     setImagePreview(preview);
   };
 
-  const handleAddExercise = () => {
+  const handleAddExercise = async () => {
     if (!newExercise.name || !newExercise.category) {
       toast.error('Exercise name and category are required');
       return;
@@ -113,10 +148,10 @@ const ExerciseLibrary = () => {
     }
     
     // Add the exercise to our data
-    addExercise(exercise);
+    await addExercise(exercise);
     
-    // Show success toast
-    toast.success(`Exercise "${exercise.name}" added successfully`);
+    // Update local state
+    setExercises([...exercises, exercise]);
     
     // Close the dialog
     setIsAddDialogOpen(false);
@@ -132,15 +167,17 @@ const ExerciseLibrary = () => {
     setImagePreview(null);
   };
   
-  const handleAddCategory = (category: Category) => {
-    addCategory(category);
+  const handleAddCategory = async (category: Category) => {
+    await addCategory(category);
+    setCategories([...categories, category]);
   };
   
-  const handleUpdateCategory = (category: Category) => {
-    updateCategory(category);
+  const handleUpdateCategory = async (category: Category) => {
+    await updateCategory(category);
+    setCategories(categories.map(c => c.id === category.id ? category : c));
   };
   
-  const handleDeleteCategory = (categoryId: string) => {
+  const handleDeleteCategory = async (categoryId: string) => {
     // Check if any exercises are using this category
     const exercisesUsingCategory = exercises.filter(e => e.category === categoryId);
     
@@ -149,8 +186,25 @@ const ExerciseLibrary = () => {
       return;
     }
     
-    deleteCategory(categoryId);
+    await deleteCategory(categoryId);
+    setCategories(categories.filter(c => c.id !== categoryId));
   };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <PageContainer>
+          <div className="flex items-center justify-center h-[80vh]">
+            <div className="flex flex-col items-center gap-4">
+              <Loader className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-muted-foreground">Loading exercise library...</p>
+            </div>
+          </div>
+        </PageContainer>
+      </>
+    );
+  }
 
   return (
     <>

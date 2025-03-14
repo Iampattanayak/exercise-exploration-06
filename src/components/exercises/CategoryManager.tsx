@@ -52,7 +52,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
     setIsOpen(true);
   };
 
-  const handleSaveCategory = () => {
+  const handleSaveCategory = async () => {
     if (!newCategory.name) {
       toast.error('Category name is required');
       return;
@@ -66,8 +66,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
         color: newCategory.color || 'bg-gray-100 text-gray-800',
       };
       
-      onCategoryUpdate?.(updatedCategory);
-      toast.success(`Category "${updatedCategory.name}" updated successfully`);
+      await onCategoryUpdate?.(updatedCategory);
     } else {
       // Add new category
       const categoryId = newCategory.name?.toLowerCase().replace(/\s+/g, '-') || `category-${Date.now()}`;
@@ -77,8 +76,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
         color: newCategory.color || 'bg-gray-100 text-gray-800',
       };
       
-      onCategoryAdd?.(category);
-      toast.success(`Category "${category.name}" added successfully`);
+      await onCategoryAdd?.(category);
     }
     
     setIsOpen(false);
@@ -86,10 +84,10 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
     setNewCategory({ name: '', color: 'bg-gray-100 text-gray-800' });
   };
 
-  const handleDeleteCategory = (categoryId: string) => {
-    if (confirm('Are you sure you want to delete this category? This will affect all exercises using this category.')) {
-      onCategoryDelete?.(categoryId);
-      toast.success('Category deleted successfully');
+  const handleDeleteCategory = async (categoryId: string) => {
+    const confirmed = window.confirm('Are you sure you want to delete this category? This will affect all exercises using this category.');
+    if (confirmed) {
+      await onCategoryDelete?.(categoryId);
     }
   };
 
@@ -144,6 +142,12 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
             </div>
           </div>
         ))}
+
+        {categories.length === 0 && (
+          <div className="text-center py-8 border rounded-lg">
+            <p className="text-muted-foreground">No categories found. Create your first category.</p>
+          </div>
+        )}
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
