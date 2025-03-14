@@ -1,0 +1,426 @@
+
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getWorkoutById, updateWorkout } from '@/lib/data';
+import { Workout, WorkoutExercise, ExerciseSet } from '@/lib/types';
+import PageContainer from '@/components/layout/PageContainer';
+import PageHeader from '@/components/layout/PageHeader';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from '@/components/ui/use-toast';
+import { Clock, CheckCircle2, Award, ArrowLeft, Save, Dumbbell } from 'lucide-react';
+import { format } from 'date-fns';
+import Navbar from '@/components/layout/Navbar';
+
+const WorkoutSession = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [workout, setWorkout] = useState<Workout | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [startTime] = useState(new Date());
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+
+  useEffect(() => {
+    if (id) {
+      const foundWorkout = getWorkoutById(id);
+      if (foundWorkout) {
+        // Initialize all sets as not completed if this is a new session
+        const initializedWorkout = {
+          ...foundWorkout,
+          exercises: foundWorkout.exercises.map(exercise => ({
+            ...exercise,
+            sets: exercise.sets.map(set => ({
+              ...set,
+              completed: false,
+              actualReps: set.targetReps
+            }))
+          }))
+        };
+        setWorkout(initializedWorkout);
+      }
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    // Update elapsed time every second
+    const timer = setInterval(() => {
+      setElapsedTime(Math.floor((new Date().getTime() - startTime.getTime()) / 1000));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [startTime]);
+
+  useEffect(() => {
+    if (workout) {
+      // Calculate progress
+      const totalSets = workout.exercises.reduce(
+        (total, exercise) => total + exercise.sets.length, 
+        0
+      );
+      
+      const completedSets = workout.exercises.reduce(
+        (total, exercise) => 
+          total + exercise.sets.filter(set => set.completed).length, 
+        0
+      );
+      
+      const calculatedProgress = totalSets > 0 
+        ? Math.round((completedSets / totalSets) * 100) 
+        : 0;
+      
+      setProgress(calculatedProgress);
+    }
+  }, [workout]);
+
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    return `${hours > 0 ? `${hours}:` : ''}${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleSetCompletion = (exerciseIndex: number, setIndex: number, completed: boolean) => {
+    if (!workout) return;
+    
+    setWorkout(prevWorkout => {
+      if (!prevWorkout) return null;
+      
+      const updatedExercises = [...prevWorkout.exercises];
+      const updatedSets = [...updatedExercises[exerciseIndex].sets];
+      
+      updatedSets[setIndex] = {
+        ...updatedSets[setIndex],
+        completed
+      };
+      
+      updatedExercises[exerciseIndex] = {
+        ...updatedExercises[exerciseIndex],
+        sets: updatedSets
+      };
+      
+      return {
+        ...prevWorkout,
+        exercises: updatedExercises
+      };
+    });
+
+    // Play a fun sound effect when completing a set
+    if (completed) {
+      const audio = new Audio('/completion-sound.mp3');
+      audio.volume = 0.5;
+      audio.play().catch(() => {
+        // Silent catch for browsers that block autoplay
+      });
+    }
+  };
+
+  const handleWeightChange = (exerciseIndex: number, setIndex: number, weight: string) => {
+    if (!workout) return;
+    
+    setWorkout(prevWorkout => {
+      if (!prevWorkout) return null;
+      
+      const updatedExercises = [...prevWorkout.exercises];
+      const updatedSets = [...updatedExercises[exerciseIndex].sets];
+      
+      updatedSets[setIndex] = {
+        ...updatedSets[setIndex],
+        weight: parseInt(weight) || 0
+      };
+      
+      updatedExercises[exerciseIndex] = {
+        ...updatedExercises[exerciseIndex],
+        sets: updatedSets
+      };
+      
+      return {
+        ...prevWorkout,
+        exercises: updatedExercises
+      };
+    });
+  };
+
+  const handleActualRepsChange = (exerciseIndex: number, setIndex: number, reps: string) => {
+    if (!workout) return;
+    
+    setWorkout(prevWorkout => {
+      if (!prevWorkout) return null;
+      
+      const updatedExercises = [...prevWorkout.exercises];
+      const updatedSets = [...updatedExercises[exerciseIndex].sets];
+      
+      updatedSets[setIndex] = {
+        ...updatedSets[setIndex],
+        actualReps: parseInt(reps) || 0
+      };
+      
+      updatedExercises[exerciseIndex] = {
+        ...updatedExercises[exerciseIndex],
+        sets: updatedSets
+      };
+      
+      return {
+        ...prevWorkout,
+        exercises: updatedExercises
+      };
+    });
+  };
+
+  const saveWorkoutProgress = () => {
+    if (!workout) return;
+    
+    const updatedWorkout = {
+      ...workout,
+      progress,
+      completed: progress === 100
+    };
+    
+    updateWorkout(updatedWorkout);
+    
+    toast({
+      title: progress === 100 ? "Workout Complete! 💪" : "Progress Saved!",
+      description: progress === 100 
+        ? "Congratulations on completing your workout!" 
+        : "Your workout progress has been saved.",
+    });
+    
+    navigate('/calendar');
+  };
+
+  const handleNavigateToExercise = (index: number) => {
+    setCurrentExerciseIndex(index);
+    // Scroll to the exercise
+    document.getElementById(`exercise-${index}`)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  };
+
+  if (loading) {
+    return (
+      <PageContainer>
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <p className="text-lg">Loading workout session...</p>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!workout) {
+    return (
+      <PageContainer>
+        <div className="flex flex-col justify-center items-center min-h-[60vh]">
+          <h2 className="text-2xl font-bold mb-4">Workout Not Found</h2>
+          <p className="mb-6">The workout you're looking for doesn't exist.</p>
+          <Button onClick={() => navigate('/calendar')}>
+            Back to Calendar
+          </Button>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+      <PageContainer>
+        <PageHeader
+          title={`${workout.name}`}
+          description={`Get ready to crush it! ${workout.description || ''}`}
+          action={
+            <div className="flex space-x-2">
+              <Button variant="outline" onClick={() => navigate(-1)}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Exit
+              </Button>
+              <Button onClick={saveWorkoutProgress}>
+                <Save className="h-4 w-4 mr-2" />
+                {progress === 100 ? "Complete Workout" : "Save Progress"}
+              </Button>
+            </div>
+          }
+        />
+
+        {/* Workout Stats Panel */}
+        <Card className="mb-6 border-2 border-primary/10">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex flex-col items-center justify-center p-4 bg-primary/5 rounded-lg">
+                <Clock className="h-8 w-8 text-primary mb-2" />
+                <span className="text-sm text-muted-foreground">Workout Time</span>
+                <span className="text-2xl font-semibold">{formatTime(elapsedTime)}</span>
+              </div>
+              
+              <div className="flex flex-col items-center justify-center p-4 bg-primary/5 rounded-lg">
+                <Dumbbell className="h-8 w-8 text-primary mb-2" />
+                <span className="text-sm text-muted-foreground">Exercises</span>
+                <span className="text-2xl font-semibold">{workout.exercises.length}</span>
+              </div>
+              
+              <div className="flex flex-col items-center justify-center p-4 bg-primary/5 rounded-lg">
+                <CheckCircle2 className="h-8 w-8 text-primary mb-2" />
+                <span className="text-sm text-muted-foreground">Completion</span>
+                <span className="text-2xl font-semibold">{progress}%</span>
+              </div>
+            </div>
+            
+            <div className="mt-6">
+              <div className="flex justify-between mb-2">
+                <span className="text-sm font-medium">Progress</span>
+                <span className="text-sm font-medium">{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-3" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Exercise Navigation */}
+        <div className="mb-6 overflow-x-auto">
+          <div className="flex space-x-2 pb-2">
+            {workout.exercises.map((exercise, index) => {
+              const exerciseSets = exercise.sets;
+              const completedSets = exerciseSets.filter(set => set.completed).length;
+              const exerciseProgress = Math.round((completedSets / exerciseSets.length) * 100);
+              
+              return (
+                <Button
+                  key={exercise.id}
+                  variant={currentExerciseIndex === index ? "default" : "outline"}
+                  className="whitespace-nowrap"
+                  onClick={() => handleNavigateToExercise(index)}
+                >
+                  {exercise.exercise.name}
+                  {exerciseProgress === 100 && <CheckCircle2 className="ml-2 h-4 w-4 text-green-500" />}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Exercise List */}
+        <div className="space-y-8 mb-8">
+          {workout.exercises.map((exerciseItem, exerciseIndex) => (
+            <Card 
+              key={exerciseItem.id} 
+              id={`exercise-${exerciseIndex}`}
+              className={`overflow-hidden transition-all duration-300 ${
+                currentExerciseIndex === exerciseIndex ? 'border-primary ring-2 ring-primary/20' : ''
+              }`}
+            >
+              <div className="bg-muted/30 p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                  <div 
+                    className="h-16 w-16 md:h-20 md:w-20 rounded-lg bg-cover bg-center flex-shrink-0" 
+                    style={{ backgroundImage: `url(${exerciseItem.exercise.imageUrl})` }}
+                  />
+                  
+                  <div className="flex-grow">
+                    <h3 className="text-xl font-semibold flex items-center">
+                      {exerciseItem.exercise.name}
+                      <span className="ml-2 text-sm px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                        {exerciseItem.exercise.category}
+                      </span>
+                    </h3>
+                    <p className="text-muted-foreground mt-1">{exerciseItem.exercise.description}</p>
+                    
+                    <div className="mt-3">
+                      <div className="bg-background rounded-md px-3 py-1 text-sm inline-flex items-center">
+                        <span className="font-medium">{exerciseItem.sets.length} sets</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <CardContent className="p-4 md:p-6">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="pb-2 text-left font-medium">Set</th>
+                        <th className="pb-2 text-left font-medium">Previous</th>
+                        <th className="pb-2 text-left font-medium">Weight (kg)</th>
+                        <th className="pb-2 text-left font-medium">Target</th>
+                        <th className="pb-2 text-left font-medium">Actual</th>
+                        <th className="pb-2 text-left font-medium">Complete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {exerciseItem.sets.map((set, setIndex) => (
+                        <tr key={set.id} className="border-b last:border-0">
+                          <td className="py-4">
+                            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center font-medium">
+                              {set.setNumber}
+                            </div>
+                          </td>
+                          <td className="py-4 text-muted-foreground">
+                            {set.weight || 0}kg × {set.targetReps}
+                          </td>
+                          <td className="py-4">
+                            <Input
+                              type="number"
+                              value={set.weight || ''}
+                              onChange={(e) => handleWeightChange(exerciseIndex, setIndex, e.target.value)}
+                              className="h-8 w-20"
+                            />
+                          </td>
+                          <td className="py-4 font-medium text-center">
+                            {set.targetReps}
+                          </td>
+                          <td className="py-4">
+                            <Input
+                              type="number"
+                              value={set.actualReps !== undefined ? set.actualReps : ''}
+                              onChange={(e) => handleActualRepsChange(exerciseIndex, setIndex, e.target.value)}
+                              className="h-8 w-20"
+                            />
+                          </td>
+                          <td className="py-4">
+                            <div className="flex justify-center">
+                              <div className={`p-1 rounded-md transition-all ${set.completed ? 'bg-green-100' : ''}`}>
+                                <Checkbox
+                                  id={`set-${exerciseIndex}-${setIndex}`}
+                                  checked={set.completed}
+                                  onCheckedChange={(checked) => 
+                                    handleSetCompletion(exerciseIndex, setIndex, checked as boolean)
+                                  }
+                                  className="h-6 w-6 data-[state=checked]:bg-green-500 data-[state=checked]:text-white"
+                                />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {progress === 100 && (
+          <div className="flex flex-col items-center justify-center bg-green-50 p-8 rounded-lg mb-8 animate-fade-in">
+            <Award className="h-16 w-16 text-green-500 mb-4" />
+            <h2 className="text-2xl font-bold text-green-700 mb-2">Workout Complete!</h2>
+            <p className="text-green-600 mb-4 text-center">Congratulations on completing your workout! Save your progress to record this achievement.</p>
+            <Button onClick={saveWorkoutProgress} size="lg" className="bg-green-500 hover:bg-green-600">
+              <Save className="h-5 w-5 mr-2" />
+              Save & Complete
+            </Button>
+          </div>
+        )}
+      </PageContainer>
+    </>
+  );
+};
+
+export default WorkoutSession;

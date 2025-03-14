@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Calendar from "./pages/Calendar";
 import ExerciseLibrary from "./pages/ExerciseLibrary";
 import WorkoutForm from "./pages/WorkoutForm";
+import WorkoutSession from "./pages/WorkoutSession";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,7 @@ const App = () => (
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/workout/new" element={<WorkoutForm />} />
           <Route path="/workout/:id" element={<WorkoutForm />} />
-          <Route path="/workout-session/:id" element={<WorkoutForm />} />
+          <Route path="/workout-session/:id" element={<WorkoutSession />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
