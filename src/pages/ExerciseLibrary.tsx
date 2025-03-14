@@ -43,7 +43,7 @@ const ExerciseLibrary = () => {
     name: '',
     description: '',
     category: '',
-    imageUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=500&h=500&auto=format&fit=crop'
+    imageUrl: ''
   });
   
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
@@ -82,19 +82,17 @@ const ExerciseLibrary = () => {
   const handleImageChange = (file: File | null, preview: string | null) => {
     setUploadedImage(file);
     setImagePreview(preview);
-    
-    if (preview) {
-      // If using uploaded image, update the imageUrl to use the preview
-      setNewExercise({
-        ...newExercise,
-        imageUrl: preview
-      });
-    }
   };
 
   const handleAddExercise = () => {
     if (!newExercise.name || !newExercise.category) {
       toast.error('Exercise name and category are required');
+      return;
+    }
+    
+    // Check if we have an image (either uploaded or URL)
+    if (!imagePreview && !newExercise.imageUrl) {
+      toast.error('Please provide an image for the exercise');
       return;
     }
     
@@ -106,15 +104,13 @@ const ExerciseLibrary = () => {
       name: newExercise.name,
       description: newExercise.description,
       category: newExercise.category,
-      imageUrl: newExercise.imageUrl
+      imageUrl: imagePreview || newExercise.imageUrl
     };
     
     // If we have an uploaded image, store its path reference
     if (uploadedImage) {
       exercise.imagePath = URL.createObjectURL(uploadedImage);
     }
-    
-    // In a real app, we would upload the image to a server here
     
     // Add the exercise to our data
     addExercise(exercise);
@@ -130,7 +126,7 @@ const ExerciseLibrary = () => {
       name: '',
       description: '',
       category: '',
-      imageUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=500&h=500&auto=format&fit=crop'
+      imageUrl: ''
     });
     setUploadedImage(null);
     setImagePreview(null);
@@ -271,17 +267,17 @@ const ExerciseLibrary = () => {
                 
                 <div className="space-y-4">
                   <div className="grid gap-2">
-                    <Label>Exercise Image</Label>
+                    <Label>Exercise Image *</Label>
                     <ImageUpload
                       onImageChange={handleImageChange}
-                      previewUrl={imagePreview || newExercise.imageUrl}
+                      previewUrl={imagePreview}
                       maxSizeMB={5}
-                      minWidth={300}
-                      minHeight={300}
+                      minWidth={500}
+                      minHeight={500}
                       maxWidth={1500}
                       maxHeight={1500}
                       aspectRatio={1}
-                      helpText="Upload an image of the exercise. Recommended size: 500x500px. Will be automatically resized if needed."
+                      helpText="Square images work best (1:1 ratio). Images will be optimized automatically."
                     />
                   </div>
                   
@@ -295,6 +291,11 @@ const ExerciseLibrary = () => {
                       placeholder="https://example.com/image.jpg"
                       disabled={!!imagePreview}
                     />
+                    {(!imagePreview && !newExercise.imageUrl) && (
+                      <p className="text-xs text-muted-foreground">
+                        Either upload an image or provide a URL
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

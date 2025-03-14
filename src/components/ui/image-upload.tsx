@@ -53,7 +53,7 @@ export function ImageUpload({
     
     // Check image dimensions and apply resizing if needed
     reader.onload = (e) => {
-      const img = new Image();
+      const img = document.createElement("img");
       img.onload = () => {
         let validImage = true;
         let message = "";
@@ -195,8 +195,13 @@ export function ImageUpload({
                   Drag & drop an image or click to browse
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  JPG, PNG or GIF • Max {maxSizeMB}MB
+                  JPG, PNG or GIF • Max {maxSizeMB}MB • Optimal {minWidth}x{minHeight}px to {maxWidth}x{maxHeight}px
                 </p>
+                {aspectRatio && (
+                  <p className="text-xs text-muted-foreground">
+                    Aspect ratio: {aspectRatio}:1 (recommended)
+                  </p>
+                )}
               </div>
               <Button
                 type="button"
