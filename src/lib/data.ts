@@ -1,4 +1,3 @@
-
 import { Category, Exercise, Workout, WorkoutExercise, ExerciseSet } from './types';
 import { format, addDays, subDays } from 'date-fns';
 
@@ -299,4 +298,29 @@ export const generateWorkoutId = (): string => {
 
 export const generateExerciseId = (): string => {
   return `exercise-${Date.now()}`;
+};
+
+export const updateExercise = (updatedExercise: Exercise): void => {
+  const index = exercises.findIndex(e => e.id === updatedExercise.id);
+  if (index !== -1) {
+    exercises[index] = updatedExercise;
+  }
+};
+
+export const updateCategory = (updatedCategory: Category): void => {
+  const index = categories.findIndex(c => c.id === updatedCategory.id);
+  if (index !== -1) {
+    categories[index] = updatedCategory;
+  }
+};
+
+export const addCategory = (category: Category): void => {
+  categories.push(category);
+};
+
+export const deleteCategory = (id: string): void => {
+  const index = categories.findIndex(c => c.id === id);
+  if (index !== -1) {
+    categories.splice(index, 1);
+  }
 };
