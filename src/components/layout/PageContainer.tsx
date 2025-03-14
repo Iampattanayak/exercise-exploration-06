@@ -9,7 +9,7 @@ interface PageContainerProps {
 
 const PageContainer: React.FC<PageContainerProps> = ({ children, className = "" }) => {
   return (
-    <div className={`container mx-auto px-4 py-8 animate-fade-in ${className}`}>
+    <div className={`container mx-auto px-4 py-8 animate-fade-in font-inter ${className}`}>
       <div className="mb-6">
         <AppNavigation />
       </div>
