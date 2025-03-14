@@ -1,6 +1,42 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Category, Exercise } from './types';
+import { Category, Exercise, Workout, WorkoutExercise } from './types';
+import { v4 as uuidv4 } from 'uuid';
+
+// Mock data for workouts until we implement them in Supabase
+const mockWorkouts: Workout[] = [
+  {
+    id: '1',
+    name: 'Monday Push Day',
+    description: 'Chest, shoulders and triceps workout',
+    date: '2023-10-09',
+    exercises: [],
+    completed: false
+  },
+  {
+    id: '2',
+    name: 'Tuesday Pull Day',
+    description: 'Back and biceps focused workout',
+    date: '2023-10-10',
+    exercises: [],
+    completed: false
+  },
+  {
+    id: '3',
+    name: 'Wednesday Leg Day',
+    description: 'Full lower body workout',
+    date: '2023-10-11',
+    exercises: [],
+    completed: true,
+    progress: 100
+  }
+];
+
+// Export mockWorkouts for components that need it directly
+export const workouts = mockWorkouts;
+
+// Helper to get exercises for the mockWorkouts
+export const exercises: Exercise[] = [];
 
 // CATEGORY FUNCTIONS
 export const getAllCategories = async (): Promise<Category[]> => {
@@ -161,4 +197,75 @@ export const deleteExercise = async (id: string): Promise<void> => {
     console.error('Error deleting exercise:', error);
     throw new Error(error.message);
   }
+};
+
+// WORKOUT FUNCTIONS (Currently mocked)
+export const getRecentWorkouts = (): Workout[] => {
+  // Return completed workouts, sorted by date (most recent first)
+  return [...mockWorkouts]
+    .filter(workout => workout.completed)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
+};
+
+export const getTodayWorkouts = (): Workout[] => {
+  // Get today's date in yyyy-MM-dd format
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Return workouts scheduled for today
+  return mockWorkouts.filter(workout => workout.date === today);
+};
+
+export const getUpcomingWorkouts = (): Workout[] => {
+  // Get today's date
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Return future workouts, sorted by date (soonest first)
+  return [...mockWorkouts]
+    .filter(workout => {
+      const workoutDate = new Date(workout.date);
+      workoutDate.setHours(0, 0, 0, 0);
+      return workoutDate.getTime() > today.getTime();
+    })
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 3);
+};
+
+export const getWorkoutsByDate = (date: string): Workout[] => {
+  // Return workouts scheduled for the specified date
+  return mockWorkouts.filter(workout => workout.date === date);
+};
+
+export const getWorkoutById = (id: string): Workout | null => {
+  // Find workout by ID
+  return mockWorkouts.find(workout => workout.id === id) || null;
+};
+
+export const addWorkout = (workout: Workout): void => {
+  // Add workout to mock data
+  mockWorkouts.push(workout);
+};
+
+export const updateWorkout = (updatedWorkout: Workout): void => {
+  // Find workout index
+  const index = mockWorkouts.findIndex(workout => workout.id === updatedWorkout.id);
+  
+  // Update if found
+  if (index !== -1) {
+    mockWorkouts[index] = updatedWorkout;
+  }
+};
+
+export const deleteWorkout = (id: string): void => {
+  // Remove workout from mock data
+  const index = mockWorkouts.findIndex(workout => workout.id === id);
+  if (index !== -1) {
+    mockWorkouts.splice(index, 1);
+  }
+};
+
+export const generateWorkoutId = (): string => {
+  // Generate a unique ID for a new workout
+  return uuidv4();
 };
