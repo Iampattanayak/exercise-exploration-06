@@ -13,7 +13,11 @@ export function useExerciseQueries() {
     refetch: refetchExercises
   } = useQuery({
     queryKey: ['exercises'],
-    queryFn: getAllExercises
+    queryFn: getAllExercises,
+    onError: (error) => {
+      toast.error(`Failed to load exercises: ${error.message}`);
+      console.error('Failed to load exercises:', error);
+    }
   });
 
   // Fetch categories using React Query
@@ -24,15 +28,19 @@ export function useExerciseQueries() {
     refetch: refetchCategories
   } = useQuery({
     queryKey: ['categories'],
-    queryFn: getAllCategories
+    queryFn: getAllCategories,
+    onError: (error) => {
+      toast.error(`Failed to load categories: ${error.message}`);
+      console.error('Failed to load categories:', error);
+    }
   });
 
   // Function to reload all data
   const refreshAllData = useCallback(() => {
     toast.info('Refreshing data...');
-    refetchExercises();
-    refetchCategories();
-    toast.success('Data refreshed successfully');
+    Promise.all([refetchExercises(), refetchCategories()])
+      .then(() => toast.success('Data refreshed successfully'))
+      .catch((error) => toast.error(`Refresh failed: ${error.message}`));
   }, [refetchExercises, refetchCategories]);
 
   return {

@@ -14,7 +14,6 @@ export function useExerciseMutations() {
     mutationFn: addExercise,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
-      toast.success('Exercise added successfully');
     },
     onError: (error: Error) => {
       console.error('Mutation error:', error);
@@ -27,7 +26,6 @@ export function useExerciseMutations() {
     mutationFn: addMultipleExercises,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
-      toast.success('Exercises added successfully');
     },
     onError: (error: Error) => {
       console.error('Mutation error:', error);
@@ -40,7 +38,6 @@ export function useExerciseMutations() {
     mutationFn: updateExercise,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
-      toast.success('Exercise updated successfully');
     },
     onError: (error: Error) => {
       console.error('Mutation error:', error);
@@ -53,7 +50,6 @@ export function useExerciseMutations() {
     mutationFn: deleteExercise,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
-      toast.success('Exercise deleted successfully');
     },
     onError: (error: Error) => {
       console.error('Mutation error:', error);
@@ -64,6 +60,12 @@ export function useExerciseMutations() {
   // Create Exercise handler
   const handleCreateExercise = async (exerciseData: Partial<Exercise>, uploadedImage: File | null) => {
     try {
+      // Check for required fields
+      if (!exerciseData.name || !exerciseData.category) {
+        toast.error('Exercise name and category are required');
+        return false;
+      }
+      
       // Generate a unique ID for the exercise
       const exerciseId = uuidv4();
       let imageUrl = exerciseData.imageUrl || '';
@@ -83,9 +85,9 @@ export function useExerciseMutations() {
       // Create the exercise object
       const exercise: Exercise = {
         id: exerciseId,
-        name: exerciseData.name || '',
+        name: exerciseData.name,
         description: exerciseData.description || '',
-        category: exerciseData.category || '',
+        category: exerciseData.category,
         imageUrl: imageUrl
       };
       
@@ -96,7 +98,6 @@ export function useExerciseMutations() {
       return true;
     } catch (error) {
       console.error('Error adding exercise:', error);
-      toast.error('Failed to add exercise');
       return false;
     }
   };
@@ -113,7 +114,6 @@ export function useExerciseMutations() {
       return true;
     } catch (error) {
       console.error('Error adding exercises:', error);
-      toast.error('Failed to add exercises');
       return false;
     }
   };
@@ -125,6 +125,12 @@ export function useExerciseMutations() {
     uploadedImage: File | null
   ) => {
     try {
+      // Check for required fields
+      if (!exerciseData.name || !exerciseData.category) {
+        toast.error('Exercise name and category are required');
+        return false;
+      }
+      
       let imageUrl = exerciseData.imageUrl || '';
       
       // If there's an uploaded image, process it
@@ -141,9 +147,9 @@ export function useExerciseMutations() {
       // Create the exercise object
       const exercise: Exercise = {
         id: exerciseId,
-        name: exerciseData.name || '',
+        name: exerciseData.name,
         description: exerciseData.description || '',
-        category: exerciseData.category || '',
+        category: exerciseData.category,
         imageUrl: imageUrl
       };
       
@@ -152,7 +158,6 @@ export function useExerciseMutations() {
       return true;
     } catch (error) {
       console.error('Error updating exercise:', error);
-      toast.error('Failed to update exercise');
       return false;
     }
   };
@@ -164,7 +169,6 @@ export function useExerciseMutations() {
       return true;
     } catch (error) {
       console.error('Error deleting exercise:', error);
-      toast.error('Failed to delete exercise');
       return false;
     }
   };
@@ -173,6 +177,12 @@ export function useExerciseMutations() {
     handleCreateExercise,
     handleCreateMultipleExercises,
     handleUpdateExercise,
-    handleDeleteExercise
+    handleDeleteExercise,
+    
+    // Expose the raw mutations for advanced use cases
+    createExerciseMutation,
+    updateExerciseMutation,
+    deleteExerciseMutation,
+    createMultipleExercisesMutation
   };
 }

@@ -16,7 +16,8 @@ import EditExerciseDialog from '@/components/exercises/EditExerciseDialog';
 import DeleteExerciseDialog from '@/components/exercises/DeleteExerciseDialog';
 import CuratedExercisesDialog from '@/components/exercises/CuratedExercisesDialog';
 import { Button } from '@/components/ui/button';
-import { Plus, RefreshCw, BookOpen } from 'lucide-react';
+import { Plus, RefreshCw, BookOpen, FileText } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ExerciseLibrary: React.FC = () => {
   const {
@@ -25,6 +26,8 @@ const ExerciseLibrary: React.FC = () => {
     filteredExercises,
     exercisesLoading,
     categoriesLoading,
+    exercisesError,
+    categoriesError,
     searchTerm,
     selectedCategory,
     handleSearchChange,
@@ -50,10 +53,20 @@ const ExerciseLibrary: React.FC = () => {
   const [showCategoryManager, setShowCategoryManager] = useState(false);
 
   const handleOpenAddExercise = () => {
+    if (categories.length === 0) {
+      toast.error("Please create at least one category first");
+      setShowCategoryManager(true);
+      return;
+    }
     setIsAddExerciseOpen(true);
   };
 
   const handleOpenCuratedExercises = () => {
+    if (categories.length === 0) {
+      toast.error("Please create at least one category first");
+      setShowCategoryManager(true);
+      return;
+    }
     setIsCuratedExercisesOpen(true);
   };
 
@@ -69,14 +82,30 @@ const ExerciseLibrary: React.FC = () => {
 
   const handleDeleteExerciseSubmit = async () => {
     if (selectedExercise) {
-      return handleDeleteExercise(selectedExercise.id);
+      const success = await handleDeleteExercise(selectedExercise.id);
+      if (success) {
+        toast.success(`Deleted "${selectedExercise.name}" successfully`);
+      }
+      return success;
     }
     return false;
   };
 
   const handleUpdateExerciseSubmit = async (exerciseData: Partial<Exercise>, uploadedImage: File | null) => {
     if (!selectedExercise) return false;
-    return handleUpdateExercise(selectedExercise.id, exerciseData, uploadedImage);
+    const success = await handleUpdateExercise(selectedExercise.id, exerciseData, uploadedImage);
+    if (success) {
+      toast.success(`Updated "${exerciseData.name}" successfully`);
+    }
+    return success;
+  };
+
+  const handleCreateExerciseSubmit = async (exerciseData: Partial<Exercise>, uploadedImage: File | null) => {
+    const success = await handleCreateExercise(exerciseData, uploadedImage);
+    if (success) {
+      toast.success(`Created "${exerciseData.name}" successfully`);
+    }
+    return success;
   };
 
   const handleRefresh = () => {
@@ -86,6 +115,15 @@ const ExerciseLibrary: React.FC = () => {
   const toggleCategoryManager = () => {
     setShowCategoryManager(!showCategoryManager);
   };
+
+  // Display error states if present
+  if (exercisesError && !exercisesLoading) {
+    console.error("Exercise loading error:", exercisesError);
+  }
+  
+  if (categoriesError && !categoriesLoading) {
+    console.error("Category loading error:", categoriesError);
+  }
 
   return (
     <>
@@ -99,7 +137,7 @@ const ExerciseLibrary: React.FC = () => {
               title="Exercise Library"
               description="Browse and manage your exercises"
               action={
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" onClick={handleRefresh}>
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Refresh
@@ -141,6 +179,24 @@ const ExerciseLibrary: React.FC = () => {
                 onEdit={handleOpenEditExercise}
                 onDelete={handleOpenDeleteExercise}
               />
+              
+              {filteredExercises.length === 0 && !exercisesLoading && (
+                <div className="text-center py-12">
+                  <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium">No exercises found</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {exercises.length === 0 
+                      ? "Your exercise library is empty. Add your first exercise to get started."
+                      : "No exercises match your current filters."}
+                  </p>
+                  {exercises.length === 0 && (
+                    <Button onClick={handleOpenAddExercise}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Your First Exercise
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </>
         ) : (
@@ -158,7 +214,7 @@ const ExerciseLibrary: React.FC = () => {
           isOpen={isAddExerciseOpen}
           onOpenChange={setIsAddExerciseOpen}
           categories={categories}
-          onSubmit={handleCreateExercise}
+          onSubmit={handleCreateExerciseSubmit}
         />
 
         <EditExerciseDialog
