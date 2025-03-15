@@ -8,9 +8,16 @@ import { cn } from '@/lib/utils';
 interface ExerciseCardProps {
   exercise: Exercise;
   onClick?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick }) => {
+const ExerciseCard: React.FC<ExerciseCardProps> = ({ 
+  exercise, 
+  onClick,
+  onEdit,
+  onDelete 
+}) => {
   const [category, setCategory] = useState(getCategoryByIdSync(exercise.category));
   
   useEffect(() => {
