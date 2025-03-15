@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,9 @@ import { toast } from 'sonner';
 
 interface CategoryManagerProps {
   categories: Category[];
+  exercises?: any[];
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onCategoryAdd?: (category: Omit<Category, 'id'>) => void;
   onCategoryUpdate?: (category: Category) => void;
   onCategoryDelete?: (categoryId: string) => void;
@@ -23,16 +27,22 @@ interface CategoryManagerProps {
 
 const CategoryManager: React.FC<CategoryManagerProps> = ({
   categories,
+  exercises = [],
+  isOpen = false,
+  onOpenChange,
   onCategoryAdd,
   onCategoryUpdate,
   onCategoryDelete,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [newCategory, setNewCategory] = useState<Partial<Category>>({
     name: '',
     color: 'bg-gray-100 text-gray-800',
   });
+
+  const effectiveIsOpen = onOpenChange ? isOpen : editDialogOpen;
+  const effectiveSetIsOpen = onOpenChange || setEditDialogOpen;
 
   const handleOpenDialog = (category?: Category) => {
     if (category) {
@@ -48,7 +58,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
         color: 'bg-gray-100 text-gray-800',
       });
     }
-    setIsOpen(true);
+    effectiveSetIsOpen(true);
   };
 
   const handleSaveCategory = async () => {
@@ -76,7 +86,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       await onCategoryAdd?.(category);
     }
     
-    setIsOpen(false);
+    effectiveSetIsOpen(false);
     setEditingCategory(null);
     setNewCategory({ name: '', color: 'bg-gray-100 text-gray-800' });
   };
@@ -146,7 +156,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
         )}
       </div>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={effectiveIsOpen} onOpenChange={effectiveSetIsOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -192,7 +202,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
+            <Button variant="outline" onClick={() => effectiveSetIsOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleSaveCategory}>

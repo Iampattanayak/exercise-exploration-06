@@ -8,12 +8,14 @@ interface CategoryFilterProps {
   categories: Category[];
   selectedCategory: string | null;
   onCategoryChange: (categoryId: string | null) => void;
+  onManageCategories?: () => void;
 }
 
 const CategoryFilter: React.FC<CategoryFilterProps> = ({
   categories,
   selectedCategory,
   onCategoryChange,
+  onManageCategories,
 }) => {
   return (
     <div className="pb-4 overflow-x-auto">
@@ -37,6 +39,16 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
             {category.name}
           </Button>
         ))}
+        {onManageCategories && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onManageCategories}
+            className="rounded-full ml-2"
+          >
+            Manage Categories
+          </Button>
+        )}
       </div>
     </div>
   );

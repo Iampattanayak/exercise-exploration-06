@@ -8,10 +8,21 @@ import { cn } from '@/lib/utils';
 
 interface ExerciseGridProps {
   exercises: Exercise[];
+  categories?: Category[];
+  isLoading?: boolean;
+  onEdit?: (exercise: Exercise) => void;
+  onDelete?: (exercise: Exercise) => void;
   onExerciseSelect?: (exercise: Exercise) => void;
 }
 
-const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect }) => {
+const ExerciseGrid: React.FC<ExerciseGridProps> = ({ 
+  exercises, 
+  categories = [],
+  isLoading = false,
+  onEdit,
+  onDelete,
+  onExerciseSelect 
+}) => {
   const [selectedExercise, setSelectedExercise] = React.useState<Exercise | null>(null);
   const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
 
@@ -31,6 +42,16 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect
   useEffect(() => {
     const loadCategory = async () => {
       if (selectedExercise?.category) {
+        // First check if we already have the category in our categories prop
+        if (categories.length > 0) {
+          const category = categories.find(c => c.id === selectedExercise.category);
+          if (category) {
+            setSelectedCategory(category);
+            return;
+          }
+        }
+        
+        // If not found in props, load from API
         const loadedCategory = await getCategoryById(selectedExercise.category);
         if (loadedCategory) {
           setSelectedCategory(loadedCategory);
@@ -41,7 +62,28 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect
     if (selectedExercise) {
       loadCategory();
     }
-  }, [selectedExercise]);
+  }, [selectedExercise, categories]);
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div 
+            key={index} 
+            className="bg-muted/30 rounded-lg h-60 animate-pulse"
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (exercises.length === 0) {
+    return (
+      <div className="text-center py-12 border rounded-lg">
+        <p className="text-muted-foreground">No exercises found.</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -51,6 +93,8 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect
             key={exercise.id} 
             exercise={exercise} 
             onClick={() => handleExerciseClick(exercise)}
+            onEdit={onEdit ? () => onEdit(exercise) : undefined}
+            onDelete={onDelete ? () => onDelete(exercise) : undefined}
           />
         ))}
       </div>
