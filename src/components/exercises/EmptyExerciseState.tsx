@@ -6,11 +6,13 @@ import { FileText, Plus, Filter } from 'lucide-react';
 interface EmptyExerciseStateProps {
   hasExercises: boolean;
   onAddExercise: () => void;
+  onClearFilters?: () => void;
 }
 
 const EmptyExerciseState: React.FC<EmptyExerciseStateProps> = ({
   hasExercises,
   onAddExercise,
+  onClearFilters,
 }) => {
   return (
     <div className="text-center py-12 px-4 border border-dashed border-gray-200 rounded-lg bg-gray-50/50">
@@ -22,7 +24,7 @@ const EmptyExerciseState: React.FC<EmptyExerciseStateProps> = ({
           : "Your exercise library is empty. Add your first exercise to get started with your fitness journey."}
       </p>
       {hasExercises ? (
-        <Button variant="outline">
+        <Button variant="outline" onClick={onClearFilters}>
           <Filter className="h-4 w-4 mr-2" />
           Clear Filters
         </Button>

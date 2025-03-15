@@ -4,6 +4,9 @@ import { Exercise } from '@/lib/types';
 import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from '@/components/ui/context-menu';
+import { Edit, Trash } from 'lucide-react';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -33,32 +36,84 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     loadCategory();
   }, [exercise.category]);
   
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEdit) onEdit();
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) onDelete();
+  };
+  
   return (
-    <div 
-      className="rounded-lg overflow-hidden bg-white border shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] cursor-pointer"
-      onClick={onClick}
-    >
-      <AspectRatio ratio={1 / 1} className="bg-muted/30">
-        <img 
-          src={exercise.imageUrl} 
-          alt={exercise.name}
-          className="object-cover w-full h-full transition-transform duration-300"
-        />
-      </AspectRatio>
-      <div className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-medium">{exercise.name}</h3>
-          {category && (
-            <span className={cn('text-xs px-2 py-1 rounded-full', category.color)}>
-              {category.name}
-            </span>
-          )}
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <div 
+          className="rounded-lg overflow-hidden bg-white border shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] cursor-pointer relative group"
+          onClick={onClick}
+        >
+          <AspectRatio ratio={1 / 1} className="bg-muted/30">
+            <img 
+              src={exercise.imageUrl} 
+              alt={exercise.name}
+              className="object-cover w-full h-full transition-transform duration-300"
+            />
+            
+            {/* Action buttons that appear on hover */}
+            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {onEdit && (
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="h-8 w-8 bg-white/80 hover:bg-white" 
+                  onClick={handleEdit}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              {onDelete && (
+                <Button 
+                  variant="destructive" 
+                  size="icon" 
+                  className="h-8 w-8 bg-white/80 hover:bg-destructive" 
+                  onClick={handleDelete}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </AspectRatio>
+          <div className="p-4">
+            <div className="flex items-start justify-between mb-2">
+              <h3 className="font-medium">{exercise.name}</h3>
+              {category && (
+                <span className={cn('text-xs px-2 py-1 rounded-full', category.color)}>
+                  {category.name}
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {exercise.description}
+            </p>
+          </div>
         </div>
-        <p className="text-sm text-muted-foreground line-clamp-2">
-          {exercise.description}
-        </p>
-      </div>
-    </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        {onEdit && (
+          <ContextMenuItem onClick={handleEdit}>
+            <Edit className="h-4 w-4 mr-2" />
+            Edit Exercise
+          </ContextMenuItem>
+        )}
+        {onDelete && (
+          <ContextMenuItem onClick={handleDelete} className="text-destructive">
+            <Trash className="h-4 w-4 mr-2" />
+            Delete Exercise
+          </ContextMenuItem>
+        )}
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };
 

@@ -103,6 +103,11 @@ const ExerciseLibrary: React.FC = () => {
     return success;
   };
 
+  const handleClearFilters = () => {
+    handleSearchChange('');
+    handleCategoryChange('');
+  };
+
   const toggleCategoryManager = () => {
     setShowCategoryManager(!showCategoryManager);
   };
@@ -152,6 +157,7 @@ const ExerciseLibrary: React.FC = () => {
                 <EmptyExerciseState 
                   hasExercises={exercises.length > 0}
                   onAddExercise={handleOpenAddExercise}
+                  onClearFilters={handleClearFilters}
                 />
               )}
             </div>
