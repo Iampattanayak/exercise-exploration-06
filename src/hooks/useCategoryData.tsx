@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addCategory, updateCategory, deleteCategory } from '@/lib/data';
 import { Category } from '@/lib/types';
 import { toast } from 'sonner';
+import { v4 as uuidv4 } from 'uuid';
 
 export function useCategoryData() {
   const queryClient = useQueryClient();
@@ -40,9 +41,15 @@ export function useCategoryData() {
     }
   });
 
-  const handleAddCategory = async (category: Category): Promise<boolean> => {
+  const handleAddCategory = async (category: Omit<Category, 'id'> & { id?: string }): Promise<boolean> => {
     try {
-      await addCategoryMutation.mutateAsync(category);
+      // Generate a proper UUID for the category
+      const newCategory: Category = {
+        ...category,
+        id: uuidv4()
+      };
+      
+      await addCategoryMutation.mutateAsync(newCategory);
       return true;
     } catch (error) {
       console.error('Error adding category:', error);

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ import { toast } from 'sonner';
 
 interface CategoryManagerProps {
   categories: Category[];
-  onCategoryAdd?: (category: Category) => void;
+  onCategoryAdd?: (category: Omit<Category, 'id'>) => void;
   onCategoryUpdate?: (category: Category) => void;
   onCategoryDelete?: (categoryId: string) => void;
 }
@@ -68,10 +67,8 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       
       await onCategoryUpdate?.(updatedCategory);
     } else {
-      // Add new category
-      const categoryId = newCategory.name?.toLowerCase().replace(/\s+/g, '-') || `category-${Date.now()}`;
-      const category: Category = {
-        id: categoryId,
+      // Add new category - let the hook generate the UUID
+      const category = {
         name: newCategory.name || '',
         color: newCategory.color || 'bg-gray-100 text-gray-800',
       };
@@ -91,7 +88,6 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
     }
   };
 
-  // Predefined color options
   const colorOptions = [
     { value: 'bg-red-100 text-red-800', label: 'Red' },
     { value: 'bg-blue-100 text-blue-800', label: 'Blue' },
