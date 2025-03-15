@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getWorkoutById, updateWorkout } from '@/lib/workouts';
 import { Workout, WorkoutExercise, ExerciseSet } from '@/lib/types';
+import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
 import PageContainer from '@/components/layout/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Clock, CheckCircle2, Award, ArrowLeft, Save, Dumbbell, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import Navbar from '@/components/layout/Navbar';
+import { cn } from '@/lib/utils';
 
 const WorkoutSession = () => {
   const { id } = useParams();
@@ -26,6 +28,7 @@ const WorkoutSession = () => {
   const [startTime] = useState(new Date());
   const [elapsedTime, setElapsedTime] = useState(0);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [exerciseCategories, setExerciseCategories] = useState<Record<string, {name: string, color: string}>>({});
 
   useEffect(() => {
     const fetchWorkout = async () => {
@@ -47,6 +50,21 @@ const WorkoutSession = () => {
               }))
             };
             setWorkout(initializedWorkout);
+            
+            // Load categories for all exercises
+            const categories: Record<string, {name: string, color: string}> = {};
+            for (const exercise of initializedWorkout.exercises) {
+              if (exercise.exercise.category) {
+                const category = await getCategoryById(exercise.exercise.category);
+                if (category) {
+                  categories[exercise.exercise.category] = {
+                    name: category.name,
+                    color: category.color
+                  };
+                }
+              }
+            }
+            setExerciseCategories(categories);
           }
         } catch (error) {
           console.error('Error fetching workout:', error);
@@ -229,6 +247,23 @@ const WorkoutSession = () => {
     });
   };
 
+  const getCategoryDisplay = (categoryId: string) => {
+    if (exerciseCategories[categoryId]) {
+      return (
+        <span className={cn('text-sm px-2 py-1 rounded-full', exerciseCategories[categoryId].color)}>
+          {exerciseCategories[categoryId].name}
+        </span>
+      );
+    }
+    
+    // Fallback to a placeholder
+    return (
+      <span className="text-sm px-2 py-1 rounded-full bg-gray-100 text-gray-800">
+        Loading...
+      </span>
+    );
+  };
+
   if (loading) {
     return (
       <PageContainer>
@@ -357,9 +392,11 @@ const WorkoutSession = () => {
                   <div className="flex-grow">
                     <h3 className="text-xl font-semibold flex items-center">
                       {exerciseItem.exercise.name}
-                      <span className="ml-2 text-sm px-2 py-1 rounded-full bg-blue-100 text-blue-800">
-                        {exerciseItem.exercise.category}
-                      </span>
+                      {exerciseItem.exercise.category && (
+                        <span className="ml-2">
+                          {getCategoryDisplay(exerciseItem.exercise.category)}
+                        </span>
+                      )}
                     </h3>
                     <p className="text-muted-foreground mt-1">{exerciseItem.exercise.description}</p>
                     
