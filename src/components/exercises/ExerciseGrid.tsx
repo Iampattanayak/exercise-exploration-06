@@ -1,9 +1,9 @@
 
-import React from 'react';
-import { Exercise } from '@/lib/types';
+import React, { useState, useEffect } from 'react';
+import { Exercise, Category } from '@/lib/types';
 import ExerciseCard from './ExerciseCard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { getCategoryById } from '@/lib/data';
+import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 
 interface ExerciseGridProps {
@@ -13,6 +13,7 @@ interface ExerciseGridProps {
 
 const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect }) => {
   const [selectedExercise, setSelectedExercise] = React.useState<Exercise | null>(null);
+  const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
 
   const handleExerciseClick = (exercise: Exercise) => {
     if (onExerciseSelect) {
@@ -24,7 +25,23 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect
 
   const handleDialogClose = () => {
     setSelectedExercise(null);
+    setSelectedCategory(null);
   };
+  
+  useEffect(() => {
+    const loadCategory = async () => {
+      if (selectedExercise?.category) {
+        const loadedCategory = await getCategoryById(selectedExercise.category);
+        if (loadedCategory) {
+          setSelectedCategory(loadedCategory);
+        }
+      }
+    };
+    
+    if (selectedExercise) {
+      loadCategory();
+    }
+  }, [selectedExercise]);
 
   return (
     <>
@@ -45,12 +62,12 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect
               <DialogHeader>
                 <DialogTitle className="flex items-center justify-between">
                   <span>{selectedExercise.name}</span>
-                  {selectedExercise.category && (
+                  {selectedCategory && (
                     <span className={cn(
                       'text-xs px-2 py-1 rounded-full',
-                      getCategoryById(selectedExercise.category)?.color || 'bg-gray-100 text-gray-800'
+                      selectedCategory.color
                     )}>
-                      {getCategoryById(selectedExercise.category)?.name || 'Uncategorized'}
+                      {selectedCategory.name}
                     </span>
                   )}
                 </DialogTitle>

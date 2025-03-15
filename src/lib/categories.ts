@@ -20,24 +20,57 @@ export const getAllCategories = async (): Promise<Category[]> => {
   }));
 };
 
-export const getCategoryById = (categoryId: string): Category | null => {
-  // This is a modified helper function to handle local category lookup
-  // It will use a cache mechanism with categories that have been fetched already
-  const categoryCache: Record<string, Category> = {
-    // Add some default categories to avoid showing IDs while loading
-    'ab709094-2835-4fb4-80b0-9d53f30b3861': { id: 'ab709094-2835-4fb4-80b0-9d53f30b3861', name: 'Strength', color: 'bg-blue-100 text-blue-800' },
-    'abca1d31-80f0-469b-bfa5-0c7bc30d4730': { id: 'abca1d31-80f0-469b-bfa5-0c7bc30d4730', name: 'Cardio', color: 'bg-red-100 text-red-800' },
-  };
-  
+// Create a dynamic cache for categories that will be populated at runtime
+const categoryCache: Record<string, Category> = {};
+
+export const getCategoryById = async (categoryId: string): Promise<Category | null> => {
   // If we have this category in our cache, return it
   if (categoryCache[categoryId]) {
     return categoryCache[categoryId];
   }
   
-  // Otherwise, return a fallback with the name 'Other'
+  try {
+    // Fetch the category from the database
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('id', categoryId)
+      .maybeSingle();
+    
+    if (error) {
+      console.error('Error fetching category:', error);
+      return null;
+    }
+    
+    if (data) {
+      // Store in cache for future use
+      const category: Category = {
+        id: data.id,
+        name: data.name,
+        color: data.color
+      };
+      categoryCache[categoryId] = category;
+      return category;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error in getCategoryById:', error);
+    return null;
+  }
+};
+
+// Helper for synchronous access with fallback for UI rendering
+export const getCategoryByIdSync = (categoryId: string): Category => {
+  // If we have this category in our cache, return it
+  if (categoryCache[categoryId]) {
+    return categoryCache[categoryId];
+  }
+  
+  // Return a placeholder until async data loads
   return { 
     id: categoryId, 
-    name: 'Other', 
+    name: 'Loading...', 
     color: 'bg-gray-100 text-gray-800' 
   };
 };

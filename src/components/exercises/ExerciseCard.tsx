@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Exercise } from '@/lib/types';
-import { getCategoryById } from '@/lib/data';
+import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { cn } from '@/lib/utils';
 
@@ -11,7 +11,20 @@ interface ExerciseCardProps {
 }
 
 const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick }) => {
-  const category = getCategoryById(exercise.category);
+  const [category, setCategory] = useState(getCategoryByIdSync(exercise.category));
+  
+  useEffect(() => {
+    const loadCategory = async () => {
+      if (exercise.category) {
+        const loadedCategory = await getCategoryById(exercise.category);
+        if (loadedCategory) {
+          setCategory(loadedCategory);
+        }
+      }
+    };
+    
+    loadCategory();
+  }, [exercise.category]);
   
   return (
     <div 
