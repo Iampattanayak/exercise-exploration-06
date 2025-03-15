@@ -2,7 +2,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Dumbbell } from "lucide-react";
-import AppNavigation from "./AppNavigation";
 
 interface PageContainerProps {
   children: React.ReactNode;
@@ -21,8 +20,6 @@ const PageContainer: React.FC<PageContainerProps> = ({ children, className = "" 
             <Dumbbell className="h-6 w-6 mr-2 text-primary" />
             FitTrack
           </Link>
-
-          <AppNavigation />
         </div>
       </header>
       
