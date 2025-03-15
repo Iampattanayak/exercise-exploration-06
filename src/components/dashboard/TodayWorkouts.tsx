@@ -6,6 +6,9 @@ import WorkoutCard from '@/components/workout/WorkoutCard';
 import SectionHeader from '@/components/layout/SectionHeader';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const TodayWorkouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -55,10 +58,18 @@ const TodayWorkouts: React.FC = () => {
 
   return (
     <div className="mb-10">
-      <SectionHeader 
-        title={`Today's Workouts`}
-        description={today}
-      />
+      <div className="flex justify-between items-center mb-4">
+        <SectionHeader 
+          title={`Today's Workouts`}
+          description={today}
+        />
+        <Link to="/workout/new">
+          <Button className="flex items-center">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Workout
+          </Button>
+        </Link>
+      </div>
 
       {workouts.length === 0 ? (
         <div className="bg-muted/50 rounded-lg p-8 text-center">
