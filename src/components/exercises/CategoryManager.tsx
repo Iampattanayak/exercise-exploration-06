@@ -2,18 +2,16 @@
 import React, { useState } from 'react';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Plus, Pencil, Trash } from 'lucide-react';
+import { Plus, Pencil, Trash, ArrowLeft } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import CategoryForm from './categories/CategoryForm';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 
 interface CategoryManagerProps {
   categories: Category[];
   exercises?: any[];
-  isOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onBack: () => void;
   onCategoryAdd?: (category: Omit<Category, 'id'>) => void;
   onCategoryUpdate?: (category: Category) => void;
   onCategoryDelete?: (categoryId: string) => void;
@@ -22,8 +20,7 @@ interface CategoryManagerProps {
 const CategoryManager: React.FC<CategoryManagerProps> = ({
   categories,
   exercises = [],
-  isOpen = false,
-  onOpenChange,
+  onBack,
   onCategoryAdd,
   onCategoryUpdate,
   onCategoryDelete,
@@ -90,10 +87,15 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
   };
 
   return (
-    <div className="space-y-4 mt-8">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Categories</h3>
-        <Button size="sm" onClick={() => handleOpenDialog()}>
+    <div className="mt-4">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center">
+          <Button variant="ghost" onClick={onBack} className="mr-2 p-2">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h3 className="text-lg font-medium">Manage Categories</h3>
+        </div>
+        <Button onClick={() => handleOpenDialog()}>
           <Plus className="h-4 w-4 mr-2" />
           Add Category
         </Button>

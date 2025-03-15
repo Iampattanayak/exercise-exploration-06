@@ -17,7 +17,6 @@ import DeleteExerciseDialog from '@/components/exercises/DeleteExerciseDialog';
 import { Button } from '@/components/ui/button';
 import { Plus, RefreshCw } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const ExerciseLibrary: React.FC = () => {
   const {
@@ -89,60 +88,62 @@ const ExerciseLibrary: React.FC = () => {
       </Helmet>
       <Navbar />
       <PageContainer>
-        <PageHeader
-          title="Exercise Library"
-          description="Browse and manage your exercises"
-          action={
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm" onClick={handleRefresh}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-              <Button onClick={handleOpenAddExercise}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Exercise
-              </Button>
-            </div>
-          }
-        />
-
-        <div className="flex flex-col space-y-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <SearchBar 
-                searchTerm={searchTerm} 
-                onSearchChange={handleSearchChange} 
-              />
-            </div>
-            <div className="flex-none">
-              <CategoryFilter
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                onManageCategories={toggleCategoryManager}
-              />
-            </div>
-          </div>
-
-          {/* Category Manager Section */}
-          {showCategoryManager && (
-            <CategoryManager
-              categories={categories}
-              exercises={exercises}
-              onCategoryAdd={handleAddCategory}
-              onCategoryUpdate={handleUpdateCategory}
-              onCategoryDelete={handleDeleteCategory}
+        {!showCategoryManager ? (
+          <>
+            <PageHeader
+              title="Exercise Library"
+              description="Browse and manage your exercises"
+              action={
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" onClick={handleRefresh}>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh
+                  </Button>
+                  <Button onClick={handleOpenAddExercise}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Exercise
+                  </Button>
+                </div>
+              }
             />
-          )}
 
-          <ExerciseGrid 
-            exercises={filteredExercises} 
+            <div className="flex flex-col space-y-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <SearchBar 
+                    searchTerm={searchTerm} 
+                    onSearchChange={handleSearchChange} 
+                  />
+                </div>
+                <div className="flex-none">
+                  <CategoryFilter
+                    categories={categories}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={handleCategoryChange}
+                    onManageCategories={toggleCategoryManager}
+                  />
+                </div>
+              </div>
+
+              <ExerciseGrid 
+                exercises={filteredExercises} 
+                categories={categories}
+                isLoading={exercisesLoading || categoriesLoading}
+                onEdit={handleOpenEditExercise}
+                onDelete={handleOpenDeleteExercise}
+              />
+            </div>
+          </>
+        ) : (
+          <CategoryManager
             categories={categories}
-            isLoading={exercisesLoading || categoriesLoading}
-            onEdit={handleOpenEditExercise}
-            onDelete={handleOpenDeleteExercise}
+            exercises={exercises}
+            onBack={toggleCategoryManager}
+            onCategoryAdd={handleAddCategory}
+            onCategoryUpdate={handleUpdateCategory}
+            onCategoryDelete={handleDeleteCategory}
           />
-        </div>
+        )}
 
         <AddExerciseDialog
           isOpen={isAddExerciseOpen}
