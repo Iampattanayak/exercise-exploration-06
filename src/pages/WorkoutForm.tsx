@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { format, parse } from 'date-fns';
-import { exercises, getWorkoutById, addWorkout, updateWorkout, generateWorkoutId } from '@/lib/data';
+import { getWorkoutById, addWorkout, updateWorkout, generateWorkoutId } from '@/lib/data';
 import { Exercise, WorkoutExercise, ExerciseSet, Workout } from '@/lib/types';
 import PageContainer from '@/components/layout/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
@@ -21,6 +20,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/use-toast';
 import Navbar from '@/components/layout/Navbar';
+import { getAllExercises } from '@/lib/exercises';
 
 const WorkoutForm = () => {
   const { id } = useParams();
@@ -42,10 +42,31 @@ const WorkoutForm = () => {
       : new Date()
   );
   
-  const [availableExercises, setAvailableExercises] = useState<Exercise[]>(exercises);
+  const [availableExercises, setAvailableExercises] = useState<Exercise[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Fetch workout data if editing existing workout
+  useEffect(() => {
+    const fetchExercises = async () => {
+      try {
+        setIsLoading(true);
+        const exercisesData = await getAllExercises();
+        setAvailableExercises(exercisesData);
+      } catch (error) {
+        console.error('Error fetching exercises:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load exercises. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchExercises();
+  }, []);
+  
   useEffect(() => {
     if (id && id !== 'new') {
       const existingWorkout = getWorkoutById(id);
@@ -56,22 +77,22 @@ const WorkoutForm = () => {
     }
   }, [id]);
   
-  // Update date when the calendar selection changes
   useEffect(() => {
     if (selectedDate) {
       setWorkout(prev => ({ ...prev, date: format(selectedDate, 'yyyy-MM-dd') }));
     }
   }, [selectedDate]);
   
-  // Filter available exercises based on search term
   useEffect(() => {
-    if (searchTerm) {
-      const filtered = exercises.filter(exercise => 
+    if (searchTerm && availableExercises.length > 0) {
+      const filtered = availableExercises.filter(exercise => 
         exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setAvailableExercises(filtered);
-    } else {
-      setAvailableExercises(exercises);
+    } else if (searchTerm === '') {
+      getAllExercises().then(exercises => {
+        setAvailableExercises(exercises);
+      });
     }
   }, [searchTerm]);
   
@@ -81,7 +102,6 @@ const WorkoutForm = () => {
   };
   
   const handleAddExercise = (exercise: Exercise) => {
-    // Check if exercise is already added
     const isExerciseAdded = workout.exercises?.some(
       (ex) => ex.exerciseId === exercise.id
     );
@@ -95,7 +115,6 @@ const WorkoutForm = () => {
       return;
     }
     
-    // Create default sets for the exercise
     const defaultSets = Array.from({ length: 3 }, (_, i) => ({
       id: `set-${exercise.id}-${i+1}-${Date.now()}`,
       exerciseId: exercise.id,
@@ -105,7 +124,6 @@ const WorkoutForm = () => {
       completed: false
     }));
     
-    // Create workout exercise
     const workoutExercise: WorkoutExercise = {
       id: `workout-exercise-${Date.now()}`,
       exerciseId: exercise.id,
@@ -114,13 +132,11 @@ const WorkoutForm = () => {
       order: (workout.exercises?.length || 0) + 1
     };
     
-    // Add to workout
     setWorkout(prev => ({
       ...prev,
       exercises: [...(prev.exercises || []), workoutExercise]
     }));
     
-    // Clear search
     setSearchTerm('');
   };
   
@@ -184,10 +200,8 @@ const WorkoutForm = () => {
       const updatedExercises = [...(prev.exercises || [])];
       const updatedSets = [...updatedExercises[exerciseIndex].sets];
       
-      // Remove the set at the specified index
       updatedSets.splice(setIndex, 1);
       
-      // Update set numbers for remaining sets
       updatedSets.forEach((set, idx) => {
         set.setNumber = idx + 1;
       });
@@ -220,7 +234,6 @@ const WorkoutForm = () => {
       return;
     }
     
-    // Create a complete workout object
     const completeWorkout: Workout = {
       id: workout.id || generateWorkoutId(),
       name: workout.name || 'Untitled Workout',
@@ -230,7 +243,6 @@ const WorkoutForm = () => {
       completed: workout.completed || false
     };
     
-    // Save workout (create new or update existing)
     if (id && id !== 'new') {
       updateWorkout(completeWorkout);
       toast({
@@ -245,7 +257,6 @@ const WorkoutForm = () => {
       });
     }
     
-    // Navigate back to calendar view
     navigate('/calendar');
   };
   
@@ -451,7 +462,9 @@ const WorkoutForm = () => {
                   />
                   
                   <div className="max-h-[500px] overflow-y-auto">
-                    {availableExercises.length === 0 ? (
+                    {isLoading ? (
+                      <p className="text-center text-muted-foreground py-4">Loading exercises...</p>
+                    ) : availableExercises.length === 0 ? (
                       <p className="text-center text-muted-foreground py-4">No exercises found</p>
                     ) : (
                       <div className="space-y-1">
