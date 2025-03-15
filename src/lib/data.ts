@@ -1,8 +1,6 @@
 
-// Re-export everything from our new modules 
-// Make sure workouts.ts exports are properly included
+// Re-export everything from our workouts module
 export { 
-  workouts,
   getRecentWorkouts,
   getTodayWorkouts,
   getUpcomingWorkouts,

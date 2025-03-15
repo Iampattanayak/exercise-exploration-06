@@ -1,13 +1,56 @@
 
-import React from 'react';
-import { getRecentWorkouts } from '@/lib/data';
+import React, { useState, useEffect } from 'react';
+import { getRecentWorkouts } from '@/lib/workouts';
 import { Workout } from '@/lib/types';
 import WorkoutCard from '@/components/workout/WorkoutCard';
 import SectionHeader from '@/components/layout/SectionHeader';
 import { History } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const RecentWorkouts: React.FC = () => {
-  const workouts = getRecentWorkouts();
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      try {
+        setLoading(true);
+        const data = await getRecentWorkouts();
+        setWorkouts(data);
+      } catch (error) {
+        console.error('Error fetching recent workouts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWorkouts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="mb-10">
+        <SectionHeader 
+          title="Recent Workouts" 
+          description="Your most recent workout sessions" 
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="border rounded-lg p-5">
+              <Skeleton className="h-4 w-20 mb-3" />
+              <Skeleton className="h-6 w-40 mb-1" />
+              <Skeleton className="h-4 w-full mb-3" />
+              <Skeleton className="h-4 w-32 mb-3" />
+              <Skeleton className="h-2 w-full mb-6" />
+              <div className="border-t pt-3">
+                <Skeleton className="h-8 w-24" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-10">

@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getWorkoutById, updateWorkout } from '@/lib/data';
+import { getWorkoutById, updateWorkout } from '@/lib/workouts';
 import { Workout, WorkoutExercise, ExerciseSet } from '@/lib/types';
 import PageContainer from '@/components/layout/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
@@ -11,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
-import { Clock, CheckCircle2, Award, ArrowLeft, Save, Dumbbell } from 'lucide-react';
+import { Clock, CheckCircle2, Award, ArrowLeft, Save, Dumbbell, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import Navbar from '@/components/layout/Navbar';
 
@@ -20,30 +21,47 @@ const WorkoutSession = () => {
   const navigate = useNavigate();
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [progress, setProgress] = useState(0);
   const [startTime] = useState(new Date());
   const [elapsedTime, setElapsedTime] = useState(0);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
 
   useEffect(() => {
-    if (id) {
-      const foundWorkout = getWorkoutById(id);
-      if (foundWorkout) {
-        const initializedWorkout = {
-          ...foundWorkout,
-          exercises: foundWorkout.exercises.map(exercise => ({
-            ...exercise,
-            sets: exercise.sets.map(set => ({
-              ...set,
-              completed: false,
-              actualReps: set.targetReps
-            }))
-          }))
-        };
-        setWorkout(initializedWorkout);
+    const fetchWorkout = async () => {
+      if (id) {
+        try {
+          setLoading(true);
+          const foundWorkout = await getWorkoutById(id);
+          if (foundWorkout) {
+            // Initialize workout sets for tracking
+            const initializedWorkout = {
+              ...foundWorkout,
+              exercises: foundWorkout.exercises.map(exercise => ({
+                ...exercise,
+                sets: exercise.sets.map(set => ({
+                  ...set,
+                  completed: false,
+                  actualReps: set.targetReps
+                }))
+              }))
+            };
+            setWorkout(initializedWorkout);
+          }
+        } catch (error) {
+          console.error('Error fetching workout:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load workout. Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setLoading(false);
+        }
       }
-      setLoading(false);
-    }
+    };
+
+    fetchWorkout();
   }, [id]);
 
   useEffect(() => {
@@ -112,6 +130,7 @@ const WorkoutSession = () => {
       const audio = new Audio('/completion-sound.mp3');
       audio.volume = 0.5;
       audio.play().catch(() => {
+        // Ignore errors on audio play (common in some browsers)
       });
     }
   };
@@ -168,25 +187,38 @@ const WorkoutSession = () => {
     });
   };
 
-  const saveWorkoutProgress = () => {
+  const saveWorkoutProgress = async () => {
     if (!workout) return;
     
-    const updatedWorkout = {
-      ...workout,
-      progress,
-      completed: progress === 100
-    };
-    
-    updateWorkout(updatedWorkout);
-    
-    toast({
-      title: progress === 100 ? "Workout Complete! 💪" : "Progress Saved!",
-      description: progress === 100 
-        ? "Congratulations on completing your workout!" 
-        : "Your workout progress has been saved.",
-    });
-    
-    navigate('/');
+    try {
+      setIsSaving(true);
+      
+      const updatedWorkout = {
+        ...workout,
+        progress,
+        completed: progress === 100
+      };
+      
+      await updateWorkout(updatedWorkout);
+      
+      toast({
+        title: progress === 100 ? "Workout Complete! 💪" : "Progress Saved!",
+        description: progress === 100 
+          ? "Congratulations on completing your workout!" 
+          : "Your workout progress has been saved.",
+      });
+      
+      navigate('/');
+    } catch (error) {
+      console.error('Error saving workout progress:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save workout progress. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleNavigateToExercise = (index: number) => {
@@ -201,6 +233,7 @@ const WorkoutSession = () => {
     return (
       <PageContainer>
         <div className="flex justify-center items-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
           <p className="text-lg">Loading workout session...</p>
         </div>
       </PageContainer>
@@ -230,13 +263,22 @@ const WorkoutSession = () => {
           description={`Get ready to crush it! ${workout.description || ''}`}
           action={
             <div className="flex space-x-2">
-              <Button variant="outline" onClick={() => navigate(-1)}>
+              <Button variant="outline" onClick={() => navigate(-1)} disabled={isSaving}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Exit
               </Button>
-              <Button onClick={saveWorkoutProgress}>
-                <Save className="h-4 w-4 mr-2" />
-                {progress === 100 ? "Complete Workout" : "Save Progress"}
+              <Button onClick={saveWorkoutProgress} disabled={isSaving}>
+                {isSaving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    {progress === 100 ? "Complete Workout" : "Save Progress"}
+                  </>
+                )}
               </Button>
             </div>
           }
@@ -402,9 +444,18 @@ const WorkoutSession = () => {
             <Award className="h-16 w-16 text-green-500 mb-4" />
             <h2 className="text-2xl font-bold text-green-700 mb-2">Workout Complete!</h2>
             <p className="text-green-600 mb-4 text-center">Congratulations on completing your workout! Save your progress to record this achievement.</p>
-            <Button onClick={saveWorkoutProgress} size="lg" className="bg-green-500 hover:bg-green-600">
-              <Save className="h-5 w-5 mr-2" />
-              Save & Complete
+            <Button onClick={saveWorkoutProgress} size="lg" className="bg-green-500 hover:bg-green-600" disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-5 w-5 mr-2" />
+                  Save & Complete
+                </>
+              )}
             </Button>
           </div>
         )}
