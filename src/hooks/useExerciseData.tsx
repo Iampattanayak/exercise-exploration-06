@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   getAllExercises, 
@@ -22,7 +22,8 @@ export function useExerciseData() {
   const { 
     data: exercises = [], 
     isLoading: exercisesLoading,
-    error: exercisesError
+    error: exercisesError,
+    refetch: refetchExercises
   } = useQuery({
     queryKey: ['exercises'],
     queryFn: getAllExercises
@@ -32,11 +33,20 @@ export function useExerciseData() {
   const { 
     data: categories = [], 
     isLoading: categoriesLoading,
-    error: categoriesError
+    error: categoriesError,
+    refetch: refetchCategories
   } = useQuery({
     queryKey: ['categories'],
     queryFn: getAllCategories
   });
+
+  // Function to reload all data
+  const refreshAllData = useCallback(() => {
+    toast.info('Refreshing data...');
+    refetchExercises();
+    refetchCategories();
+    toast.success('Data refreshed successfully');
+  }, [refetchExercises, refetchCategories]);
 
   // Mutations for CRUD operations
   const createExerciseMutation = useMutation({
@@ -192,6 +202,7 @@ export function useExerciseData() {
     handleCategoryChange,
     handleCreateExercise,
     handleUpdateExercise,
-    handleDeleteExercise
+    handleDeleteExercise,
+    refreshAllData
   };
 }
