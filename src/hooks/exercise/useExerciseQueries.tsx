@@ -14,12 +14,12 @@ export function useExerciseQueries() {
   } = useQuery({
     queryKey: ['exercises'],
     queryFn: getAllExercises,
-    // Use onSuccess and onError in the meta object or handle errors directly with the error field
-    onSettled: (data, error) => {
-      if (error) {
-        toast.error(`Failed to load exercises: ${error.message}`);
-        console.error('Failed to load exercises:', error);
-      }
+    onSuccess: (data) => {
+      // Optional success handling
+    },
+    onError: (error) => {
+      toast.error(`Failed to load exercises: ${error.message}`);
+      console.error('Failed to load exercises:', error);
     }
   });
 
@@ -32,12 +32,12 @@ export function useExerciseQueries() {
   } = useQuery({
     queryKey: ['categories'],
     queryFn: getAllCategories,
-    // Use onSuccess and onError in the meta object or handle errors directly with the error field
-    onSettled: (data, error) => {
-      if (error) {
-        toast.error(`Failed to load categories: ${error.message}`);
-        console.error('Failed to load categories:', error);
-      }
+    onSuccess: (data) => {
+      // Optional success handling
+    },
+    onError: (error) => {
+      toast.error(`Failed to load categories: ${error.message}`);
+      console.error('Failed to load categories:', error);
     }
   });
 

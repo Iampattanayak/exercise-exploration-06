@@ -2,22 +2,17 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useExerciseData } from '@/hooks/useExerciseData';
-import { Exercise, Category } from '@/lib/types';
-import { useCategoryData } from '@/hooks/useCategoryData';
+import { Exercise } from '@/lib/types';
+import { toast } from 'sonner';
 
 import PageContainer from '@/components/layout/PageContainer';
-import PageHeader from '@/components/layout/PageHeader';
 import ExerciseGrid from '@/components/exercises/ExerciseGrid';
-import SearchBar from '@/components/exercises/SearchBar';
-import CategoryFilter from '@/components/exercises/CategoryFilter';
 import CategoryManager from '@/components/exercises/CategoryManager';
-import AddExerciseDialog from '@/components/exercises/AddExerciseDialog';
-import EditExerciseDialog from '@/components/exercises/EditExerciseDialog';
-import DeleteExerciseDialog from '@/components/exercises/DeleteExerciseDialog';
-import CuratedExercisesDialog from '@/components/exercises/CuratedExercisesDialog';
-import { Button } from '@/components/ui/button';
-import { Plus, RefreshCw, BookOpen, FileText } from 'lucide-react';
-import { toast } from 'sonner';
+import { useCategoryData } from '@/hooks/useCategoryData';
+import ExerciseLibraryHeader from '@/components/exercises/ExerciseLibraryHeader';
+import FilterSection from '@/components/exercises/FilterSection';
+import EmptyExerciseState from '@/components/exercises/EmptyExerciseState';
+import ExerciseDialogs from '@/components/exercises/ExerciseDialogs';
 
 const ExerciseLibrary: React.FC = () => {
   const {
@@ -108,10 +103,6 @@ const ExerciseLibrary: React.FC = () => {
     return success;
   };
 
-  const handleRefresh = () => {
-    refreshAllData();
-  };
-
   const toggleCategoryManager = () => {
     setShowCategoryManager(!showCategoryManager);
   };
@@ -133,44 +124,21 @@ const ExerciseLibrary: React.FC = () => {
       <PageContainer>
         {!showCategoryManager ? (
           <>
-            <PageHeader
-              title="Exercise Library"
-              description="Browse and manage your exercises"
-              action={
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" onClick={handleRefresh}>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={handleOpenCuratedExercises}>
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    Add Curated Exercises
-                  </Button>
-                  <Button onClick={handleOpenAddExercise}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Exercise
-                  </Button>
-                </div>
-              }
+            <ExerciseLibraryHeader 
+              onRefresh={refreshAllData}
+              onAddExercise={handleOpenAddExercise}
+              onOpenCurated={handleOpenCuratedExercises}
             />
 
             <div className="flex flex-col space-y-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <SearchBar 
-                    searchTerm={searchTerm} 
-                    onSearchChange={handleSearchChange} 
-                  />
-                </div>
-                <div className="flex-none">
-                  <CategoryFilter
-                    categories={categories}
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={handleCategoryChange}
-                    onManageCategories={toggleCategoryManager}
-                  />
-                </div>
-              </div>
+              <FilterSection 
+                searchTerm={searchTerm}
+                selectedCategory={selectedCategory}
+                categories={categories}
+                onSearchChange={handleSearchChange}
+                onCategoryChange={handleCategoryChange}
+                onManageCategories={toggleCategoryManager}
+              />
 
               <ExerciseGrid 
                 exercises={filteredExercises} 
@@ -181,21 +149,10 @@ const ExerciseLibrary: React.FC = () => {
               />
               
               {filteredExercises.length === 0 && !exercisesLoading && (
-                <div className="text-center py-12">
-                  <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">No exercises found</h3>
-                  <p className="text-muted-foreground mb-4">
-                    {exercises.length === 0 
-                      ? "Your exercise library is empty. Add your first exercise to get started."
-                      : "No exercises match your current filters."}
-                  </p>
-                  {exercises.length === 0 && (
-                    <Button onClick={handleOpenAddExercise}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Your First Exercise
-                    </Button>
-                  )}
-                </div>
+                <EmptyExerciseState 
+                  hasExercises={exercises.length > 0}
+                  onAddExercise={handleOpenAddExercise}
+                />
               )}
             </div>
           </>
@@ -210,35 +167,22 @@ const ExerciseLibrary: React.FC = () => {
           />
         )}
 
-        <AddExerciseDialog
-          isOpen={isAddExerciseOpen}
-          onOpenChange={setIsAddExerciseOpen}
+        <ExerciseDialogs 
+          isAddExerciseOpen={isAddExerciseOpen}
+          isEditExerciseOpen={isEditExerciseOpen}
+          isDeleteExerciseOpen={isDeleteExerciseOpen}
+          isCuratedExercisesOpen={isCuratedExercisesOpen}
+          selectedExercise={selectedExercise}
+          exercises={exercises}
           categories={categories}
-          onSubmit={handleCreateExerciseSubmit}
-        />
-
-        <EditExerciseDialog
-          isOpen={isEditExerciseOpen}
-          onOpenChange={setIsEditExerciseOpen}
-          exercise={selectedExercise}
-          categories={categories}
-          onSubmit={handleUpdateExerciseSubmit}
-          onDelete={() => handleOpenDeleteExercise(selectedExercise as Exercise)}
-        />
-
-        <DeleteExerciseDialog
-          isOpen={isDeleteExerciseOpen}
-          onOpenChange={setIsDeleteExerciseOpen}
-          exercise={selectedExercise}
-          onDelete={handleDeleteExerciseSubmit}
-        />
-
-        <CuratedExercisesDialog
-          isOpen={isCuratedExercisesOpen}
-          onOpenChange={setIsCuratedExercisesOpen}
-          existingExercises={exercises}
-          categories={categories}
-          onAddExercises={handleCreateMultipleExercises}
+          onAddExerciseOpenChange={setIsAddExerciseOpen}
+          onEditExerciseOpenChange={setIsEditExerciseOpen}
+          onDeleteExerciseOpenChange={setIsDeleteExerciseOpen}
+          onCuratedExercisesOpenChange={setIsCuratedExercisesOpen}
+          onCreateExercise={handleCreateExerciseSubmit}
+          onUpdateExercise={handleUpdateExerciseSubmit}
+          onDeleteExercise={handleDeleteExerciseSubmit}
+          onCreateMultipleExercises={handleCreateMultipleExercises}
         />
       </PageContainer>
     </>
