@@ -4,6 +4,7 @@ import { Exercise } from '@/lib/types';
 import ExerciseCard from './ExerciseCard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getCategoryById } from '@/lib/data';
+import { cn } from '@/lib/utils';
 
 interface ExerciseGridProps {
   exercises: Exercise[];
