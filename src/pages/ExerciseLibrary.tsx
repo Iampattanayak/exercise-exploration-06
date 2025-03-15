@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useExerciseData } from '@/hooks/useExerciseData';
 import { Exercise, Category } from '@/lib/types';
+import { useCategoryData } from '@/hooks/useCategoryData';
 
 import PageContainer from '@/components/layout/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
@@ -16,6 +17,7 @@ import DeleteExerciseDialog from '@/components/exercises/DeleteExerciseDialog';
 import { Button } from '@/components/ui/button';
 import { Plus, RefreshCw } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const ExerciseLibrary: React.FC = () => {
   const {
@@ -34,11 +36,17 @@ const ExerciseLibrary: React.FC = () => {
     refreshAllData
   } = useExerciseData();
 
+  const {
+    handleAddCategory,
+    handleUpdateCategory,
+    handleDeleteCategory
+  } = useCategoryData();
+
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false);
   const [isEditExerciseOpen, setIsEditExerciseOpen] = useState(false);
   const [isDeleteExerciseOpen, setIsDeleteExerciseOpen] = useState(false);
-  const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
 
   const handleOpenAddExercise = () => {
     setIsAddExerciseOpen(true);
@@ -68,6 +76,10 @@ const ExerciseLibrary: React.FC = () => {
 
   const handleRefresh = () => {
     refreshAllData();
+  };
+
+  const toggleCategoryManager = () => {
+    setShowCategoryManager(!showCategoryManager);
   };
 
   return (
@@ -107,10 +119,21 @@ const ExerciseLibrary: React.FC = () => {
                 categories={categories}
                 selectedCategory={selectedCategory}
                 onCategoryChange={handleCategoryChange}
-                onManageCategories={() => setIsCategoryManagerOpen(true)}
+                onManageCategories={toggleCategoryManager}
               />
             </div>
           </div>
+
+          {/* Category Manager Section */}
+          {showCategoryManager && (
+            <CategoryManager
+              categories={categories}
+              exercises={exercises}
+              onCategoryAdd={handleAddCategory}
+              onCategoryUpdate={handleUpdateCategory}
+              onCategoryDelete={handleDeleteCategory}
+            />
+          )}
 
           <ExerciseGrid 
             exercises={filteredExercises} 
@@ -142,13 +165,6 @@ const ExerciseLibrary: React.FC = () => {
           onOpenChange={setIsDeleteExerciseOpen}
           exercise={selectedExercise}
           onDelete={handleDeleteExerciseSubmit}
-        />
-
-        <CategoryManager
-          isOpen={isCategoryManagerOpen}
-          onOpenChange={setIsCategoryManagerOpen}
-          categories={categories}
-          exercises={exercises}
         />
       </PageContainer>
     </>

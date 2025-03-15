@@ -2,17 +2,12 @@
 import React, { useState } from 'react';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
+import { Plus, Pencil, Trash } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import CategoryItem from './categories/CategoryItem';
 import CategoryForm from './categories/CategoryForm';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -33,15 +28,12 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
   onCategoryUpdate,
   onCategoryDelete,
 }) => {
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [newCategory, setNewCategory] = useState<Partial<Category>>({
     name: '',
     color: 'bg-gray-100 text-gray-800',
   });
-
-  const effectiveIsOpen = onOpenChange ? isOpen : editDialogOpen;
-  const effectiveSetIsOpen = onOpenChange || setEditDialogOpen;
 
   const handleOpenDialog = (category?: Category) => {
     if (category) {
@@ -57,7 +49,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
         color: 'bg-gray-100 text-gray-800',
       });
     }
-    effectiveSetIsOpen(true);
+    setFormDialogOpen(true);
   };
 
   const handleSaveCategory = async () => {
@@ -85,7 +77,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       await onCategoryAdd?.(category);
     }
     
-    effectiveSetIsOpen(false);
+    setFormDialogOpen(false);
     setEditingCategory(null);
     setNewCategory({ name: '', color: 'bg-gray-100 text-gray-800' });
   };
@@ -98,7 +90,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 mt-8">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Categories</h3>
         <Button size="sm" onClick={() => handleOpenDialog()}>
@@ -107,14 +99,31 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-2">
+      <div className="space-y-2">
         {categories.map((category) => (
-          <CategoryItem
-            key={category.id}
-            category={category}
-            onEdit={handleOpenDialog}
-            onDelete={handleDeleteCategory}
-          />
+          <div key={category.id} className="flex items-center justify-between p-3 rounded-lg border">
+            <div className="flex items-center space-x-3">
+              <div className={cn('px-3 py-1 rounded-full text-sm', category.color)}>
+                {category.name}
+              </div>
+            </div>
+            <div className="flex space-x-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => handleOpenDialog(category)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => handleDeleteCategory(category.id)}
+              >
+                <Trash className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         ))}
 
         {categories.length === 0 && (
@@ -124,7 +133,8 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
         )}
       </div>
 
-      <Dialog open={effectiveIsOpen} onOpenChange={effectiveSetIsOpen}>
+      {/* Form Dialog for adding/editing categories */}
+      <Dialog open={formDialogOpen} onOpenChange={setFormDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -141,7 +151,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
             category={newCategory}
             onCategoryChange={setNewCategory}
             onSave={handleSaveCategory}
-            onCancel={() => effectiveSetIsOpen(false)}
+            onCancel={() => setFormDialogOpen(false)}
             isEditing={!!editingCategory}
           />
         </DialogContent>
