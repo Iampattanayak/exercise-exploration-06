@@ -45,8 +45,11 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect
                 <DialogTitle className="flex items-center justify-between">
                   <span>{selectedExercise.name}</span>
                   {selectedExercise.category && (
-                    <span className="category-badge">
-                      {getCategoryById(selectedExercise.category)?.name || ''}
+                    <span className={cn(
+                      'text-xs px-2 py-1 rounded-full',
+                      getCategoryById(selectedExercise.category)?.color || 'bg-gray-100 text-gray-800'
+                    )}>
+                      {getCategoryById(selectedExercise.category)?.name || 'Uncategorized'}
                     </span>
                   )}
                 </DialogTitle>

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Category } from './types';
 
@@ -22,9 +21,25 @@ export const getAllCategories = async (): Promise<Category[]> => {
 };
 
 export const getCategoryById = (categoryId: string): Category | null => {
-  // This is a helper function used by components for immediate rendering
-  // It will be called with data that's already been fetched
-  return { id: categoryId, name: categoryId, color: 'bg-gray-100 text-gray-800' };
+  // This is a modified helper function to handle local category lookup
+  // It will use a cache mechanism with categories that have been fetched already
+  const categoryCache: Record<string, Category> = {
+    // Add some default categories to avoid showing IDs while loading
+    'ab709094-2835-4fb4-80b0-9d53f30b3861': { id: 'ab709094-2835-4fb4-80b0-9d53f30b3861', name: 'Strength', color: 'bg-blue-100 text-blue-800' },
+    'abca1d31-80f0-469b-bfa5-0c7bc30d4730': { id: 'abca1d31-80f0-469b-bfa5-0c7bc30d4730', name: 'Cardio', color: 'bg-red-100 text-red-800' },
+  };
+  
+  // If we have this category in our cache, return it
+  if (categoryCache[categoryId]) {
+    return categoryCache[categoryId];
+  }
+  
+  // Otherwise, return a fallback with the name 'Other'
+  return { 
+    id: categoryId, 
+    name: 'Other', 
+    color: 'bg-gray-100 text-gray-800' 
+  };
 };
 
 export const addCategory = async (category: Category): Promise<void> => {

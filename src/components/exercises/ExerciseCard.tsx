@@ -29,7 +29,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick }) => {
         <div className="flex items-start justify-between mb-2">
           <h3 className="font-medium">{exercise.name}</h3>
           {category && (
-            <span className={cn('category-badge', category.color)}>
+            <span className={cn('text-xs px-2 py-1 rounded-full', category.color)}>
               {category.name}
             </span>
           )}
