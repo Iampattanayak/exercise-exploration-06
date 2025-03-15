@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Exercise } from '@/lib/types';
 import PageContainer from '@/components/layout/PageContainer';
@@ -9,7 +8,6 @@ import SearchBar from '@/components/exercises/SearchBar';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Settings, Loader } from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
 import CategoryManager from '@/components/exercises/CategoryManager';
 import AddExerciseDialog from '@/components/exercises/AddExerciseDialog';
 import EditExerciseDialog from '@/components/exercises/EditExerciseDialog';
@@ -92,138 +90,129 @@ const ExerciseLibrary = () => {
   // Loading state
   if (exercisesLoading || categoriesLoading) {
     return (
-      <>
-        <Navbar />
-        <PageContainer>
-          <div className="flex items-center justify-center h-[80vh]">
-            <div className="flex flex-col items-center gap-4">
-              <Loader className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-muted-foreground">Loading exercise library...</p>
-            </div>
+      <PageContainer>
+        <div className="flex items-center justify-center h-[80vh]">
+          <div className="flex flex-col items-center gap-4">
+            <Loader className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-muted-foreground">Loading exercise library...</p>
           </div>
-        </PageContainer>
-      </>
+        </div>
+      </PageContainer>
     );
   }
 
   // Error handling
   if (exercisesError || categoriesError) {
     return (
-      <>
-        <Navbar />
-        <PageContainer>
-          <div className="flex items-center justify-center h-[80vh]">
-            <div className="flex flex-col items-center gap-4 max-w-md text-center">
-              <p className="text-destructive font-semibold">Error loading data</p>
-              <p className="text-muted-foreground">
-                {exercisesError ? String(exercisesError) : categoriesError ? String(categoriesError) : 'Unknown error occurred'}
-              </p>
-              <Button onClick={() => window.location.reload()}>
-                Try Again
-              </Button>
-            </div>
+      <PageContainer>
+        <div className="flex items-center justify-center h-[80vh]">
+          <div className="flex flex-col items-center gap-4 max-w-md text-center">
+            <p className="text-destructive font-semibold">Error loading data</p>
+            <p className="text-muted-foreground">
+              {exercisesError ? String(exercisesError) : categoriesError ? String(categoriesError) : 'Unknown error occurred'}
+            </p>
+            <Button onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
           </div>
-        </PageContainer>
-      </>
+        </div>
+      </PageContainer>
     );
   }
 
   return (
-    <>
-      <Navbar />
-      <PageContainer>
-        <PageHeader 
-          title="Exercise Library" 
-          description="Browse, search, and manage your exercises"
-          action={
-            <Button onClick={() => setIsAddDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Exercise
-            </Button>
-          }
-        />
+    <PageContainer>
+      <PageHeader 
+        title="Exercise Library" 
+        description="Browse, search, and manage your exercises"
+        action={
+          <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Exercise
+          </Button>
+        }
+      />
 
-        <Tabs
-          defaultValue="exercises"
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="w-full"
-        >
-          <TabsList className="mb-4">
-            <TabsTrigger value="exercises">Exercises</TabsTrigger>
-            <TabsTrigger value="categories">
-              <Settings className="h-4 w-4 mr-2" />
-              Manage Categories
-            </TabsTrigger>
-          </TabsList>
+      <Tabs
+        defaultValue="exercises"
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full"
+      >
+        <TabsList className="mb-4">
+          <TabsTrigger value="exercises">Exercises</TabsTrigger>
+          <TabsTrigger value="categories">
+            <Settings className="h-4 w-4 mr-2" />
+            Manage Categories
+          </TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="exercises" className="mt-0">
-            <SearchBar 
-              searchTerm={searchTerm} 
-              onSearchChange={handleSearchChange} 
-            />
+        <TabsContent value="exercises" className="mt-0">
+          <SearchBar 
+            searchTerm={searchTerm} 
+            onSearchChange={handleSearchChange} 
+          />
 
-            <CategoryFilter 
-              categories={categories} 
-              selectedCategory={selectedCategory} 
-              onCategoryChange={handleCategoryChange} 
-            />
+          <CategoryFilter 
+            categories={categories} 
+            selectedCategory={selectedCategory} 
+            onCategoryChange={handleCategoryChange} 
+          />
 
-            <div className="mt-6">
-              {filteredExercises.length === 0 ? (
-                <div className="text-center py-12 border rounded-lg">
-                  <p className="text-muted-foreground">No exercises found matching your criteria.</p>
-                </div>
-              ) : (
-                <ExerciseGrid 
-                  exercises={filteredExercises}
-                  onExerciseSelect={openEditDialog}
-                />
-              )}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="categories" className="mt-0">
-            <CategoryManager 
-              categories={categories} 
-              onCategoryAdd={handleAddCategory}
-              onCategoryUpdate={handleUpdateCategory}
-              onCategoryDelete={handleCategoryDelete}
-            />
-          </TabsContent>
-        </Tabs>
+          <div className="mt-6">
+            {filteredExercises.length === 0 ? (
+              <div className="text-center py-12 border rounded-lg">
+                <p className="text-muted-foreground">No exercises found matching your criteria.</p>
+              </div>
+            ) : (
+              <ExerciseGrid 
+                exercises={filteredExercises}
+                onExerciseSelect={openEditDialog}
+              />
+            )}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="categories" className="mt-0">
+          <CategoryManager 
+            categories={categories} 
+            onCategoryAdd={handleAddCategory}
+            onCategoryUpdate={handleUpdateCategory}
+            onCategoryDelete={handleCategoryDelete}
+          />
+        </TabsContent>
+      </Tabs>
 
-        {/* Exercise Dialogs */}
-        <AddExerciseDialog 
-          isOpen={isAddDialogOpen}
-          onOpenChange={setIsAddDialogOpen}
-          categories={categories}
-          onSubmit={handleAddExerciseSubmit}
-        />
+      {/* Exercise Dialogs */}
+      <AddExerciseDialog 
+        isOpen={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        categories={categories}
+        onSubmit={handleAddExerciseSubmit}
+      />
 
-        <EditExerciseDialog 
-          isOpen={isEditDialogOpen}
-          onOpenChange={(open) => {
-            setIsEditDialogOpen(open);
-            if (!open) resetSelectedExercise();
-          }}
-          exercise={selectedExercise}
-          categories={categories}
-          onSubmit={handleEditExerciseSubmit}
-          onDelete={() => openDeleteDialog(selectedExercise as Exercise)}
-        />
+      <EditExerciseDialog 
+        isOpen={isEditDialogOpen}
+        onOpenChange={(open) => {
+          setIsEditDialogOpen(open);
+          if (!open) resetSelectedExercise();
+        }}
+        exercise={selectedExercise}
+        categories={categories}
+        onSubmit={handleEditExerciseSubmit}
+        onDelete={() => openDeleteDialog(selectedExercise as Exercise)}
+      />
 
-        <DeleteExerciseDialog 
-          isOpen={isDeleteDialogOpen}
-          onOpenChange={(open) => {
-            setIsDeleteDialogOpen(open);
-            if (!open) resetSelectedExercise();
-          }}
-          exercise={selectedExercise}
-          onDelete={handleDeleteExerciseSubmit}
-        />
-      </PageContainer>
-    </>
+      <DeleteExerciseDialog 
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={(open) => {
+          setIsDeleteDialogOpen(open);
+          if (!open) resetSelectedExercise();
+        }}
+        exercise={selectedExercise}
+        onDelete={handleDeleteExerciseSubmit}
+      />
+    </PageContainer>
   );
 };
 
