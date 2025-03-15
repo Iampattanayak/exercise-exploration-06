@@ -3,6 +3,7 @@ import React from 'react';
 import { Exercise } from '@/lib/types';
 import ExerciseCard from './ExerciseCard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { getCategoryById } from '@/lib/data';
 
 interface ExerciseGridProps {
   exercises: Exercise[];
@@ -24,8 +25,6 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect
     setSelectedExercise(null);
   };
 
-  const category = selectedExercise ? { id: selectedExercise.category } : null;
-
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -45,9 +44,9 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect
               <DialogHeader>
                 <DialogTitle className="flex items-center justify-between">
                   <span>{selectedExercise.name}</span>
-                  {category && (
-                    <span className={`category-badge bg-${category.id}-100 text-${category.id}-800`}>
-                      {category.id.charAt(0).toUpperCase() + category.id.slice(1)}
+                  {selectedExercise.category && (
+                    <span className="category-badge">
+                      {getCategoryById(selectedExercise.category)?.name || ''}
                     </span>
                   )}
                 </DialogTitle>
@@ -70,7 +69,7 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({ exercises, onExerciseSelect
                   
                   <h4 className="font-medium mb-2">Instructions</h4>
                   <ol className="list-decimal pl-4 text-muted-foreground space-y-2">
-                    {selectedExercise.description.split(', ').map((step, index) => (
+                    {selectedExercise.description.split('. ').map((step, index) => (
                       <li key={index}>{step}</li>
                     ))}
                   </ol>
