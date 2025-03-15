@@ -18,7 +18,7 @@ const AppNavigation: React.FC = () => {
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5 mr-2" /> },
-    { href: '/exercises', label: 'Exercise Library', icon: <Dumbbell className="h-5 w-5 mr-2" /> },
+    { href: '/exercise-library', label: 'Exercise Library', icon: <Dumbbell className="h-5 w-5 mr-2" /> },
     { href: '/calendar', label: 'Calendar', icon: <CalendarIcon className="h-5 w-5 mr-2" /> }
   ];
 

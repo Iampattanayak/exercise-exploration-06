@@ -21,7 +21,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/exercises" element={<ExerciseLibrary />} />
+          <Route path="/exercise-library" element={<ExerciseLibrary />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/workout/new" element={<WorkoutForm />} />
           <Route path="/workout/:id" element={<WorkoutForm />} />

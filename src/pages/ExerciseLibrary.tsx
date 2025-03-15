@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useExerciseData } from '@/hooks/useExerciseData';
@@ -16,7 +15,6 @@ import EditExerciseDialog from '@/components/exercises/EditExerciseDialog';
 import DeleteExerciseDialog from '@/components/exercises/DeleteExerciseDialog';
 import { Button } from '@/components/ui/button';
 import { Plus, RefreshCw } from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
 
 const ExerciseLibrary: React.FC = () => {
   const {
@@ -86,7 +84,6 @@ const ExerciseLibrary: React.FC = () => {
       <Helmet>
         <title>Exercise Library | FitTrack</title>
       </Helmet>
-      <Navbar />
       <PageContainer>
         {!showCategoryManager ? (
           <>
