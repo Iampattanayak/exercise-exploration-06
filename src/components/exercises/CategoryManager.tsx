@@ -2,9 +2,7 @@
 import React, { useState } from 'react';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Pencil, Trash, Plus, X, Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Plus } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -12,8 +10,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import CategoryItem from './categories/CategoryItem';
+import CategoryForm from './categories/CategoryForm';
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -77,7 +76,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       
       await onCategoryUpdate?.(updatedCategory);
     } else {
-      // Add new category - let the hook generate the UUID
+      // Add new category
       const category = {
         name: newCategory.name || '',
         color: newCategory.color || 'bg-gray-100 text-gray-800',
@@ -98,17 +97,6 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
     }
   };
 
-  const colorOptions = [
-    { value: 'bg-red-100 text-red-800', label: 'Red' },
-    { value: 'bg-blue-100 text-blue-800', label: 'Blue' },
-    { value: 'bg-green-100 text-green-800', label: 'Green' },
-    { value: 'bg-yellow-100 text-yellow-800', label: 'Yellow' },
-    { value: 'bg-purple-100 text-purple-800', label: 'Purple' },
-    { value: 'bg-orange-100 text-orange-800', label: 'Orange' },
-    { value: 'bg-pink-100 text-pink-800', label: 'Pink' },
-    { value: 'bg-gray-100 text-gray-800', label: 'Gray' },
-  ];
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -121,32 +109,12 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
 
       <div className="grid grid-cols-1 gap-2">
         {categories.map((category) => (
-          <div 
+          <CategoryItem
             key={category.id}
-            className="flex items-center justify-between p-3 rounded-lg border"
-          >
-            <div className="flex items-center space-x-3">
-              <div className={cn('px-3 py-1 rounded-full text-sm', category.color)}>
-                {category.name}
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handleOpenDialog(category)}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => handleDeleteCategory(category.id)}
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+            category={category}
+            onEdit={handleOpenDialog}
+            onDelete={handleDeleteCategory}
+          />
         ))}
 
         {categories.length === 0 && (
@@ -169,46 +137,13 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Category Name</Label>
-              <Input
-                id="name"
-                value={newCategory.name || ''}
-                onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                placeholder="e.g., Upper Body"
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label>Color</Label>
-              <div className="grid grid-cols-4 gap-2">
-                {colorOptions.map((color) => (
-                  <button
-                    key={color.value}
-                    type="button"
-                    className={cn(
-                      'flex items-center justify-center h-10 rounded-md border',
-                      color.value,
-                      newCategory.color === color.value && 'ring-2 ring-offset-2 ring-ring'
-                    )}
-                    onClick={() => setNewCategory({ ...newCategory, color: color.value })}
-                  >
-                    {newCategory.color === color.value && <Check className="h-4 w-4" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => effectiveSetIsOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveCategory}>
-              {editingCategory ? 'Update Category' : 'Add Category'}
-            </Button>
-          </div>
+          <CategoryForm
+            category={newCategory}
+            onCategoryChange={setNewCategory}
+            onSave={handleSaveCategory}
+            onCancel={() => effectiveSetIsOpen(false)}
+            isEditing={!!editingCategory}
+          />
         </DialogContent>
       </Dialog>
     </div>
