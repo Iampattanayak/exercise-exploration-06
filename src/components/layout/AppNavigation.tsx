@@ -11,7 +11,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { Dumbbell, Calendar, Home, Bookmark } from 'lucide-react';
+import { Dumbbell, Calendar, LayoutDashboard, Plus } from 'lucide-react';
 
 const AppNavigation: React.FC = () => {
   const location = useLocation();
@@ -21,7 +21,7 @@ const AppNavigation: React.FC = () => {
   };
 
   return (
-    <NavigationMenu className="max-w-full w-full justify-start">
+    <NavigationMenu className="max-w-full justify-end">
       <NavigationMenuList className="gap-2">
         <NavigationMenuItem>
           <Link to="/">
@@ -31,7 +31,7 @@ const AppNavigation: React.FC = () => {
                 isActive('/') && "bg-accent text-accent-foreground font-medium"
               )}
             >
-              <Home className="h-4 w-4 mr-2" />
+              <LayoutDashboard className="h-4 w-4 mr-2" />
               Dashboard
             </NavigationMenuLink>
           </Link>
@@ -73,7 +73,7 @@ const AppNavigation: React.FC = () => {
                 isActive('/workout/new') && "bg-accent text-accent-foreground font-medium"
               )}
             >
-              <Bookmark className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-2" />
               New Workout
             </NavigationMenuLink>
           </Link>
