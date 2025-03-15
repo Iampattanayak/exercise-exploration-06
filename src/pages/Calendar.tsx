@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, parseISO, isSameDay } from 'date-fns';
-import { workouts, getWorkoutsByDate } from '@/lib/data';
+import { getWorkoutsByDate } from '@/lib/data';
 import { Workout } from '@/lib/types';
 import PageContainer from '@/components/layout/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
@@ -10,13 +11,58 @@ import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import WorkoutCard from '@/components/workout/WorkoutCard';
 import { Link } from 'react-router-dom';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
+  const [calendarWorkouts, setCalendarWorkouts] = useState<Record<string, Workout[]>>({});
+  const [loading, setLoading] = useState(true);
 
   const selectedDateString = format(selectedDate, 'yyyy-MM-dd');
-  const selectedWorkouts = getWorkoutsByDate(selectedDateString);
+
+  useEffect(() => {
+    const fetchSelectedDateWorkouts = async () => {
+      setLoading(true);
+      try {
+        const workouts = await getWorkoutsByDate(selectedDateString);
+        setSelectedWorkouts(workouts);
+      } catch (error) {
+        console.error('Error fetching workouts for selected date:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSelectedDateWorkouts();
+  }, [selectedDateString]);
+
+  useEffect(() => {
+    const fetchCalendarWorkouts = async () => {
+      const monthStart = startOfMonth(currentMonth);
+      const monthEnd = endOfMonth(monthStart);
+      const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+      
+      const workoutsByDate: Record<string, Workout[]> = {};
+      
+      // Fetch workouts for each day in the month
+      for (const day of days) {
+        const dateString = format(day, 'yyyy-MM-dd');
+        try {
+          const dayWorkouts = await getWorkoutsByDate(dateString);
+          workoutsByDate[dateString] = dayWorkouts;
+        } catch (error) {
+          console.error(`Error fetching workouts for ${dateString}:`, error);
+          workoutsByDate[dateString] = [];
+        }
+      }
+      
+      setCalendarWorkouts(workoutsByDate);
+    };
+
+    fetchCalendarWorkouts();
+  }, [currentMonth]);
 
   const nextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
@@ -78,7 +124,7 @@ const Calendar = () => {
     days.forEach((day) => {
       const formattedDate = format(day, dateFormat);
       const dateString = format(day, 'yyyy-MM-dd');
-      const dayWorkouts = getWorkoutsByDate(dateString);
+      const dayWorkouts = calendarWorkouts[dateString] || [];
       const hasWorkouts = dayWorkouts.length > 0;
       
       cells.push(
@@ -183,7 +229,19 @@ const Calendar = () => {
                 : `No workouts on ${format(selectedDate, 'MMM d')}`}
             </h3>
 
-            {selectedWorkouts.length > 0 ? (
+            {loading ? (
+              <div className="space-y-4">
+                {[1, 2].map((i) => (
+                  <Card key={i}>
+                    <CardContent className="p-4">
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-4" />
+                      <Skeleton className="h-4 w-full" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : selectedWorkouts.length > 0 ? (
               <div className="space-y-4">
                 {selectedWorkouts.map((workout: Workout) => (
                   <WorkoutCard key={workout.id} workout={workout} />
