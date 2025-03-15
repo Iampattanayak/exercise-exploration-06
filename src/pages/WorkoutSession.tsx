@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getWorkoutById, updateWorkout } from '@/lib/data';
@@ -30,7 +29,6 @@ const WorkoutSession = () => {
     if (id) {
       const foundWorkout = getWorkoutById(id);
       if (foundWorkout) {
-        // Initialize all sets as not completed if this is a new session
         const initializedWorkout = {
           ...foundWorkout,
           exercises: foundWorkout.exercises.map(exercise => ({
@@ -49,7 +47,6 @@ const WorkoutSession = () => {
   }, [id]);
 
   useEffect(() => {
-    // Update elapsed time every second
     const timer = setInterval(() => {
       setElapsedTime(Math.floor((new Date().getTime() - startTime.getTime()) / 1000));
     }, 1000);
@@ -59,7 +56,6 @@ const WorkoutSession = () => {
 
   useEffect(() => {
     if (workout) {
-      // Calculate progress
       const totalSets = workout.exercises.reduce(
         (total, exercise) => total + exercise.sets.length, 
         0
@@ -112,12 +108,10 @@ const WorkoutSession = () => {
       };
     });
 
-    // Play a fun sound effect when completing a set
     if (completed) {
       const audio = new Audio('/completion-sound.mp3');
       audio.volume = 0.5;
       audio.play().catch(() => {
-        // Silent catch for browsers that block autoplay
       });
     }
   };
@@ -192,12 +186,11 @@ const WorkoutSession = () => {
         : "Your workout progress has been saved.",
     });
     
-    navigate('/calendar');
+    navigate('/');
   };
 
   const handleNavigateToExercise = (index: number) => {
     setCurrentExerciseIndex(index);
-    // Scroll to the exercise
     document.getElementById(`exercise-${index}`)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
@@ -249,7 +242,6 @@ const WorkoutSession = () => {
           }
         />
 
-        {/* Workout Stats Panel */}
         <Card className="mb-6 border-2 border-primary/10">
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -282,7 +274,6 @@ const WorkoutSession = () => {
           </CardContent>
         </Card>
 
-        {/* Exercise Navigation */}
         <div className="mb-6 overflow-x-auto">
           <div className="flex space-x-2 pb-2">
             {workout.exercises.map((exercise, index) => {
@@ -305,7 +296,6 @@ const WorkoutSession = () => {
           </div>
         </div>
 
-        {/* Exercise List */}
         <div className="space-y-8 mb-8">
           {workout.exercises.map((exerciseItem, exerciseIndex) => (
             <Card 
