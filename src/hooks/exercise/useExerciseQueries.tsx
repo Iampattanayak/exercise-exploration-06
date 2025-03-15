@@ -14,12 +14,11 @@ export function useExerciseQueries() {
   } = useQuery({
     queryKey: ['exercises'],
     queryFn: getAllExercises,
-    onSuccess: (data) => {
-      // Optional success handling
-    },
-    onError: (error) => {
-      toast.error(`Failed to load exercises: ${error.message}`);
-      console.error('Failed to load exercises:', error);
+    onSettled: (data, error) => {
+      if (error) {
+        toast.error(`Failed to load exercises: ${error.message}`);
+        console.error('Failed to load exercises:', error);
+      }
     }
   });
 
@@ -32,12 +31,11 @@ export function useExerciseQueries() {
   } = useQuery({
     queryKey: ['categories'],
     queryFn: getAllCategories,
-    onSuccess: (data) => {
-      // Optional success handling
-    },
-    onError: (error) => {
-      toast.error(`Failed to load categories: ${error.message}`);
-      console.error('Failed to load categories:', error);
+    onSettled: (data, error) => {
+      if (error) {
+        toast.error(`Failed to load categories: ${error.message}`);
+        console.error('Failed to load categories:', error);
+      }
     }
   });
 
