@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, parseISO, isSameDay } from 'date-fns';
-import { getWorkoutsByDate } from '@/lib/data';
+import { getWorkoutsByDate } from '@/lib/workouts';
 import { Workout } from '@/lib/types';
 import PageContainer from '@/components/layout/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
