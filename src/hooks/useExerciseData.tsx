@@ -27,6 +27,7 @@ export function useExerciseData() {
   // Get mutation-related operations
   const {
     handleCreateExercise,
+    handleCreateMultipleExercises,
     handleUpdateExercise,
     handleDeleteExercise
   } = useExerciseMutations();
@@ -53,6 +54,7 @@ export function useExerciseData() {
     
     // CRUD operations
     handleCreateExercise,
+    handleCreateMultipleExercises,
     handleUpdateExercise,
     handleDeleteExercise,
     

@@ -1,6 +1,6 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { addExercise, updateExercise, deleteExercise } from '@/lib/data';
+import { addExercise, updateExercise, deleteExercise, addMultipleExercises } from '@/lib/data';
 import { Exercise } from '@/lib/types';
 import { toast } from 'sonner';
 import { uploadExerciseImage } from '@/lib/storage';
@@ -19,6 +19,19 @@ export function useExerciseMutations() {
     onError: (error: Error) => {
       console.error('Mutation error:', error);
       toast.error(`Failed to add exercise: ${error.message}`);
+    }
+  });
+
+  // Create Multiple Exercises Mutation
+  const createMultipleExercisesMutation = useMutation({
+    mutationFn: addMultipleExercises,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      toast.success('Exercises added successfully');
+    },
+    onError: (error: Error) => {
+      console.error('Mutation error:', error);
+      toast.error(`Failed to add exercises: ${error.message}`);
     }
   });
 
@@ -88,6 +101,23 @@ export function useExerciseMutations() {
     }
   };
 
+  // Create Multiple Exercises handler
+  const handleCreateMultipleExercises = async (exercises: Exercise[]) => {
+    try {
+      // Save exercises to database
+      if (exercises.length === 0) {
+        return true;
+      }
+      
+      await createMultipleExercisesMutation.mutateAsync(exercises);
+      return true;
+    } catch (error) {
+      console.error('Error adding exercises:', error);
+      toast.error('Failed to add exercises');
+      return false;
+    }
+  };
+
   // Update Exercise handler
   const handleUpdateExercise = async (
     exerciseId: string,
@@ -141,6 +171,7 @@ export function useExerciseMutations() {
 
   return {
     handleCreateExercise,
+    handleCreateMultipleExercises,
     handleUpdateExercise,
     handleDeleteExercise
   };

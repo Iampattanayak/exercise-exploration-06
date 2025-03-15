@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useExerciseData } from '@/hooks/useExerciseData';
@@ -13,8 +14,9 @@ import CategoryManager from '@/components/exercises/CategoryManager';
 import AddExerciseDialog from '@/components/exercises/AddExerciseDialog';
 import EditExerciseDialog from '@/components/exercises/EditExerciseDialog';
 import DeleteExerciseDialog from '@/components/exercises/DeleteExerciseDialog';
+import CuratedExercisesDialog from '@/components/exercises/CuratedExercisesDialog';
 import { Button } from '@/components/ui/button';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, BookOpen } from 'lucide-react';
 
 const ExerciseLibrary: React.FC = () => {
   const {
@@ -30,6 +32,7 @@ const ExerciseLibrary: React.FC = () => {
     handleCreateExercise,
     handleUpdateExercise,
     handleDeleteExercise,
+    handleCreateMultipleExercises,
     refreshAllData
   } = useExerciseData();
 
@@ -42,11 +45,16 @@ const ExerciseLibrary: React.FC = () => {
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false);
   const [isEditExerciseOpen, setIsEditExerciseOpen] = useState(false);
   const [isDeleteExerciseOpen, setIsDeleteExerciseOpen] = useState(false);
+  const [isCuratedExercisesOpen, setIsCuratedExercisesOpen] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
 
   const handleOpenAddExercise = () => {
     setIsAddExerciseOpen(true);
+  };
+
+  const handleOpenCuratedExercises = () => {
+    setIsCuratedExercisesOpen(true);
   };
 
   const handleOpenEditExercise = (exercise: Exercise) => {
@@ -95,6 +103,10 @@ const ExerciseLibrary: React.FC = () => {
                   <Button variant="outline" size="sm" onClick={handleRefresh}>
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Refresh
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleOpenCuratedExercises}>
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Add Curated Exercises
                   </Button>
                   <Button onClick={handleOpenAddExercise}>
                     <Plus className="h-4 w-4 mr-2" />
@@ -163,6 +175,14 @@ const ExerciseLibrary: React.FC = () => {
           onOpenChange={setIsDeleteExerciseOpen}
           exercise={selectedExercise}
           onDelete={handleDeleteExerciseSubmit}
+        />
+
+        <CuratedExercisesDialog
+          isOpen={isCuratedExercisesOpen}
+          onOpenChange={setIsCuratedExercisesOpen}
+          existingExercises={exercises}
+          categories={categories}
+          onAddExercises={handleCreateMultipleExercises}
         />
       </PageContainer>
     </>
