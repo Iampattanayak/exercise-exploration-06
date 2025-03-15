@@ -525,7 +525,7 @@ const WorkoutForm = () => {
                                 className="h-10 w-10 rounded bg-cover bg-center mr-3" 
                                 style={{ backgroundImage: `url(${exercise.imageUrl})` }}
                               />
-                              <div>
+                              <div className="flex-1">
                                 <p className="font-medium">{exercise.name}</p>
                                 <p className="text-xs text-muted-foreground capitalize">{exercise.category}</p>
                               </div>
