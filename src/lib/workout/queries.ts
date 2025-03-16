@@ -31,9 +31,12 @@ export const getRecentWorkouts = async (): Promise<Workout[]> => {
 
 // Get workouts scheduled for today
 export const getTodayWorkouts = async (): Promise<Workout[]> => {
-  // Get today's date in yyyy-MM-dd format, properly considering local timezone
+  // Get today's date in yyyy-MM-dd format in local timezone
   const today = new Date();
-  const todayString = today.toISOString().split('T')[0];
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const todayString = `${year}-${month}-${day}`;
   
   console.log('Today date used for queries:', todayString); // Debug log
   
@@ -61,9 +64,12 @@ export const getTodayWorkouts = async (): Promise<Workout[]> => {
 
 // Get upcoming workouts
 export const getUpcomingWorkouts = async (): Promise<Workout[]> => {
-  // Get today's date in yyyy-MM-dd format, properly considering local timezone
+  // Get today's date in yyyy-MM-dd format in local timezone
   const today = new Date();
-  const todayString = today.toISOString().split('T')[0];
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const todayString = `${year}-${month}-${day}`;
   
   console.log('Today date used for upcoming workouts:', todayString); // Debug log
   

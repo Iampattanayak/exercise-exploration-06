@@ -14,7 +14,7 @@ const TodayWorkouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Format today's date consistently
+  // Format today's date consistently - use local date object
   const today = format(new Date(), 'EEEE, MMMM d');
   
   console.log('Today component date display:', today); // Debug log
