@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { useExerciseData } from '@/hooks/useExerciseData';
 import { useCategoryData } from '@/hooks/useCategoryData';
 import { useExerciseDialogs } from '@/hooks/exercise/useExerciseDialogs';
+import { Exercise, Category } from '@/lib/types';
 
 import PageContainer from '@/components/layout/PageContainer';
 import ExerciseLibraryHeader from '@/components/exercises/ExerciseLibraryHeader';
@@ -60,7 +61,7 @@ const ExerciseLibrary: React.FC = () => {
     handleCreateExerciseSubmit,
     toggleCategoryManager
   } = useExerciseDialogs({
-    categories,
+    categories: categories as Category[],
     handleCreateExercise,
     handleUpdateExercise,
     handleDeleteExercise,
@@ -97,9 +98,9 @@ const ExerciseLibrary: React.FC = () => {
             />
 
             <ExerciseContent
-              exercises={exercises}
+              exercises={exercises as Exercise[]}
               filteredExercises={filteredExercises}
-              categories={categories}
+              categories={categories as Category[]}
               isLoading={exercisesLoading || categoriesLoading}
               searchTerm={searchTerm}
               selectedCategory={selectedCategory}
@@ -114,8 +115,8 @@ const ExerciseLibrary: React.FC = () => {
           </>
         ) : (
           <CategoryManager
-            categories={categories}
-            exercises={exercises}
+            categories={categories as Category[]}
+            exercises={exercises as Exercise[]}
             onBack={toggleCategoryManager}
             onCategoryAdd={handleAddCategory}
             onCategoryUpdate={handleUpdateCategory}
@@ -130,8 +131,8 @@ const ExerciseLibrary: React.FC = () => {
           isCuratedExercisesOpen={isCuratedExercisesOpen}
           isBackupDialogOpen={isBackupDialogOpen}
           selectedExercise={selectedExercise}
-          exercises={exercises}
-          categories={categories}
+          exercises={exercises as Exercise[]}
+          categories={categories as Category[]}
           onAddExerciseOpenChange={setIsAddExerciseOpen}
           onEditExerciseOpenChange={setIsEditExerciseOpen}
           onDeleteExerciseOpenChange={setIsDeleteExerciseOpen}

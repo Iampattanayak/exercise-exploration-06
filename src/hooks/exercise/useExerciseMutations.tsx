@@ -1,6 +1,6 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { addExercise, updateExercise, deleteExercise, addMultipleExercises } from '@/lib/data';
+import { addExercise, updateExercise, deleteExercise, addMultipleExercises } from '@/lib/exercises';
 import { Exercise } from '@/lib/types';
 import { toast } from 'sonner';
 import { uploadExerciseImage } from '@/lib/storage';
@@ -11,7 +11,7 @@ export function useExerciseMutations() {
 
   // Create Exercise Mutation
   const createExerciseMutation = useMutation({
-    mutationFn: addExercise,
+    mutationFn: (exercise: Exercise) => addExercise(exercise),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
     },
@@ -23,7 +23,7 @@ export function useExerciseMutations() {
 
   // Create Multiple Exercises Mutation
   const createMultipleExercisesMutation = useMutation({
-    mutationFn: addMultipleExercises,
+    mutationFn: (exercises: Exercise[]) => addMultipleExercises(exercises),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
     },
@@ -35,7 +35,7 @@ export function useExerciseMutations() {
 
   // Update Exercise Mutation
   const updateExerciseMutation = useMutation({
-    mutationFn: updateExercise,
+    mutationFn: (exercise: Exercise) => updateExercise(exercise),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
     },
@@ -47,7 +47,7 @@ export function useExerciseMutations() {
 
   // Delete Exercise Mutation
   const deleteExerciseMutation = useMutation({
-    mutationFn: deleteExercise,
+    mutationFn: (id: string) => deleteExercise(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
     },

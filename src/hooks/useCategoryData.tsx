@@ -1,6 +1,6 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { addCategory, updateCategory, deleteCategory } from '@/lib/data';
+import { addCategory, updateCategory, deleteCategory } from '@/lib/categories';
 import { Category } from '@/lib/types';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +9,7 @@ export function useCategoryData() {
   const queryClient = useQueryClient();
 
   const addCategoryMutation = useMutation({
-    mutationFn: addCategory,
+    mutationFn: (category: Category) => addCategory(category),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category added successfully');
@@ -20,7 +20,7 @@ export function useCategoryData() {
   });
 
   const updateCategoryMutation = useMutation({
-    mutationFn: updateCategory,
+    mutationFn: (category: Category) => updateCategory(category),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category updated successfully');
@@ -31,7 +31,7 @@ export function useCategoryData() {
   });
 
   const deleteCategoryMutation = useMutation({
-    mutationFn: deleteCategory,
+    mutationFn: (categoryId: string) => deleteCategory(categoryId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category deleted successfully');

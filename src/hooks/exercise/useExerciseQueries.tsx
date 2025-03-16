@@ -1,6 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
-import { getAllExercises, getAllCategories } from '@/lib/data';
+import { getAllExercises } from '@/lib/exercises';
+import { getAllCategories } from '@/lib/categories';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 

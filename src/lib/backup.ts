@@ -1,7 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { Exercise, Category } from './types';
-import { getAllExercises, getAllCategories } from './data';
+import { getAllExercises } from './exercises';
+import { getAllCategories } from './categories';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
 

@@ -2,6 +2,7 @@
 import { useExerciseQueries } from './exercise/useExerciseQueries';
 import { useExerciseFilters } from './exercise/useExerciseFilters';
 import { useExerciseMutations } from './exercise/useExerciseMutations';
+import { Exercise } from '@/lib/types';
 
 export function useExerciseData() {
   // Get query-related data and operations
@@ -22,7 +23,7 @@ export function useExerciseData() {
     filteredExercises,
     handleSearchChange,
     handleCategoryChange
-  } = useExerciseFilters(exercises);
+  } = useExerciseFilters(exercises as Exercise[]);
 
   // Get mutation-related operations
   const {
