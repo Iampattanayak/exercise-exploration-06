@@ -8,16 +8,20 @@ import {
   CheckCircle, 
   Circle, 
   Dumbbell,
-  ArrowRight
+  ArrowRight,
+  Archive
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { archiveWorkout } from '@/lib/workouts';
+import { toast } from '@/components/ui/use-toast';
 
 interface WorkoutCardProps {
   workout: Workout;
+  onArchive?: () => void;
 }
 
-const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout }) => {
+const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
   const dateObj = parseISO(workout.date);
   const formattedDate = format(dateObj, 'EEE, MMM d');
   
@@ -29,6 +33,34 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout }) => {
     (total, exercise) => total + exercise.sets.length,
     0
   );
+
+  const handleArchive = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      await archiveWorkout(workout.id);
+      toast({
+        title: "Workout archived",
+        description: `"${workout.name}" has been archived.`,
+      });
+      
+      if (onArchive) {
+        onArchive();
+      }
+    } catch (error) {
+      console.error('Error archiving workout:', error);
+      toast({
+        title: "Error",
+        description: "Failed to archive workout. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (workout.archived) {
+    return null; // Don't render archived workouts
+  }
 
   return (
     <div className="workout-card flex flex-col border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
@@ -82,11 +114,23 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout }) => {
       </div>
 
       <div className="border-t p-3 bg-muted/30 flex justify-between items-center">
-        <Link to={`/workout/${workout.id}`}>
-          <Button variant="ghost" size="sm" className="text-sm">
-            View Details
+        <div className="flex gap-2">
+          <Link to={`/workout/${workout.id}`}>
+            <Button variant="ghost" size="sm" className="text-sm">
+              View Details
+            </Button>
+          </Link>
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-sm text-muted-foreground" 
+            onClick={handleArchive}
+          >
+            <Archive className="h-3.5 w-3.5 mr-1" />
+            Archive
           </Button>
-        </Link>
+        </div>
         
         {!workout.completed && (
           <Link to={`/workout-session/${workout.id}`}>

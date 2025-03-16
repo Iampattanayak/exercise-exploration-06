@@ -33,6 +33,34 @@ const WorkoutForm = () => {
     navigate
   } = useWorkoutForm();
   
+  // If the workout is archived, show a message
+  if (workout.archived) {
+    return (
+      <PageContainer>
+        <PageHeader 
+          title="Archived Workout" 
+          description="This workout has been archived"
+          action={
+            <Button variant="outline" onClick={() => navigate(-1)}>
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+          }
+        />
+        <div className="p-8 bg-muted/30 rounded-lg text-center">
+          <h2 className="text-xl font-medium mb-4">This workout has been archived</h2>
+          <p className="text-muted-foreground mb-6">
+            Archived workouts are hidden from the calendar and dashboard.
+          </p>
+          <Button onClick={() => navigate(-1)}>
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Go Back
+          </Button>
+        </div>
+      </PageContainer>
+    );
+  }
+  
   return (
     <PageContainer>
       <PageHeader 

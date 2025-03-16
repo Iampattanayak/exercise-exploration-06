@@ -19,6 +19,7 @@ export const getRecentWorkouts = async (): Promise<Workout[]> => {
       )
     `)
     .eq('completed', true)
+    .eq('archived', false) // Filter out archived workouts
     .order('date', { ascending: false })
     .limit(3);
   
@@ -45,7 +46,8 @@ export const getTodayWorkouts = async (): Promise<Workout[]> => {
         exercise_sets(*)
       )
     `)
-    .eq('date', today);
+    .eq('date', today)
+    .eq('archived', false); // Filter out archived workouts
   
   if (error) {
     console.error('Error fetching today workouts:', error);
@@ -71,6 +73,7 @@ export const getUpcomingWorkouts = async (): Promise<Workout[]> => {
       )
     `)
     .gt('date', today)
+    .eq('archived', false) // Filter out archived workouts
     .order('date', { ascending: true })
     .limit(3);
   
@@ -94,7 +97,8 @@ export const getWorkoutsByDate = async (date: string): Promise<Workout[]> => {
         exercise_sets(*)
       )
     `)
-    .eq('date', date);
+    .eq('date', date)
+    .eq('archived', false); // Filter out archived workouts
   
   if (error) {
     console.error('Error fetching workouts by date:', error);
@@ -141,6 +145,7 @@ export const getAllWorkouts = async (): Promise<Workout[]> => {
         exercise_sets(*)
       )
     `)
+    .eq('archived', false) // Filter out archived workouts
     .order('date', { ascending: false });
   
   if (error) {
@@ -149,6 +154,20 @@ export const getAllWorkouts = async (): Promise<Workout[]> => {
   }
   
   return formatWorkoutsFromDb(data || []);
+};
+
+export const archiveWorkout = async (id: string): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('workouts')
+      .update({ archived: true })
+      .eq('id', id);
+    
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error archiving workout:', error);
+    throw error;
+  }
 };
 
 export const addWorkout = async (workout: Workout): Promise<void> => {
@@ -407,7 +426,8 @@ const formatWorkoutFromDb = (dbWorkout: any): Workout => {
     date: dbWorkout.date,
     exercises: exercises,
     completed: dbWorkout.completed,
-    progress: dbWorkout.progress
+    progress: dbWorkout.progress,
+    archived: dbWorkout.archived
   };
 };
 

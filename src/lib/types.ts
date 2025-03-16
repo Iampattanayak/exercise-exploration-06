@@ -35,6 +35,7 @@ export interface Workout {
   exercises: WorkoutExercise[];
   completed: boolean;
   progress?: number; // 0-100
+  archived?: boolean; // New field for archive feature
 }
 
 export interface Category {

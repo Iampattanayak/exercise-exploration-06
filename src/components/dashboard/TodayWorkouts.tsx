@@ -15,20 +15,20 @@ const TodayWorkouts: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const today = format(new Date(), 'EEEE, MMMM d');
 
-  useEffect(() => {
-    const fetchWorkouts = async () => {
-      try {
-        setLoading(true);
-        const data = await getTodayWorkouts();
-        setWorkouts(data);
-      } catch (error) {
-        console.error('Error fetching today workouts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const refreshWorkouts = async () => {
+    try {
+      setLoading(true);
+      const data = await getTodayWorkouts();
+      setWorkouts(data);
+    } catch (error) {
+      console.error('Error fetching today workouts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchWorkouts();
+  useEffect(() => {
+    refreshWorkouts();
   }, []);
 
   if (loading) {
@@ -79,7 +79,7 @@ const TodayWorkouts: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {workouts.map((workout: Workout) => (
-            <WorkoutCard key={workout.id} workout={workout} />
+            <WorkoutCard key={workout.id} workout={workout} onArchive={refreshWorkouts} />
           ))}
         </div>
       )}

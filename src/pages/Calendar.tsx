@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, parseISO, isSameDay } from 'date-fns';
 import { getWorkoutsByDate } from '@/lib/workouts';
 import { Workout } from '@/lib/types';
@@ -19,8 +19,14 @@ const Calendar = () => {
   const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
   const [calendarWorkouts, setCalendarWorkouts] = useState<Record<string, Workout[]>>({});
   const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const selectedDateString = format(selectedDate, 'yyyy-MM-dd');
+
+  // Function to refresh data after a workout is archived
+  const refreshData = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
 
   useEffect(() => {
     const fetchSelectedDateWorkouts = async () => {
@@ -36,7 +42,7 @@ const Calendar = () => {
     };
 
     fetchSelectedDateWorkouts();
-  }, [selectedDateString]);
+  }, [selectedDateString, refreshTrigger]);
 
   useEffect(() => {
     const fetchCalendarWorkouts = async () => {
@@ -62,7 +68,7 @@ const Calendar = () => {
     };
 
     fetchCalendarWorkouts();
-  }, [currentMonth]);
+  }, [currentMonth, refreshTrigger]);
 
   const nextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
@@ -202,8 +208,26 @@ const Calendar = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          {renderCalendarHeader()}
-          {renderDaysOfWeek()}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">{format(currentMonth, 'MMMM yyyy')}</h2>
+            <div className="flex space-x-2">
+              <Button variant="outline" size="icon" onClick={prevMonth}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" onClick={nextMonth}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-7 mb-2">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+              <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
+                {day}
+              </div>
+            ))}
+          </div>
+
           {renderDays()}
         </div>
         
@@ -244,7 +268,11 @@ const Calendar = () => {
             ) : selectedWorkouts.length > 0 ? (
               <div className="space-y-4">
                 {selectedWorkouts.map((workout: Workout) => (
-                  <WorkoutCard key={workout.id} workout={workout} />
+                  <WorkoutCard 
+                    key={workout.id} 
+                    workout={workout} 
+                    onArchive={refreshData}
+                  />
                 ))}
               </div>
             ) : (
