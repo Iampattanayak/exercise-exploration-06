@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 import { Workout, WorkoutExercise, ExerciseSet, Exercise } from './types';
 import { supabase } from '@/integrations/supabase/client';
@@ -128,6 +127,28 @@ export const getWorkoutById = async (id: string): Promise<Workout | null> => {
   if (!data) return null;
   
   return formatWorkoutFromDb(data);
+};
+
+export const getAllWorkouts = async (): Promise<Workout[]> => {
+  // Return all workouts, sorted by date (most recent first)
+  const { data, error } = await supabase
+    .from('workouts')
+    .select(`
+      *,
+      workout_exercises(
+        *,
+        exercises(id, name, description, category, image_url),
+        exercise_sets(*)
+      )
+    `)
+    .order('date', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching all workouts:', error);
+    return [];
+  }
+  
+  return formatWorkoutsFromDb(data || []);
 };
 
 export const addWorkout = async (workout: Workout): Promise<void> => {

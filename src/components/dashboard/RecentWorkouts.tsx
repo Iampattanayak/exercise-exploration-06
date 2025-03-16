@@ -4,8 +4,10 @@ import { getRecentWorkouts } from '@/lib/workouts';
 import { Workout } from '@/lib/types';
 import WorkoutCard from '@/components/workout/WorkoutCard';
 import SectionHeader from '@/components/layout/SectionHeader';
-import { History } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { History, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Link } from 'react-router-dom';
 
 const RecentWorkouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -57,6 +59,14 @@ const RecentWorkouts: React.FC = () => {
       <SectionHeader 
         title="Recent Workouts" 
         description="Your most recent workout sessions" 
+        action={
+          <Link to="/workout-history">
+            <Button variant="outline" size="sm" className="gap-1">
+              View All
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        }
       />
 
       {workouts.length === 0 ? (
