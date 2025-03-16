@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -38,7 +37,6 @@ export function ImageUpload({
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Set initial preview from props
   useEffect(() => {
     if (previewUrl) {
       setPreview(previewUrl);
@@ -51,14 +49,12 @@ export function ImageUpload({
     const file = files[0];
     const reader = new FileReader();
     
-    // Check file size
     const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > maxSizeMB) {
       toast.error(`File size exceeds ${maxSizeMB}MB limit`);
       return;
     }
     
-    // Check image dimensions and apply resizing if needed
     reader.onload = (e) => {
       const img = document.createElement("img");
       img.onload = () => {
@@ -80,7 +76,6 @@ export function ImageUpload({
           return;
         }
         
-        // Create canvas for the processed image
         const canvas = document.createElement("canvas");
         let sourceX = 0;
         let sourceY = 0;
@@ -89,20 +84,16 @@ export function ImageUpload({
         let targetWidth = img.width;
         let targetHeight = img.height;
         
-        // Apply auto-cropping if aspect ratio is required
         if (aspectRatio) {
           if (img.width / img.height > aspectRatio) {
-            // Image is wider than target aspect ratio, crop sides
             sourceWidth = img.height * aspectRatio;
-            sourceX = (img.width - sourceWidth) / 2; // Center horizontally
+            sourceX = (img.width - sourceWidth) / 2;
           } else if (img.width / img.height < aspectRatio) {
-            // Image is taller than target aspect ratio, crop top/bottom
             sourceHeight = img.width / aspectRatio;
-            sourceY = (img.height - sourceHeight) / 2; // Center vertically
+            sourceY = (img.height - sourceHeight) / 2;
           }
         }
         
-        // Resize if larger than max dimensions
         if (targetWidth > maxWidth) {
           targetHeight = (targetHeight * maxWidth) / targetWidth;
           targetWidth = maxWidth;
@@ -113,21 +104,19 @@ export function ImageUpload({
           targetHeight = maxHeight;
         }
         
-        // Set canvas size to the target dimensions
         canvas.width = targetWidth;
         canvas.height = targetHeight;
         
         const ctx = canvas.getContext("2d");
         ctx?.drawImage(
           img, 
-          sourceX, sourceY, sourceWidth, sourceHeight, // Source rectangle
-          0, 0, targetWidth, targetHeight // Destination rectangle
+          sourceX, sourceY, sourceWidth, sourceHeight,
+          0, 0, targetWidth, targetHeight
         );
         
         const optimizedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
         setPreview(optimizedDataUrl);
         
-        // Convert data URL back to file
         fetch(optimizedDataUrl)
           .then(res => res.blob())
           .then(blob => {
