@@ -66,19 +66,9 @@ const EditExerciseDialog: React.FC<EditExerciseDialogProps> = ({
                 onSubmit={handleSubmit}
                 onCancel={handleCancel}
                 submitLabel="Save Changes"
-                showDeleteButton={false}
+                showDeleteButton={true}
+                onDelete={handleDelete}
               />
-            </div>
-            <div className="border-t pt-4 mt-2 flex justify-center">
-              <Button 
-                variant="destructive" 
-                size="default"
-                onClick={handleDelete}
-                className="w-full sm:w-auto"
-              >
-                <Trash className="h-4 w-4 mr-2" />
-                Delete Exercise
-              </Button>
             </div>
           </>
         )}

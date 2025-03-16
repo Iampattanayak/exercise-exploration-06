@@ -23,7 +23,7 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
   categories
 }) => {
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 h-full flex flex-col">
       <FormField
         control={form.control}
         name="name"
@@ -74,14 +74,14 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
         control={form.control}
         name="description"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="flex-grow">
             <FormLabel className="font-medium">Description</FormLabel>
             <FormControl>
               <Textarea 
                 {...field}
                 placeholder="Describe how to perform this exercise..."
-                rows={5}
-                className="mt-1 resize-none"
+                rows={8}
+                className="mt-1 resize-none flex-grow"
               />
             </FormControl>
             <FormMessage />
