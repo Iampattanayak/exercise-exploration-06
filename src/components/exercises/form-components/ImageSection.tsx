@@ -42,6 +42,12 @@ const ImageSection: React.FC<ImageSectionProps> = ({
           aspectRatio={1}
           helpText={imagePreview ? "Current image shown. Click to replace." : "Square images work best (1:1 ratio). Non-square images will be auto-cropped from the center."}
         />
+        
+        {imagePreview && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Current image is displayed above. Click the image to replace it.
+          </p>
+        )}
       </div>
       
       <div className="pt-2 border-t border-gray-100">

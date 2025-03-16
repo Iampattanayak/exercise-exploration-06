@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,9 +34,16 @@ export function ImageUpload({
   alt = "Image preview",
   ...props
 }: ImageUploadProps) {
-  const [preview, setPreview] = useState<string | null>(previewUrl || null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Set initial preview from props
+  useEffect(() => {
+    if (previewUrl) {
+      setPreview(previewUrl);
+    }
+  }, [previewUrl]);
 
   const handleFileChange = (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -189,16 +196,29 @@ export function ImageUpload({
             <img
               src={preview}
               alt={alt}
-              className="w-full h-auto rounded-md object-cover"
+              className="w-full h-auto max-h-[250px] rounded-md object-contain"
             />
             <Button
               type="button"
               variant="destructive"
               size="icon"
               className="absolute top-2 right-2"
-              onClick={removeImage}
+              onClick={(e) => {
+                e.stopPropagation();
+                removeImage();
+              }}
             >
               <X className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button" 
+              variant="secondary"
+              size="sm"
+              className="mt-2"
+              onClick={handleClick}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Replace Image
             </Button>
           </div>
         ) : (

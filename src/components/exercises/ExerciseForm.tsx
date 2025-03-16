@@ -46,6 +46,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({
         category: exercise.category,
         imageUrl: exercise.imageUrl
       });
+      // Set the image preview directly from the exercise's imageUrl
       setImagePreview(exercise.imageUrl);
     }
   }, [exercise, form]);
@@ -86,13 +87,13 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({
         <div className="grid md:grid-cols-2 gap-8">
           {/* Details section (name, category, description) */}
           <div className="space-y-6">
-            <h3 className="font-medium text-sm text-gray-500">Exercise Details</h3>
+            <h3 className="font-medium text-sm text-gray-500 mb-4">Exercise Details</h3>
             <DetailsSection form={form} categories={categories} />
           </div>
           
           {/* Image section */}
           <div className="space-y-6">
-            <h3 className="font-medium text-sm text-gray-500">Exercise Image</h3>
+            <h3 className="font-medium text-sm text-gray-500 mb-4">Exercise Image</h3>
             <ImageSection 
               form={form} 
               onImageChange={handleImageChange} 

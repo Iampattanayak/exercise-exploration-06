@@ -51,11 +51,11 @@ const EditExerciseDialog: React.FC<EditExerciseDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="pb-4 border-b">
-          <DialogTitle className="text-xl">Edit Exercise</DialogTitle>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="pb-4 border-b mb-4">
+          <DialogTitle className="text-xl font-bold text-primary">Edit Exercise</DialogTitle>
           <DialogDescription className="mt-1 text-sm">
-            Update the details of this exercise
+            Update the details and image of this exercise
           </DialogDescription>
         </DialogHeader>
         {exercise && (
