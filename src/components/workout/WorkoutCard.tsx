@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format, parseISO } from 'date-fns';
 import { Workout } from '@/lib/types';
@@ -25,10 +24,8 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
   const dateObj = parseISO(workout.date);
   const formattedDate = format(dateObj, 'EEE, MMM d');
   
-  // Get total number of exercises
   const exerciseCount = workout.exercises.length;
   
-  // Get total number of sets across all exercises
   const totalSets = workout.exercises.reduce(
     (total, exercise) => total + exercise.sets.length,
     0
@@ -134,7 +131,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
         
         {!workout.completed && (
           <Link to={`/workout-session/${workout.id}`}>
-            <Button size="sm" className="text-sm flex items-center">
+            <Button size="sm" className="text-sm flex items-center bg-green-600 hover:bg-green-700">
               Start Workout
               <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Button>
