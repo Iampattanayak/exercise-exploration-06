@@ -150,6 +150,7 @@ export type Database = {
       }
       workouts: {
         Row: {
+          archived: boolean
           completed: boolean
           created_at: string
           date: string
@@ -160,6 +161,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived?: boolean
           completed?: boolean
           created_at?: string
           date: string
@@ -170,6 +172,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived?: boolean
           completed?: boolean
           created_at?: string
           date?: string

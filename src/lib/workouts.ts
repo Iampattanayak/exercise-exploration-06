@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 import { Workout, WorkoutExercise, ExerciseSet, Exercise } from './types';
 import { supabase } from '@/integrations/supabase/client';
@@ -181,7 +182,8 @@ export const addWorkout = async (workout: Workout): Promise<void> => {
         description: workout.description || null,
         date: workout.date,
         completed: workout.completed,
-        progress: workout.progress || 0
+        progress: workout.progress || 0,
+        archived: workout.archived || false // Add the archived field
       })
       .select('id')
       .single();
@@ -233,7 +235,8 @@ export const updateWorkout = async (updatedWorkout: Workout): Promise<void> => {
         description: updatedWorkout.description || null,
         date: updatedWorkout.date,
         completed: updatedWorkout.completed,
-        progress: updatedWorkout.progress || 0
+        progress: updatedWorkout.progress || 0,
+        archived: updatedWorkout.archived || false // Add the archived field
       })
       .eq('id', updatedWorkout.id);
 
