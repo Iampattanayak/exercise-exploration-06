@@ -14,7 +14,7 @@ const FormActions: React.FC<FormActionsProps> = ({
   submitLabel
 }) => {
   return (
-    <div className="flex justify-end gap-4 pt-5 border-t mt-8">
+    <div className="flex justify-between sm:justify-end gap-4 pt-5 border-t mt-8">
       <Button 
         type="button" 
         variant="outline" 

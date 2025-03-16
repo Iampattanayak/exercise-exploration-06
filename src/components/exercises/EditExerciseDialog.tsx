@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter
 } from '@/components/ui/dialog';
 import ExerciseForm from './ExerciseForm';
 import { Button } from '@/components/ui/button';
@@ -67,19 +66,20 @@ const EditExerciseDialog: React.FC<EditExerciseDialogProps> = ({
                 onSubmit={handleSubmit}
                 onCancel={handleCancel}
                 submitLabel="Save Changes"
+                showDeleteButton={false}
               />
             </div>
-            <DialogFooter className="flex justify-between items-center border-t pt-4 mt-2">
+            <div className="border-t pt-4 mt-2">
               <Button 
                 variant="destructive" 
-                size="sm"
+                size="default"
                 onClick={handleDelete}
-                className="mr-auto"
+                className="w-full sm:w-auto"
               >
                 <Trash className="h-4 w-4 mr-2" />
                 Delete Exercise
               </Button>
-            </DialogFooter>
+            </div>
           </>
         )}
       </DialogContent>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Exercise, Category } from '@/lib/types';
 import { useForm } from 'react-hook-form';
@@ -16,6 +15,7 @@ interface ExerciseFormProps {
   onSubmit: (exerciseData: Partial<Exercise>, uploadedImage: File | null) => Promise<boolean>;
   onCancel: () => void;
   submitLabel?: string;
+  showDeleteButton?: boolean;
 }
 
 const ExerciseForm: React.FC<ExerciseFormProps> = ({
@@ -23,7 +23,8 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({
   categories,
   onSubmit,
   onCancel,
-  submitLabel = 'Save'
+  submitLabel = 'Save',
+  showDeleteButton = true
 }) => {
   const form = useForm<Partial<Exercise>>({
     defaultValues: {
