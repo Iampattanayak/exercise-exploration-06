@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { format, parse } from 'date-fns';
@@ -10,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ChevronLeft, Loader2, Save } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
-import Navbar from '@/components/layout/Navbar';
 import { getAllExercises } from '@/lib/exercises';
 import { getAllCategories } from '@/lib/data';
 
@@ -303,83 +301,80 @@ const WorkoutForm = () => {
   };
   
   return (
-    <>
-      <Navbar />
-      <PageContainer>
-        <PageHeader 
-          title={id === 'new' ? "Create Workout" : "Edit Workout"} 
-          description="Plan your workout routine"
-          action={
-            <div className="flex space-x-2">
-              <Button variant="outline" onClick={() => navigate(-1)} disabled={isSaving}>
-                <ChevronLeft className="h-4 w-4 mr-2" />
-                Cancel
-              </Button>
-              <Button onClick={saveWorkout} disabled={isSaving || isLoading}>
-                {isSaving ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Workout
-                  </>
-                )}
-              </Button>
-            </div>
-          }
-        />
-        
-        {isLoading ? (
-          <Card className="p-8">
-            <div className="flex justify-center items-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <span className="ml-2">Loading workout data...</span>
-            </div>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              {/* Basic workout info form */}
-              <WorkoutBasicInfoForm
-                name={workout.name || ''}
-                description={workout.description || ''}
-                selectedDate={selectedDate}
-                onNameChange={(e) => handleInputChange(e)}
-                onDescriptionChange={(e) => handleInputChange(e)}
-                onDateChange={setSelectedDate}
-              />
-              
-              <h3 className="font-medium text-lg mb-4">Exercises</h3>
-              
-              {/* Exercise list */}
-              <WorkoutExerciseList
-                exercises={workout.exercises || []}
-                categoryMap={categoryMap}
-                onRemoveExercise={handleRemoveExercise}
-                onAddSet={handleAddSet}
-                onRemoveSet={handleRemoveSet}
-                onSetChange={handleSetChange}
-              />
-            </div>
-            
-            <div>
-              {/* Exercise search */}
-              <ExerciseSearch
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                availableExercises={availableExercises}
-                isLoading={isLoading}
-                onExerciseAdd={handleAddExercise}
-                categoryMap={categoryMap}
-              />
-            </div>
+    <PageContainer>
+      <PageHeader 
+        title={id === 'new' ? "Create Workout" : "Edit Workout"} 
+        description="Plan your workout routine"
+        action={
+          <div className="flex space-x-2">
+            <Button variant="outline" onClick={() => navigate(-1)} disabled={isSaving}>
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Cancel
+            </Button>
+            <Button onClick={saveWorkout} disabled={isSaving || isLoading}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Workout
+                </>
+              )}
+            </Button>
           </div>
-        )}
-      </PageContainer>
-    </>
+        }
+      />
+      
+      {isLoading ? (
+        <Card className="p-8">
+          <div className="flex justify-center items-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2">Loading workout data...</span>
+          </div>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            {/* Basic workout info form */}
+            <WorkoutBasicInfoForm
+              name={workout.name || ''}
+              description={workout.description || ''}
+              selectedDate={selectedDate}
+              onNameChange={(e) => handleInputChange(e)}
+              onDescriptionChange={(e) => handleInputChange(e)}
+              onDateChange={setSelectedDate}
+            />
+            
+            <h3 className="font-medium text-lg mb-4">Exercises</h3>
+            
+            {/* Exercise list */}
+            <WorkoutExerciseList
+              exercises={workout.exercises || []}
+              categoryMap={categoryMap}
+              onRemoveExercise={handleRemoveExercise}
+              onAddSet={handleAddSet}
+              onRemoveSet={handleRemoveSet}
+              onSetChange={handleSetChange}
+            />
+          </div>
+          
+          <div>
+            {/* Exercise search */}
+            <ExerciseSearch
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              availableExercises={availableExercises}
+              isLoading={isLoading}
+              onExerciseAdd={handleAddExercise}
+              categoryMap={categoryMap}
+            />
+          </div>
+        </div>
+      )}
+    </PageContainer>
   );
 };
 
