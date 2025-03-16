@@ -1,9 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { Exercise } from './types';
-
-// Helper to get exercises for the mockWorkouts
-export const exercises: Exercise[] = [];
+import { v4 as uuidv4 } from 'uuid';
 
 // EXERCISE FUNCTIONS
 export const getAllExercises = async (): Promise<Exercise[]> => {
@@ -61,9 +59,6 @@ export const getExerciseById = async (id: string): Promise<Exercise | null> => {
 
 export const addExercise = async (exercise: Exercise): Promise<void> => {
   try {
-    // If there's an image upload, we would handle storage here
-    // For now, we just store the image URL
-    
     const { error } = await supabase
       .from('exercises')
       .insert([{
@@ -80,6 +75,32 @@ export const addExercise = async (exercise: Exercise): Promise<void> => {
     }
   } catch (error) {
     console.error('Error in addExercise:', error);
+    throw error;
+  }
+};
+
+export const addMultipleExercises = async (exercises: Exercise[]): Promise<void> => {
+  try {
+    if (exercises.length === 0) return;
+    
+    const formattedExercises = exercises.map(exercise => ({
+      id: exercise.id,
+      name: exercise.name,
+      description: exercise.description,
+      category: exercise.category,
+      image_url: exercise.imageUrl
+    }));
+    
+    const { error } = await supabase
+      .from('exercises')
+      .insert(formattedExercises);
+    
+    if (error) {
+      console.error('Error adding exercises:', error);
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Error in addMultipleExercises:', error);
     throw error;
   }
 };
