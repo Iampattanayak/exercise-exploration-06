@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Exercise } from '@/lib/types';
 import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
@@ -5,7 +6,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from '@/components/ui/context-menu';
-import { Edit, Trash } from 'lucide-react';
+import { Edit, Trash, ImageOff } from 'lucide-react';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -21,6 +22,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onDelete 
 }) => {
   const [category, setCategory] = useState(getCategoryByIdSync(exercise.category));
+  const [imageError, setImageError] = useState(false);
   
   useEffect(() => {
     const loadCategory = async () => {
@@ -44,6 +46,10 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     e.stopPropagation();
     if (onDelete) onDelete();
   };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
   
   return (
     <ContextMenu>
@@ -53,11 +59,18 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
           onClick={onClick}
         >
           <AspectRatio ratio={4 / 3} className="bg-muted/30">
-            <img 
-              src={exercise.imageUrl} 
-              alt={exercise.name}
-              className="object-cover w-full h-full transition-transform duration-300"
-            />
+            {!imageError && exercise.imageUrl ? (
+              <img 
+                src={exercise.imageUrl} 
+                alt={exercise.name}
+                className="object-cover w-full h-full transition-transform duration-300"
+                onError={handleImageError}
+              />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full bg-muted/50">
+                <ImageOff className="h-12 w-12 text-muted-foreground opacity-50" />
+              </div>
+            )}
             
             {/* Action buttons that appear on hover */}
             <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

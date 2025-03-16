@@ -5,6 +5,7 @@ import ExerciseCard from './ExerciseCard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
 import { cn } from '@/lib/utils';
+import { ImageOff } from 'lucide-react';
 
 interface ExerciseGridProps {
   exercises: Exercise[];
@@ -25,12 +26,14 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({
 }) => {
   const [selectedExercise, setSelectedExercise] = React.useState<Exercise | null>(null);
   const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   const handleExerciseClick = (exercise: Exercise) => {
     if (onExerciseSelect) {
       onExerciseSelect(exercise);
     } else {
       setSelectedExercise(exercise);
+      setImageError(false);
     }
   };
 
@@ -122,22 +125,33 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="aspect-ratio-4/3 rounded-lg overflow-hidden bg-muted/30">
-                  <img 
-                    src={selectedExercise.imageUrl} 
-                    alt={selectedExercise.name}
-                    className="object-cover w-full h-full"
-                  />
+                  {!imageError && selectedExercise.imageUrl ? (
+                    <img 
+                      src={selectedExercise.imageUrl} 
+                      alt={selectedExercise.name}
+                      className="object-cover w-full h-full"
+                      onError={() => setImageError(true)}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center w-full h-full bg-muted/50">
+                      <ImageOff className="h-16 w-16 text-muted-foreground opacity-50" />
+                    </div>
+                  )}
                 </div>
                 <div>
                   <h4 className="font-medium mb-2">Description</h4>
-                  <p className="text-muted-foreground mb-4">{selectedExercise.description}</p>
+                  <p className="text-muted-foreground mb-4">{selectedExercise.description || "No description available."}</p>
                   
                   <h4 className="font-medium mb-2">Instructions</h4>
-                  <ol className="list-decimal pl-4 text-muted-foreground space-y-2">
-                    {selectedExercise.description.split('. ').map((step, index) => (
-                      <li key={index}>{step}</li>
-                    ))}
-                  </ol>
+                  {selectedExercise.description ? (
+                    <ol className="list-decimal pl-4 text-muted-foreground space-y-2">
+                      {selectedExercise.description.split('. ').filter(Boolean).map((step, index) => (
+                        <li key={index}>{step}</li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p className="text-muted-foreground">No instructions available.</p>
+                  )}
                 </div>
               </div>
             </>
