@@ -42,16 +42,19 @@ const ExerciseLibrary: React.FC = () => {
     isEditExerciseOpen,
     isDeleteExerciseOpen,
     isCuratedExercisesOpen,
+    isBackupDialogOpen,
     selectedExercise,
     showCategoryManager,
     setIsAddExerciseOpen,
     setIsEditExerciseOpen,
     setIsDeleteExerciseOpen,
     setIsCuratedExercisesOpen,
+    setIsBackupDialogOpen,
     handleOpenAddExercise,
     handleOpenCuratedExercises,
     handleOpenEditExercise,
     handleOpenDeleteExercise,
+    handleOpenBackupDialog,
     handleDeleteExerciseSubmit,
     handleUpdateExerciseSubmit,
     handleCreateExerciseSubmit,
@@ -90,6 +93,7 @@ const ExerciseLibrary: React.FC = () => {
               onRefresh={refreshAllData}
               onAddExercise={handleOpenAddExercise}
               onOpenCurated={handleOpenCuratedExercises}
+              onOpenBackup={handleOpenBackupDialog}
             />
 
             <ExerciseContent
@@ -124,6 +128,7 @@ const ExerciseLibrary: React.FC = () => {
           isEditExerciseOpen={isEditExerciseOpen}
           isDeleteExerciseOpen={isDeleteExerciseOpen}
           isCuratedExercisesOpen={isCuratedExercisesOpen}
+          isBackupDialogOpen={isBackupDialogOpen}
           selectedExercise={selectedExercise}
           exercises={exercises}
           categories={categories}
@@ -131,10 +136,12 @@ const ExerciseLibrary: React.FC = () => {
           onEditExerciseOpenChange={setIsEditExerciseOpen}
           onDeleteExerciseOpenChange={setIsDeleteExerciseOpen}
           onCuratedExercisesOpenChange={setIsCuratedExercisesOpen}
+          onBackupDialogOpenChange={setIsBackupDialogOpen}
           onCreateExercise={handleCreateExerciseSubmit}
           onUpdateExercise={handleUpdateExerciseSubmit}
           onDeleteExercise={handleDeleteExerciseSubmit}
           onCreateMultipleExercises={handleCreateMultipleExercises}
+          onRefreshData={refreshAllData}
         />
       </PageContainer>
     </>

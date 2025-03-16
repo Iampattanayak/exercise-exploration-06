@@ -20,6 +20,7 @@ export function useExerciseDialogs({
   const [isEditExerciseOpen, setIsEditExerciseOpen] = useState(false);
   const [isDeleteExerciseOpen, setIsDeleteExerciseOpen] = useState(false);
   const [isCuratedExercisesOpen, setIsCuratedExercisesOpen] = useState(false);
+  const [isBackupDialogOpen, setIsBackupDialogOpen] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
 
@@ -49,6 +50,10 @@ export function useExerciseDialogs({
   const handleOpenDeleteExercise = (exercise: Exercise) => {
     setSelectedExercise(exercise);
     setIsDeleteExerciseOpen(true);
+  };
+
+  const handleOpenBackupDialog = () => {
+    setIsBackupDialogOpen(true);
   };
 
   const handleDeleteExerciseSubmit = async () => {
@@ -88,16 +93,19 @@ export function useExerciseDialogs({
     isEditExerciseOpen,
     isDeleteExerciseOpen,
     isCuratedExercisesOpen,
+    isBackupDialogOpen,
     selectedExercise,
     showCategoryManager,
     setIsAddExerciseOpen,
     setIsEditExerciseOpen,
     setIsDeleteExerciseOpen,
     setIsCuratedExercisesOpen,
+    setIsBackupDialogOpen,
     handleOpenAddExercise,
     handleOpenCuratedExercises,
     handleOpenEditExercise,
     handleOpenDeleteExercise,
+    handleOpenBackupDialog,
     handleDeleteExerciseSubmit,
     handleUpdateExerciseSubmit,
     handleCreateExerciseSubmit,
