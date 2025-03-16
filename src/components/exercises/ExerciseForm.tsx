@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Exercise, Category } from '@/lib/types';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Form } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -11,6 +13,16 @@ import { Trash } from 'lucide-react';
 import DetailsSection from './form-components/DetailsSection';
 import ImageSection from './form-components/ImageSection';
 import FormActions from './form-components/FormActions';
+
+// Define the Zod schema for validation
+const exerciseSchema = z.object({
+  name: z.string().min(1, { message: "Exercise name is required" }),
+  description: z.string().optional(),
+  category: z.string().min(1, { message: "Category is required" }),
+  imageUrl: z.string().optional()
+});
+
+type ExerciseFormValues = z.infer<typeof exerciseSchema>;
 
 interface ExerciseFormProps {
   exercise?: Exercise;
@@ -31,7 +43,8 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({
   submitLabel = 'Save',
   showDeleteButton = true
 }) => {
-  const form = useForm<Partial<Exercise>>({
+  const form = useForm<ExerciseFormValues>({
+    resolver: zodResolver(exerciseSchema),
     defaultValues: {
       name: exercise?.name || '',
       description: exercise?.description || '',
@@ -43,6 +56,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (exercise) {
@@ -67,20 +81,20 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({
     }
   };
 
-  const handleFormSubmit = async (data: Partial<Exercise>) => {
-    if (!data.name || !data.category) {
-      toast.error('Exercise name and category are required');
-      return;
-    }
-    
+  const handleFormSubmit = async (data: ExerciseFormValues) => {
+    setSubmitError(undefined);
     setIsSubmitting(true);
+    
     try {
       const success = await onSubmit(data, uploadedImage);
       if (success) {
         // Form will be closed by parent component on success
+      } else {
+        setSubmitError("Failed to save exercise. Please try again.");
       }
     } catch (error) {
       console.error("Error submitting exercise form:", error);
+      setSubmitError(error instanceof Error ? error.message : "Unknown error occurred");
       toast.error("Failed to save exercise");
     } finally {
       setIsSubmitting(false);

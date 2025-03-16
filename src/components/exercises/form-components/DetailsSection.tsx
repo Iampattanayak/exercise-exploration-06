@@ -14,7 +14,7 @@ import {
 import { FormField, FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 interface DetailsSectionProps {
-  form: UseFormReturn<Partial<Exercise>>;
+  form: UseFormReturn<any>;
   categories: Category[];
 }
 
@@ -51,6 +51,7 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
             <Select 
               onValueChange={field.onChange} 
               defaultValue={field.value}
+              value={field.value || undefined}
             >
               <FormControl>
                 <SelectTrigger className="mt-1">

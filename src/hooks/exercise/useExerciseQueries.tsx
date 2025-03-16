@@ -10,15 +10,21 @@ export function useExerciseQueries() {
     data: exercises = [], 
     isLoading: exercisesLoading,
     error: exercisesError,
-    refetch: refetchExercises
+    refetch: refetchExercises,
+    failureCount: exerciseFailureCount
   } = useQuery({
     queryKey: ['exercises'],
-    queryFn: getAllExercises
+    queryFn: getAllExercises,
+    retry: 2,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true
   });
 
-  // Show error toast if exercise loading fails
-  if (exercisesError) {
-    toast.error(`Failed to load exercises: ${exercisesError.message}`);
+  // Show error toast if exercise loading fails, but only if we've had multiple failures
+  if (exercisesError && exerciseFailureCount > 1) {
+    toast.error(`Failed to load exercises: ${exercisesError.message}`, {
+      id: 'exercises-error', // Prevents duplicate toasts
+    });
     console.error('Failed to load exercises:', exercisesError);
   }
 
@@ -27,24 +33,30 @@ export function useExerciseQueries() {
     data: categories = [], 
     isLoading: categoriesLoading,
     error: categoriesError,
-    refetch: refetchCategories
+    refetch: refetchCategories,
+    failureCount: categoryFailureCount
   } = useQuery({
     queryKey: ['categories'],
-    queryFn: getAllCategories
+    queryFn: getAllCategories,
+    retry: 2,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: true
   });
 
-  // Show error toast if categories loading fails
-  if (categoriesError) {
-    toast.error(`Failed to load categories: ${categoriesError.message}`);
+  // Show error toast if categories loading fails, but only if we've had multiple failures
+  if (categoriesError && categoryFailureCount > 1) {
+    toast.error(`Failed to load categories: ${categoriesError.message}`, {
+      id: 'categories-error', // Prevents duplicate toasts
+    });
     console.error('Failed to load categories:', categoriesError);
   }
 
   // Function to reload all data
   const refreshAllData = useCallback(() => {
-    toast.info('Refreshing data...');
+    toast.info('Refreshing data...', { id: 'refresh-data' });
     Promise.all([refetchExercises(), refetchCategories()])
-      .then(() => toast.success('Data refreshed successfully'))
-      .catch((error) => toast.error(`Refresh failed: ${error.message}`));
+      .then(() => toast.success('Data refreshed successfully', { id: 'refresh-data' }))
+      .catch((error) => toast.error(`Refresh failed: ${error.message}`, { id: 'refresh-data' }));
   }, [refetchExercises, refetchCategories]);
 
   return {
