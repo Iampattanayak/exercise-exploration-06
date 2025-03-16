@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Exercise, Category } from '@/lib/types';
 import { useForm } from 'react-hook-form';
@@ -87,13 +88,13 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Details section (name, category, description) */}
-          <div className="space-y-6">
+          <div className="space-y-6 h-full flex flex-col">
             <h3 className="font-medium text-sm text-gray-500 mb-4">Exercise Details</h3>
             <DetailsSection form={form} categories={categories} />
           </div>
           
           {/* Image section */}
-          <div className="space-y-6">
+          <div className="space-y-6 h-full flex flex-col">
             <h3 className="font-medium text-sm text-gray-500 mb-4">Exercise Image</h3>
             <ImageSection 
               form={form} 

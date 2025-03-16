@@ -69,7 +69,7 @@ const EditExerciseDialog: React.FC<EditExerciseDialogProps> = ({
                 showDeleteButton={false}
               />
             </div>
-            <div className="border-t pt-4 mt-2">
+            <div className="border-t pt-4 mt-2 flex justify-center">
               <Button 
                 variant="destructive" 
                 size="default"
