@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ChevronLeft, Loader2, Save } from 'lucide-react';
 import PageContainer from '@/components/layout/PageContainer';
@@ -6,7 +5,7 @@ import PageHeader from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import WorkoutFormLoading from '@/components/workout/WorkoutFormLoading';
 import WorkoutFormContent from '@/components/workout/WorkoutFormContent';
-import { useWorkoutForm } from '@/hooks/useWorkoutForm';
+import { useWorkoutForm } from '@/hooks/workout/useWorkoutForm';
 
 const WorkoutForm = () => {
   const {
