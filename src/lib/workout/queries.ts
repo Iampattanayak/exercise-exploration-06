@@ -31,8 +31,11 @@ export const getRecentWorkouts = async (): Promise<Workout[]> => {
 
 // Get workouts scheduled for today
 export const getTodayWorkouts = async (): Promise<Workout[]> => {
-  // Get today's date in yyyy-MM-dd format
-  const today = new Date().toISOString().split('T')[0];
+  // Get today's date in yyyy-MM-dd format, properly considering local timezone
+  const today = new Date();
+  const todayString = today.toISOString().split('T')[0];
+  
+  console.log('Today date used for queries:', todayString); // Debug log
   
   // Return workouts scheduled for today
   const { data, error } = await supabase
@@ -45,7 +48,7 @@ export const getTodayWorkouts = async (): Promise<Workout[]> => {
         exercise_sets(*)
       )
     `)
-    .eq('date', today)
+    .eq('date', todayString)
     .eq('archived', false); // Filter out archived workouts
   
   if (error) {
@@ -58,8 +61,11 @@ export const getTodayWorkouts = async (): Promise<Workout[]> => {
 
 // Get upcoming workouts
 export const getUpcomingWorkouts = async (): Promise<Workout[]> => {
-  // Get today's date in yyyy-MM-dd format
-  const today = new Date().toISOString().split('T')[0];
+  // Get today's date in yyyy-MM-dd format, properly considering local timezone
+  const today = new Date();
+  const todayString = today.toISOString().split('T')[0];
+  
+  console.log('Today date used for upcoming workouts:', todayString); // Debug log
   
   // Return future workouts, sorted by date (soonest first)
   const { data, error } = await supabase
@@ -72,7 +78,7 @@ export const getUpcomingWorkouts = async (): Promise<Workout[]> => {
         exercise_sets(*)
       )
     `)
-    .gt('date', today)
+    .gt('date', todayString)
     .eq('archived', false) // Filter out archived workouts
     .order('date', { ascending: true })
     .limit(3);

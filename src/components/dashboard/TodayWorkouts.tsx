@@ -13,12 +13,17 @@ import { Link } from 'react-router-dom';
 const TodayWorkouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Format today's date consistently
   const today = format(new Date(), 'EEEE, MMMM d');
+  
+  console.log('Today component date display:', today); // Debug log
 
   const refreshWorkouts = async () => {
     try {
       setLoading(true);
       const data = await getTodayWorkouts();
+      console.log('Fetched today workouts:', data.length);
       setWorkouts(data);
     } catch (error) {
       console.error('Error fetching today workouts:', error);
