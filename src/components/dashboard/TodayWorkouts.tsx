@@ -57,7 +57,7 @@ const TodayWorkouts: React.FC = () => {
   }
 
   return (
-    <div className="mb-10">
+    <div className="mb-10 bg-slate-50 p-6 rounded-xl shadow-sm">
       <div className="flex justify-between items-center mb-4">
         <SectionHeader 
           title={`Today's Workouts`}

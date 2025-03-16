@@ -31,7 +31,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout }) => {
   );
 
   return (
-    <div className="workout-card flex flex-col">
+    <div className="workout-card flex flex-col border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
       <div className="p-5 flex-grow">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center text-sm text-muted-foreground">

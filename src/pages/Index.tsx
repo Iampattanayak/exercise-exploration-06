@@ -9,19 +9,21 @@ import { Dumbbell } from 'lucide-react';
 const Index = () => {
   return (
     <PageContainer>
-      <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center p-2 bg-blue-100 rounded-full text-primary mb-4">
-          <Dumbbell className="h-8 w-8" />
+      <div className="mb-10 text-center">
+        <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full text-primary mb-5">
+          <Dumbbell className="h-10 w-10" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome to FitTrack</h1>
-        <p className="text-lg text-muted-foreground">
+        <h1 className="text-4xl font-bold tracking-tight mb-3">Welcome to FitTrack</h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Track your workouts, monitor your progress, and achieve your fitness goals
         </p>
       </div>
 
-      <TodayWorkouts />
-      <UpcomingWorkouts />
-      <RecentWorkouts />
+      <div className="space-y-10">
+        <TodayWorkouts />
+        <UpcomingWorkouts />
+        <RecentWorkouts />
+      </div>
     </PageContainer>
   );
 };

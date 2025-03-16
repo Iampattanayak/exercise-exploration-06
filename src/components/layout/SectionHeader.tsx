@@ -11,7 +11,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ title, description, actio
   return (
     <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+        <h2 className="text-xl font-bold tracking-tight text-primary">{title}</h2>
         {description && (
           <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         )}

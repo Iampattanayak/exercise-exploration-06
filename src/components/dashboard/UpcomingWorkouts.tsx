@@ -55,7 +55,7 @@ const UpcomingWorkouts: React.FC = () => {
   }
 
   return (
-    <div className="mb-10">
+    <div className="mb-10 bg-blue-50 p-6 rounded-xl shadow-sm">
       <div className="flex justify-between items-center mb-4">
         <SectionHeader 
           title="Upcoming Workouts" 

@@ -53,7 +53,7 @@ const RecentWorkouts: React.FC = () => {
   }
 
   return (
-    <div className="mb-10">
+    <div className="mb-10 bg-gray-50 p-6 rounded-xl shadow-sm">
       <SectionHeader 
         title="Recent Workouts" 
         description="Your most recent workout sessions" 
