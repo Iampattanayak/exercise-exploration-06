@@ -23,17 +23,18 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
   categories
 }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Exercise Name *</FormLabel>
+            <FormLabel className="font-medium">Exercise Name *</FormLabel>
             <FormControl>
               <Input 
                 {...field} 
                 placeholder="e.g., Bench Press"
+                className="mt-1"
               />
             </FormControl>
             <FormMessage />
@@ -46,13 +47,13 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
         name="category"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Category *</FormLabel>
+            <FormLabel className="font-medium">Category *</FormLabel>
             <Select 
               onValueChange={field.onChange} 
               defaultValue={field.value}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
               </FormControl>
@@ -74,12 +75,13 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Description</FormLabel>
+            <FormLabel className="font-medium">Description</FormLabel>
             <FormControl>
               <Textarea 
                 {...field}
                 placeholder="Describe how to perform this exercise..."
-                rows={4}
+                rows={5}
+                className="mt-1 resize-none"
               />
             </FormControl>
             <FormMessage />

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -29,9 +29,8 @@ const ImageSection: React.FC<ImageSectionProps> = ({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-2">
-        <Label>Exercise Image</Label>
+    <div className="space-y-5">
+      <div className="space-y-3">
         <ImageUpload
           onImageChange={onImageChange}
           previewUrl={imagePreview}
@@ -41,37 +40,40 @@ const ImageSection: React.FC<ImageSectionProps> = ({
           maxWidth={1500}
           maxHeight={1500}
           aspectRatio={1}
-          helpText="Square images work best (1:1 ratio). Non-square images will be auto-cropped from the center."
+          helpText={imagePreview ? "Current image shown. Click to replace." : "Square images work best (1:1 ratio). Non-square images will be auto-cropped from the center."}
         />
       </div>
       
-      <FormField
-        control={form.control}
-        name="imageUrl"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Or use an image URL</FormLabel>
-            <FormControl>
-              <Input 
-                {...field}
-                onChange={(e) => {
-                  field.onChange(e);
-                  handleImageUrlChange(e);
-                }}
-                placeholder="https://example.com/image.jpg"
-                disabled={!!imagePreview && !field.value}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+      <div className="pt-2 border-t border-gray-100">
+        <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm">Or use an image URL</FormLabel>
+              <FormControl>
+                <Input 
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleImageUrlChange(e);
+                  }}
+                  placeholder="https://example.com/image.jpg"
+                  disabled={!!imagePreview && !field.value}
+                  className="mt-1"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        {(!imagePreview && !form.getValues('imageUrl')) && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Either upload an image or provide a URL
+          </p>
         )}
-      />
-      
-      {(!imagePreview && !form.getValues('imageUrl')) && (
-        <p className="text-xs text-muted-foreground">
-          Either upload an image or provide a URL
-        </p>
-      )}
+      </div>
     </div>
   );
 };

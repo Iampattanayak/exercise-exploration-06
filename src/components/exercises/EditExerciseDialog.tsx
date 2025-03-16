@@ -6,7 +6,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription
+  DialogDescription,
+  DialogFooter
 } from '@/components/ui/dialog';
 import ExerciseForm from './ExerciseForm';
 import { Button } from '@/components/ui/button';
@@ -50,32 +51,35 @@ const EditExerciseDialog: React.FC<EditExerciseDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Edit Exercise</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="pb-4 border-b">
+          <DialogTitle className="text-xl">Edit Exercise</DialogTitle>
+          <DialogDescription className="mt-1 text-sm">
             Update the details of this exercise
           </DialogDescription>
         </DialogHeader>
         {exercise && (
           <>
-            <ExerciseForm 
-              exercise={exercise}
-              categories={categories}
-              onSubmit={handleSubmit}
-              onCancel={handleCancel}
-              submitLabel="Save Changes"
-            />
-            <div className="flex justify-end mt-4">
+            <div className="py-2">
+              <ExerciseForm 
+                exercise={exercise}
+                categories={categories}
+                onSubmit={handleSubmit}
+                onCancel={handleCancel}
+                submitLabel="Save Changes"
+              />
+            </div>
+            <DialogFooter className="flex justify-between items-center border-t pt-4 mt-2">
               <Button 
                 variant="destructive" 
                 size="sm"
                 onClick={handleDelete}
+                className="mr-auto"
               >
                 <Trash className="h-4 w-4 mr-2" />
                 Delete Exercise
               </Button>
-            </div>
+            </DialogFooter>
           </>
         )}
       </DialogContent>

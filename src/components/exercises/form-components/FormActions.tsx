@@ -14,7 +14,7 @@ const FormActions: React.FC<FormActionsProps> = ({
   submitLabel
 }) => {
   return (
-    <div className="flex justify-end gap-2">
+    <div className="flex justify-end gap-3 pt-4 border-t mt-6">
       <Button 
         type="button" 
         variant="outline" 
@@ -26,6 +26,7 @@ const FormActions: React.FC<FormActionsProps> = ({
       <Button 
         type="submit" 
         disabled={isSubmitting}
+        className="px-6"
       >
         {isSubmitting ? 'Saving...' : submitLabel}
       </Button>

@@ -83,16 +83,22 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-8">
           {/* Details section (name, category, description) */}
-          <DetailsSection form={form} categories={categories} />
+          <div className="space-y-6">
+            <h3 className="font-medium text-sm text-gray-500">Exercise Details</h3>
+            <DetailsSection form={form} categories={categories} />
+          </div>
           
           {/* Image section */}
-          <ImageSection 
-            form={form} 
-            onImageChange={handleImageChange} 
-            imagePreview={imagePreview} 
-          />
+          <div className="space-y-6">
+            <h3 className="font-medium text-sm text-gray-500">Exercise Image</h3>
+            <ImageSection 
+              form={form} 
+              onImageChange={handleImageChange} 
+              imagePreview={imagePreview} 
+            />
+          </div>
         </div>
         
         {/* Form actions (cancel/submit buttons) */}
