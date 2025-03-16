@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import { toast } from 'sonner';
 
-// Import our new component sections
+// Import our component sections
 import DetailsSection from './form-components/DetailsSection';
 import ImageSection from './form-components/ImageSection';
 import FormActions from './form-components/FormActions';

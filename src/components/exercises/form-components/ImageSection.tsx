@@ -59,7 +59,7 @@ const ImageSection: React.FC<ImageSectionProps> = ({
                   handleImageUrlChange(e);
                 }}
                 placeholder="https://example.com/image.jpg"
-                disabled={!!form.getValues('uploadedImage')}
+                disabled={!!imagePreview && !field.value}
               />
             </FormControl>
             <FormMessage />
