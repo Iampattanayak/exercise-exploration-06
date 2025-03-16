@@ -21,6 +21,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/use-toast';
 import Navbar from '@/components/layout/Navbar';
 import { getAllExercises } from '@/lib/exercises';
+import { getAllCategories } from '@/lib/data';
 
 const WorkoutForm = () => {
   const { id } = useParams();
@@ -46,18 +47,29 @@ const WorkoutForm = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [categoryMap, setCategoryMap] = useState<Record<string, string>>({});
   
   useEffect(() => {
-    const fetchExercises = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
-        const exercisesData = await getAllExercises();
+        const [exercisesData, categoriesData] = await Promise.all([
+          getAllExercises(),
+          getAllCategories()
+        ]);
+        
+        const catMap: Record<string, string> = {};
+        categoriesData.forEach(category => {
+          catMap[category.id] = category.name;
+        });
+        
+        setCategoryMap(catMap);
         setAvailableExercises(exercisesData);
       } catch (error) {
-        console.error('Error fetching exercises:', error);
+        console.error('Error fetching data:', error);
         toast({
           title: "Error",
-          description: "Failed to load exercises. Please try again.",
+          description: "Failed to load exercises and categories. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -65,7 +77,7 @@ const WorkoutForm = () => {
       }
     };
     
-    fetchExercises();
+    fetchData();
   }, []);
   
   useEffect(() => {
@@ -101,16 +113,20 @@ const WorkoutForm = () => {
   }, [selectedDate]);
   
   useEffect(() => {
-    if (searchTerm && availableExercises.length > 0) {
-      const filtered = availableExercises.filter(exercise => 
-        exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setAvailableExercises(filtered);
-    } else if (searchTerm === '') {
-      getAllExercises().then(exercises => {
+    const fetchFilteredExercises = async () => {
+      if (searchTerm) {
+        const allExercises = await getAllExercises();
+        const filtered = allExercises.filter(exercise => 
+          exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setAvailableExercises(filtered);
+      } else {
+        const exercises = await getAllExercises();
         setAvailableExercises(exercises);
-      });
-    }
+      }
+    };
+    
+    fetchFilteredExercises();
   }, [searchTerm]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -290,6 +306,11 @@ const WorkoutForm = () => {
     }
   };
   
+  const getCategoryName = (categoryId: string | undefined): string => {
+    if (!categoryId) return "Uncategorized";
+    return categoryMap[categoryId] || "Uncategorized";
+  };
+  
   return (
     <>
       <Navbar />
@@ -411,7 +432,7 @@ const WorkoutForm = () => {
                           />
                           <div>
                             <h4 className="font-medium">{exerciseItem.exercise.name}</h4>
-                            <p className="text-xs text-muted-foreground">{exerciseItem.exercise.category}</p>
+                            <p className="text-xs text-muted-foreground">{getCategoryName(exerciseItem.exercise.category)}</p>
                           </div>
                         </div>
                         <Button 
@@ -527,7 +548,7 @@ const WorkoutForm = () => {
                               />
                               <div className="flex-1">
                                 <p className="font-medium">{exercise.name}</p>
-                                <p className="text-xs text-muted-foreground capitalize">{exercise.category}</p>
+                                <p className="text-xs text-muted-foreground capitalize">{getCategoryName(exercise.category)}</p>
                               </div>
                             </div>
                           ))}
