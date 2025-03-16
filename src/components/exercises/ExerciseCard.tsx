@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Exercise } from '@/lib/types';
 import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
@@ -50,10 +49,10 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     <ContextMenu>
       <ContextMenuTrigger>
         <div 
-          className="rounded-lg overflow-hidden bg-white border shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] cursor-pointer relative group"
+          className="rounded-lg overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] cursor-pointer relative group h-[280px] flex flex-col"
           onClick={onClick}
         >
-          <AspectRatio ratio={1 / 1} className="bg-muted/30">
+          <AspectRatio ratio={4 / 3} className="bg-muted/30">
             <img 
               src={exercise.imageUrl} 
               alt={exercise.name}
@@ -84,18 +83,15 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
               )}
             </div>
           </AspectRatio>
-          <div className="p-4">
-            <div className="flex items-start justify-between mb-2">
-              <h3 className="font-medium">{exercise.name}</h3>
+          <div className="p-4 flex-grow flex flex-col justify-between">
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium text-lg truncate pr-2">{exercise.name}</h3>
               {category && (
-                <span className={cn('text-xs px-2 py-1 rounded-full', category.color)}>
+                <span className={cn('text-xs px-2 py-1 rounded-full whitespace-nowrap', category.color)}>
                   {category.name}
                 </span>
               )}
             </div>
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {exercise.description}
-            </p>
           </div>
         </div>
       </ContextMenuTrigger>

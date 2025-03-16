@@ -70,7 +70,7 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({
         {Array.from({ length: 8 }).map((_, index) => (
           <div 
             key={index} 
-            className="bg-muted/30 rounded-lg h-60 animate-pulse"
+            className="bg-muted/30 rounded-lg h-[280px] animate-pulse"
           />
         ))}
       </div>

@@ -135,7 +135,7 @@ const ExerciseLibrary: React.FC = () => {
               onOpenCurated={handleOpenCuratedExercises}
             />
 
-            <div className="flex flex-col space-y-6">
+            <div className="flex flex-col space-y-6 pb-10">
               <FilterSection 
                 searchTerm={searchTerm}
                 selectedCategory={selectedCategory}
@@ -145,21 +145,23 @@ const ExerciseLibrary: React.FC = () => {
                 onManageCategories={toggleCategoryManager}
               />
 
-              <ExerciseGrid 
-                exercises={filteredExercises} 
-                categories={categories}
-                isLoading={exercisesLoading || categoriesLoading}
-                onEdit={handleOpenEditExercise}
-                onDelete={handleOpenDeleteExercise}
-              />
-              
-              {filteredExercises.length === 0 && !exercisesLoading && (
-                <EmptyExerciseState 
-                  hasExercises={exercises.length > 0}
-                  onAddExercise={handleOpenAddExercise}
-                  onClearFilters={handleClearFilters}
+              <div className="bg-slate-50 p-6 rounded-xl shadow-sm">
+                <ExerciseGrid 
+                  exercises={filteredExercises} 
+                  categories={categories}
+                  isLoading={exercisesLoading || categoriesLoading}
+                  onEdit={handleOpenEditExercise}
+                  onDelete={handleOpenDeleteExercise}
                 />
-              )}
+                
+                {filteredExercises.length === 0 && !exercisesLoading && (
+                  <EmptyExerciseState 
+                    hasExercises={exercises.length > 0}
+                    onAddExercise={handleOpenAddExercise}
+                    onClearFilters={handleClearFilters}
+                  />
+                )}
+              </div>
             </div>
           </>
         ) : (
