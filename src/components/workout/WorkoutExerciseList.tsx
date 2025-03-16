@@ -1,10 +1,22 @@
 
 import React from 'react';
-import { Workout, WorkoutExercise, ExerciseSet } from '@/lib/types';
+import { WorkoutExercise, ExerciseSet } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Trash2, Plus } from 'lucide-react';
-import ExerciseSetForm from './ExerciseSetForm';
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import SortableExerciseItem from './SortableExerciseItem';
 
 interface WorkoutExerciseListProps {
   exercises: WorkoutExercise[];
@@ -18,6 +30,8 @@ interface WorkoutExerciseListProps {
     field: keyof ExerciseSet,
     value: any
   ) => void;
+  onReorderExercises: (activeId: string, overId: string) => void;
+  onMoveExercise: (exerciseIndex: number, direction: 'up' | 'down') => void;
 }
 
 const WorkoutExerciseList: React.FC<WorkoutExerciseListProps> = ({
@@ -26,12 +40,28 @@ const WorkoutExerciseList: React.FC<WorkoutExerciseListProps> = ({
   onRemoveExercise,
   onAddSet,
   onRemoveSet,
-  onSetChange
+  onSetChange,
+  onReorderExercises,
+  onMoveExercise
 }) => {
-  const getCategoryName = (categoryId: string | undefined): string => {
-    if (!categoryId) return "Uncategorized";
-    return categoryMap[categoryId] || "Uncategorized";
-  };
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      onReorderExercises(active.id as string, over.id as string);
+    }
+  }
 
   if (exercises.length === 0) {
     return (
@@ -44,61 +74,34 @@ const WorkoutExerciseList: React.FC<WorkoutExerciseListProps> = ({
   }
 
   return (
-    <div className="space-y-6 mb-6">
-      {exercises.map((exerciseItem, exerciseIndex) => (
-        <Card key={exerciseItem.id} className="overflow-hidden">
-          <div className="bg-muted/30 p-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <div 
-                className="h-10 w-10 rounded bg-cover bg-center mr-3" 
-                style={{ backgroundImage: `url(${exerciseItem.exercise.imageUrl})` }}
-              />
-              <div>
-                <h4 className="font-medium">{exerciseItem.exercise.name}</h4>
-                <p className="text-xs text-muted-foreground">{getCategoryName(exerciseItem.exercise.category)}</p>
-              </div>
-            </div>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => onRemoveExercise(exerciseItem.exerciseId)}
-            >
-              <Trash2 className="h-4 w-4 text-muted-foreground" />
-            </Button>
-          </div>
-          
-          <CardContent className="p-4">
-            <div className="grid grid-cols-12 gap-2 mb-2 text-sm font-medium">
-              <div className="col-span-1">Set</div>
-              <div className="col-span-5">Weight</div>
-              <div className="col-span-5">Reps</div>
-              <div className="col-span-1"></div>
-            </div>
-            
-            {exerciseItem.sets.map((set, setIndex) => (
-              <ExerciseSetForm
-                key={set.id}
-                set={set}
-                onWeightChange={(value) => onSetChange(exerciseIndex, setIndex, 'weight', value)}
-                onRepsChange={(value) => onSetChange(exerciseIndex, setIndex, 'targetReps', value)}
-                onRemove={() => onRemoveSet(exerciseIndex, setIndex)}
-                canRemove={exerciseItem.sets.length > 1}
-              />
-            ))}
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="mt-2 w-full"
-              onClick={() => onAddSet(exerciseIndex)}
-            >
-              <Plus className="h-3 w-3 mr-1" />
-              Add Set
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext
+        items={exercises.map(ex => ex.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div>
+          {exercises.map((exerciseItem, exerciseIndex) => (
+            <SortableExerciseItem
+              key={exerciseItem.id}
+              exerciseItem={exerciseItem}
+              exerciseIndex={exerciseIndex}
+              categoryMap={categoryMap}
+              onRemoveExercise={onRemoveExercise}
+              onAddSet={onAddSet}
+              onRemoveSet={onRemoveSet}
+              onSetChange={onSetChange}
+              onMoveExercise={onMoveExercise}
+              isFirst={exerciseIndex === 0}
+              isLast={exerciseIndex === exercises.length - 1}
+            />
+          ))}
+        </div>
+      </SortableContext>
+    </DndContext>
   );
 };
 

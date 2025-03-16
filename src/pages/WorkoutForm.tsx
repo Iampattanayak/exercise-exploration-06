@@ -42,6 +42,7 @@ const WorkoutForm = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [categoryMap, setCategoryMap] = useState<Record<string, string>>({});
+  const [categories, setCategories] = useState<Category[]>([]);
   
   useEffect(() => {
     const fetchData = async () => {
@@ -58,6 +59,7 @@ const WorkoutForm = () => {
         });
         
         setCategoryMap(catMap);
+        setCategories(categoriesData);
         setAvailableExercises(exercisesData);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -126,6 +128,60 @@ const WorkoutForm = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setWorkout(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleReorderExercises = (activeId: string, overId: string) => {
+    setWorkout(prev => {
+      if (!prev.exercises) return prev;
+
+      const oldExercises = [...prev.exercises];
+      const activeIndex = oldExercises.findIndex(ex => ex.id === activeId);
+      const overIndex = oldExercises.findIndex(ex => ex.id === overId);
+      
+      if (activeIndex === -1 || overIndex === -1) return prev;
+      
+      const reorderedExercises = [...oldExercises];
+      const [movedItem] = reorderedExercises.splice(activeIndex, 1);
+      reorderedExercises.splice(overIndex, 0, movedItem);
+      
+      const updatedExercises = reorderedExercises.map((ex, idx) => ({
+        ...ex,
+        order: idx + 1
+      }));
+      
+      return {
+        ...prev,
+        exercises: updatedExercises
+      };
+    });
+  };
+  
+  const handleMoveExercise = (exerciseIndex: number, direction: 'up' | 'down') => {
+    setWorkout(prev => {
+      if (!prev.exercises) return prev;
+      
+      const oldExercises = [...prev.exercises];
+      
+      if (direction === 'up' && exerciseIndex > 0) {
+        [oldExercises[exerciseIndex], oldExercises[exerciseIndex - 1]] = 
+        [oldExercises[exerciseIndex - 1], oldExercises[exerciseIndex]];
+      } else if (direction === 'down' && exerciseIndex < oldExercises.length - 1) {
+        [oldExercises[exerciseIndex], oldExercises[exerciseIndex + 1]] = 
+        [oldExercises[exerciseIndex + 1], oldExercises[exerciseIndex]];
+      } else {
+        return prev;
+      }
+      
+      const updatedExercises = oldExercises.map((ex, idx) => ({
+        ...ex,
+        order: idx + 1
+      }));
+      
+      return {
+        ...prev,
+        exercises: updatedExercises
+      };
+    });
   };
   
   const handleAddExercise = (exercise: Exercise) => {
@@ -338,7 +394,6 @@ const WorkoutForm = () => {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            {/* Basic workout info form */}
             <WorkoutBasicInfoForm
               name={workout.name || ''}
               description={workout.description || ''}
@@ -350,7 +405,6 @@ const WorkoutForm = () => {
             
             <h3 className="font-medium text-lg mb-4">Exercises</h3>
             
-            {/* Exercise list */}
             <WorkoutExerciseList
               exercises={workout.exercises || []}
               categoryMap={categoryMap}
@@ -358,15 +412,17 @@ const WorkoutForm = () => {
               onAddSet={handleAddSet}
               onRemoveSet={handleRemoveSet}
               onSetChange={handleSetChange}
+              onReorderExercises={handleReorderExercises}
+              onMoveExercise={handleMoveExercise}
             />
           </div>
           
           <div>
-            {/* Exercise search */}
             <ExerciseSearch
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
               availableExercises={availableExercises}
+              categories={categories}
               isLoading={isLoading}
               onExerciseAdd={handleAddExercise}
               categoryMap={categoryMap}
