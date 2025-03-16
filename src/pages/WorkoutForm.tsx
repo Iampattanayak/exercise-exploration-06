@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { format, parse } from 'date-fns';
 import { getWorkoutById, addWorkout, updateWorkout, generateWorkoutId } from '@/lib/workouts';
-import { Exercise, WorkoutExercise, ExerciseSet, Workout } from '@/lib/types';
+import { Exercise, WorkoutExercise, ExerciseSet, Workout, Category } from '@/lib/types';
 import PageContainer from '@/components/layout/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';

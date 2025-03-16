@@ -2,18 +2,20 @@
 import React from 'react';
 import PageHeader from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, BookOpen, Plus } from 'lucide-react';
+import { RefreshCw, BookOpen, Plus, Database } from 'lucide-react';
 
 interface ExerciseLibraryHeaderProps {
   onRefresh: () => void;
   onAddExercise: () => void;
   onOpenCurated: () => void;
+  onOpenBackup?: () => void;
 }
 
 const ExerciseLibraryHeader: React.FC<ExerciseLibraryHeaderProps> = ({
   onRefresh,
   onAddExercise,
   onOpenCurated,
+  onOpenBackup,
 }) => {
   return (
     <PageHeader
@@ -29,6 +31,12 @@ const ExerciseLibraryHeader: React.FC<ExerciseLibraryHeaderProps> = ({
             <BookOpen className="h-4 w-4 mr-2" />
             Add Curated Exercises
           </Button>
+          {onOpenBackup && (
+            <Button variant="outline" size="sm" onClick={onOpenBackup}>
+              <Database className="h-4 w-4 mr-2" />
+              Backup & Restore
+            </Button>
+          )}
           <Button onClick={onAddExercise}>
             <Plus className="h-4 w-4 mr-2" />
             Add Exercise
