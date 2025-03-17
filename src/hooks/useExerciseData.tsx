@@ -3,6 +3,7 @@ import { useExerciseQueries } from './exercise/useExerciseQueries';
 import { useExerciseFilters } from './exercise/useExerciseFilters';
 import { useExerciseMutations } from './exercise/useExerciseMutations';
 import { Exercise } from '@/lib/types';
+import { useEffect } from 'react';
 
 export function useExerciseData() {
   // Get query-related data and operations
@@ -15,6 +16,14 @@ export function useExerciseData() {
     categoriesError,
     refreshAllData
   } = useExerciseQueries();
+
+  // Log data for debugging purposes
+  useEffect(() => {
+    console.log("useExerciseData loaded:", {
+      exercisesCount: exercises?.length,
+      categoriesCount: categories?.length
+    });
+  }, [exercises?.length, categories?.length]);
 
   // Get filter-related data and operations
   const {

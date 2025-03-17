@@ -31,7 +31,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({
       size="sm"
       onClick={toggleSort}
       className={cn(
-        "rounded-full flex items-center gap-1",
+        "rounded-full flex items-center gap-1 whitespace-nowrap min-w-[80px] justify-center",
         sortOrder && "border-indigo-300 bg-indigo-50"
       )}
     >
