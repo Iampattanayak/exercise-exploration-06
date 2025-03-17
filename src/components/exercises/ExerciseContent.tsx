@@ -4,6 +4,7 @@ import { Exercise, Category } from '@/lib/types';
 import FilterSection from './FilterSection';
 import ExerciseGrid from './ExerciseGrid';
 import EmptyExerciseState from './EmptyExerciseState';
+import { Card } from '@/components/ui/card';
 
 interface ExerciseContentProps {
   exercises: Exercise[];
@@ -37,7 +38,7 @@ const ExerciseContent: React.FC<ExerciseContentProps> = ({
   onClearFilters
 }) => {
   return (
-    <div className="flex flex-col space-y-6 pb-10">
+    <div className="flex flex-col space-y-6 pb-10 animate-in fade-in duration-500">
       <FilterSection 
         searchTerm={searchTerm}
         selectedCategory={selectedCategory}
@@ -47,7 +48,7 @@ const ExerciseContent: React.FC<ExerciseContentProps> = ({
         onManageCategories={onManageCategories}
       />
 
-      <div className="bg-slate-50 p-6 rounded-xl shadow-sm">
+      <Card className="bg-gradient-to-br from-white/80 via-white/60 to-indigo-50/30 backdrop-blur-sm border border-indigo-100/50 p-6 pt-7 rounded-xl shadow-sm overflow-hidden">
         <ExerciseGrid 
           exercises={filteredExercises} 
           categories={categories}
@@ -63,7 +64,7 @@ const ExerciseContent: React.FC<ExerciseContentProps> = ({
             onClearFilters={onClearFilters}
           />
         )}
-      </div>
+      </Card>
     </div>
   );
 };

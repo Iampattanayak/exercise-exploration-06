@@ -6,7 +6,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from '@/components/ui/context-menu';
-import { Edit, Trash, ImageOff, Sparkles } from 'lucide-react';
+import { Edit, Trash, ImageOff, Sparkles, Flame, Dumbbell } from 'lucide-react';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -23,6 +23,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
 }) => {
   const [category, setCategory] = useState(getCategoryByIdSync(exercise.category));
   const [imageError, setImageError] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   
   useEffect(() => {
     const loadCategory = async () => {
@@ -55,30 +56,56 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     <ContextMenu>
       <ContextMenuTrigger>
         <div 
-          className="rounded-xl overflow-hidden bg-white border border-indigo-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.03] cursor-pointer relative group h-[280px] flex flex-col card-3d-effect"
+          className="rounded-xl overflow-hidden border border-indigo-100 shadow-sm hover:shadow-xl transition-all duration-500 hover:scale-[1.03] cursor-pointer relative group h-[280px] flex flex-col card-3d-effect"
           onClick={onClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            background: isHovered 
+              ? 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgba(238, 242, 255, 0.8))' 
+              : 'linear-gradient(to bottom right, rgba(255, 255, 255, 1), rgba(248, 250, 255, 0.9))'
+          }}
         >
-          <AspectRatio ratio={4 / 3} className="bg-gray-50">
+          <AspectRatio ratio={4 / 3} className="bg-gradient-to-br from-indigo-50/80 to-purple-50/80 relative overflow-hidden">
             {!imageError && exercise.imageUrl ? (
               <img 
                 src={exercise.imageUrl} 
                 alt={exercise.name}
-                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                className="object-cover w-full h-full transition-all duration-500 group-hover:scale-110"
                 onError={handleImageError}
               />
             ) : (
-              <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-indigo-50 to-purple-50">
-                <ImageOff className="h-12 w-12 text-indigo-300 opacity-50" />
+              <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-indigo-50 to-purple-50/80">
+                <Dumbbell className="h-12 w-12 text-indigo-300 opacity-60" />
               </div>
             )}
             
-            {/* Action buttons that appear on hover */}
-            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* Glow overlay for hover */}
+            <div className={cn(
+              "absolute inset-0 bg-gradient-to-tr from-indigo-600/0 via-purple-500/0 to-pink-500/0 opacity-0 transition-opacity duration-500",
+              isHovered && "opacity-30"
+            )} />
+            
+            {/* Category badge repositioned for better visibility */}
+            {category && (
+              <div className="absolute top-3 right-3 z-10">
+                <span className={cn(
+                  'text-xs px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm backdrop-blur-sm',
+                  category.color,
+                  "border border-white/20"
+                )}>
+                  {category.name}
+                </span>
+              </div>
+            )}
+            
+            {/* Action buttons that appear on hover with improved styling */}
+            <div className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100">
               {onEdit && (
                 <Button 
                   variant="secondary" 
                   size="icon" 
-                  className="h-8 w-8 bg-white/90 hover:bg-white rounded-full shadow-md" 
+                  className="h-8 w-8 bg-white/90 hover:bg-white rounded-full shadow-md backdrop-blur-sm" 
                   onClick={handleEdit}
                 >
                   <Edit className="h-4 w-4 text-indigo-600" />
@@ -88,7 +115,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 <Button 
                   variant="destructive" 
                   size="icon" 
-                  className="h-8 w-8 bg-white/90 hover:bg-red-500 rounded-full shadow-md" 
+                  className="h-8 w-8 bg-white/90 hover:bg-red-500 rounded-full shadow-md backdrop-blur-sm" 
                   onClick={handleDelete}
                 >
                   <Trash className="h-4 w-4" />
@@ -96,17 +123,18 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
               )}
             </div>
           </AspectRatio>
-          <div className="p-4 flex-grow flex flex-col justify-between bg-gradient-to-b from-white to-indigo-50/30">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-lg truncate pr-2 flex items-center">
+          
+          {/* Redesigned content area with better centering and effects */}
+          <div className="p-5 flex-grow flex flex-col justify-between relative overflow-hidden">
+            {/* Decorative icon */}
+            <Flame className="absolute right-3 bottom-3 h-12 w-12 text-purple-100 rotate-12 opacity-50" />
+            
+            {/* Title with improved styling and icon */}
+            <div className="flex items-center justify-between relative z-10">
+              <h3 className="font-semibold text-lg truncate pr-2 text-gradient group-hover:scale-[1.02] transition-all duration-300 flex items-center gap-1.5">
                 {exercise.name}
-                <Sparkles className="h-3 w-3 ml-1 text-indigo-400" />
+                <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
               </h3>
-              {category && (
-                <span className={cn('text-xs px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm', category.color)}>
-                  {category.name}
-                </span>
-              )}
             </div>
           </div>
         </div>
