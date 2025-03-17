@@ -23,8 +23,10 @@ const ExerciseLibrary: React.FC = () => {
     categoriesError,
     searchTerm,
     selectedCategory,
+    sortOrder,
     handleSearchChange,
     handleCategoryChange,
+    handleSortChange,
     handleCreateExercise,
     handleUpdateExercise,
     handleDeleteExercise,
@@ -71,6 +73,7 @@ const ExerciseLibrary: React.FC = () => {
   const handleClearFilters = () => {
     handleSearchChange('');
     handleCategoryChange('');
+    handleSortChange(null);
   };
 
   // Display error states if present
@@ -104,8 +107,10 @@ const ExerciseLibrary: React.FC = () => {
               isLoading={exercisesLoading || categoriesLoading}
               searchTerm={searchTerm}
               selectedCategory={selectedCategory}
+              sortOrder={sortOrder}
               onSearchChange={handleSearchChange}
               onCategoryChange={handleCategoryChange}
+              onSortChange={handleSortChange}
               onManageCategories={toggleCategoryManager}
               onOpenAddExercise={handleOpenAddExercise}
               onEditExercise={handleOpenEditExercise}

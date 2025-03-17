@@ -20,9 +20,11 @@ export function useExerciseData() {
   const {
     searchTerm,
     selectedCategory,
+    sortOrder,
     filteredExercises,
     handleSearchChange,
-    handleCategoryChange
+    handleCategoryChange,
+    handleSortChange
   } = useExerciseFilters(exercises as Exercise[]);
 
   // Get mutation-related operations
@@ -50,8 +52,10 @@ export function useExerciseData() {
     // Filter states and handlers
     searchTerm,
     selectedCategory,
+    sortOrder,
     handleSearchChange,
     handleCategoryChange,
+    handleSortChange,
     
     // CRUD operations
     handleCreateExercise,
