@@ -81,11 +81,11 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
               isHovered && "bg-black/20"
             )} />
 
-            {/* Category badge positioned on top-right of image */}
+            {/* Category badge positioned at bottom of image */}
             {category && (
-              <div className="absolute top-3 right-3 z-10">
+              <div className="absolute bottom-3 left-3 z-10">
                 <span className={cn(
-                  'text-xs font-semibold px-3 py-1 rounded-full',
+                  'text-xs font-medium px-3 py-1.5 rounded-md shadow-sm',
                   getCategoryBadgeStyle(category.name.toLowerCase())
                 )}>
                   {category.name}
@@ -146,17 +146,18 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
 // Function to get specialized badge styles based on muscle group/category
 const getCategoryBadgeStyle = (category: string): string => {
   const categoryMap: Record<string, string> = {
-    'back': 'bg-blue-500 text-white',
-    'arms': 'bg-purple-500 text-white',
-    'chest': 'bg-red-500 text-white',
-    'shoulders': 'bg-orange-500 text-white',
-    'legs': 'bg-emerald-500 text-white',
-    'core': 'bg-yellow-500 text-black',
-    'glutes': 'bg-pink-500 text-white',
-    'cardio': 'bg-indigo-500 text-white',
-    'strength': 'bg-slate-700 text-white',
-    'flexibility': 'bg-cyan-500 text-white',
-    'balance': 'bg-amber-500 text-white',
+    // Modern themed palette - all colors have matching text contrast
+    'back': 'bg-indigo-100 text-indigo-800',
+    'arms': 'bg-purple-100 text-purple-800', 
+    'chest': 'bg-blue-100 text-blue-800',
+    'shoulders': 'bg-teal-100 text-teal-800',
+    'legs': 'bg-emerald-100 text-emerald-800',
+    'core': 'bg-amber-100 text-amber-800',
+    'glutes': 'bg-rose-100 text-rose-800',
+    'cardio': 'bg-sky-100 text-sky-800',
+    'strength': 'bg-slate-100 text-slate-800',
+    'flexibility': 'bg-cyan-100 text-cyan-800',
+    'balance': 'bg-orange-100 text-orange-800',
   };
 
   // Check if the category name contains any of the keys as a substring
@@ -167,7 +168,7 @@ const getCategoryBadgeStyle = (category: string): string => {
   }
 
   // Default badge style
-  return 'bg-gray-600 text-white';
+  return 'bg-gray-100 text-gray-800';
 };
 
 export default ExerciseCard;

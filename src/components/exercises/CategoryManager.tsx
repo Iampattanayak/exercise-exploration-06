@@ -103,9 +103,9 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
 
       <div className="space-y-2">
         {categories.map((category) => (
-          <div key={category.id} className="flex items-center justify-between p-3 rounded-lg border">
+          <div key={category.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors">
             <div className="flex items-center space-x-3">
-              <div className={cn('px-3 py-1 rounded-full text-sm', category.color)}>
+              <div className={cn('px-3 py-1.5 rounded-md text-sm shadow-sm', category.color)}>
                 {category.name}
               </div>
             </div>
