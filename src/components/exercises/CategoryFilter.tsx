@@ -36,9 +36,8 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
             onClick={() => onCategoryChange(category.id)}
             className={cn(
               "rounded-full",
-              selectedCategory === category.id ? category.color : ""
+              selectedCategory === category.id ? category.color : "hover:bg-gray-100"
             )}
-            style={selectedCategory !== category.id ? {} : undefined}
           >
             {category.name}
           </Button>
