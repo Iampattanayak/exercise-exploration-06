@@ -4,6 +4,7 @@ import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useCategoryColors } from '@/hooks/useCategoryColors';
 
 interface CategoryListProps {
   categories: Category[];
@@ -16,6 +17,9 @@ const CategoryList: React.FC<CategoryListProps> = ({
   onEditCategory,
   onDeleteCategory,
 }) => {
+  // Use the centralized hook for consistent category colors
+  const { getCategoryColor } = useCategoryColors();
+
   if (categories.length === 0) {
     return (
       <div className="text-center py-8 border rounded-lg">
@@ -27,8 +31,8 @@ const CategoryList: React.FC<CategoryListProps> = ({
   return (
     <div className="space-y-2">
       {categories.map((category) => {
-        // Extract color classes directly
-        const colorClasses = category.color || 'bg-[#8B5CF6] text-white';
+        // Get color from centralized hook to ensure consistency
+        const colorClasses = getCategoryColor(category.id);
         
         return (
           <div key={category.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors">

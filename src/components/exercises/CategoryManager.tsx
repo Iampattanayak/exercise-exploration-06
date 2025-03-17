@@ -4,9 +4,9 @@ import { Category } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import CategoryForm from './categories/CategoryForm';
-import { supabase } from '@/integrations/supabase/client';
 import CategoryHeader from './categories/CategoryHeader';
 import CategoryList from './categories/CategoryList';
+import { useCategoryColors } from '@/hooks/useCategoryColors';
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -18,7 +18,7 @@ interface CategoryManagerProps {
 }
 
 const CategoryManager: React.FC<CategoryManagerProps> = ({
-  categories,
+  categories: propCategories,
   exercises = [],
   onBack,
   onCategoryAdd,
@@ -31,39 +31,17 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
     name: '',
     color: 'bg-[#8B5CF6] text-white',
   });
-  const [localCategories, setLocalCategories] = useState<Category[]>(categories);
   
-  // Fetch fresh categories directly from database to ensure we have the latest colors
-  useEffect(() => {
-    const fetchFreshCategories = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('categories')
-          .select('*')
-          .order('name');
-          
-        if (!error && data) {
-          // Ensure all categories have valid colors
-          const updatedCategories = data.map(cat => ({
-            ...cat,
-            color: cat.color || 'bg-[#8B5CF6] text-white'
-          }));
-          setLocalCategories(updatedCategories);
-        }
-      } catch (err) {
-        console.error('Error fetching fresh categories:', err);
-      }
-    };
-    
-    fetchFreshCategories();
-  }, []);
+  // Use the centralized hook for consistent category colors
+  const { categories, refreshCategories } = useCategoryColors();
   
-  // Update local state when props change
+  // Refresh categories on component mount
   useEffect(() => {
-    if (categories.length > 0) {
-      setLocalCategories(categories);
-    }
-  }, [categories]);
+    refreshCategories();
+  }, [refreshCategories]);
+  
+  // Use categories from the hook if available, otherwise fall back to prop categories
+  const displayCategories = categories.length > 0 ? categories : propCategories;
 
   const handleOpenDialog = (category?: Category) => {
     if (category) {
@@ -97,11 +75,6 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       };
       
       await onCategoryUpdate?.(updatedCategory);
-      
-      // Update local state immediately
-      setLocalCategories(prev => 
-        prev.map(cat => cat.id === updatedCategory.id ? updatedCategory : cat)
-      );
     } else {
       // Add new category
       const category = {
@@ -110,21 +83,22 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       };
       
       await onCategoryAdd?.(category);
-      
-      // We'll let the useEffect refresh categories from the server
     }
     
     setFormDialogOpen(false);
     setEditingCategory(null);
     setNewCategory({ name: '', color: 'bg-[#8B5CF6] text-white' });
+    
+    // Force refresh of category data
+    refreshCategories();
   };
 
   const handleDeleteCategory = async (categoryId: string) => {
     const confirmed = window.confirm('Are you sure you want to delete this category? This will affect all exercises using this category.');
     if (confirmed) {
       await onCategoryDelete?.(categoryId);
-      // Update local state immediately
-      setLocalCategories(prev => prev.filter(cat => cat.id !== categoryId));
+      // Force refresh of category data
+      refreshCategories();
     }
   };
 
@@ -136,7 +110,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       />
 
       <CategoryList 
-        categories={localCategories}
+        categories={displayCategories}
         onEditCategory={(category) => handleOpenDialog(category)}
         onDeleteCategory={handleDeleteCategory}
       />

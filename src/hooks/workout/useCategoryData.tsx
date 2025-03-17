@@ -1,21 +1,11 @@
 
-import { useQuery } from '@tanstack/react-query';
-import { getAllCategories } from '@/lib/categories';
 import { Category } from '@/lib/types';
 import { toast } from '@/components/ui/use-toast';
+import { useCategoryColors } from '@/hooks/useCategoryColors';
 
 export const useCategoryData = () => {
-  const {
-    data: categories = [],
-    isLoading,
-    error
-  } = useQuery({
-    queryKey: ['categories'],
-    queryFn: getAllCategories,
-    retry: 2,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnWindowFocus: true
-  });
+  // Use the centralized hook for category data
+  const { categories, isLoading, error } = useCategoryColors();
   
   // Create a map of category IDs to names for easy lookup
   const categoryMap: Record<string, string> = {};

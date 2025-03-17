@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Exercise, Category } from '@/lib/types';
 import ExerciseCard from './ExerciseCard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { ImageOff, Dumbbell, Sparkles, Info } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useCategoryColors } from '@/hooks/useCategoryColors';
 
 interface ExerciseGridProps {
   exercises: Exercise[];
@@ -25,8 +25,13 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({
   onExerciseSelect 
 }) => {
   const [selectedExercise, setSelectedExercise] = React.useState<Exercise | null>(null);
-  const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
   const [imageError, setImageError] = useState(false);
+  
+  const { getCategory } = useCategoryColors();
+  
+  const selectedCategory = selectedExercise?.category 
+    ? getCategory(selectedExercise.category) 
+    : null;
 
   const handleExerciseClick = (exercise: Exercise) => {
     if (onExerciseSelect) {
@@ -39,31 +44,7 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({
 
   const handleDialogClose = () => {
     setSelectedExercise(null);
-    setSelectedCategory(null);
   };
-  
-  useEffect(() => {
-    const loadCategory = async () => {
-      if (selectedExercise?.category) {
-        if (categories.length > 0) {
-          const category = categories.find(c => c.id === selectedExercise.category);
-          if (category) {
-            setSelectedCategory(category);
-            return;
-          }
-        }
-        
-        const loadedCategory = await getCategoryById(selectedExercise.category);
-        if (loadedCategory) {
-          setSelectedCategory(loadedCategory);
-        }
-      }
-    };
-    
-    if (selectedExercise) {
-      loadCategory();
-    }
-  }, [selectedExercise, categories]);
 
   if (isLoading) {
     return (

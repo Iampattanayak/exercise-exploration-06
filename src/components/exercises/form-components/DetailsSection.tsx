@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { FormField, FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
+import { useCategoryColors } from '@/hooks/useCategoryColors';
 
 interface DetailsSectionProps {
   form: UseFormReturn<any>;
@@ -21,8 +22,14 @@ interface DetailsSectionProps {
 
 const DetailsSection: React.FC<DetailsSectionProps> = ({
   form,
-  categories
+  categories: propCategories
 }) => {
+  // Use the centralized hook for category data
+  const { categories } = useCategoryColors();
+  
+  // Use hook categories if available, otherwise fall back to prop categories
+  const displayCategories = categories.length > 0 ? categories : propCategories;
+
   return (
     <div className="space-y-5 h-full flex flex-col">
       <FormField
@@ -60,7 +67,7 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {categories.map(category => {
+                {displayCategories.map(category => {
                   const categoryClass = cn(
                     "inline-block w-3 h-3 rounded-full mr-2",
                     category.color.split(' ')[0] // Extract just the background color

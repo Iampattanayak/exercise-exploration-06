@@ -1,10 +1,9 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
-import { Badge } from '@/components/ui/badge';
+import { useCategoryColors } from '@/hooks/useCategoryColors';
 
 interface CategoryFilterProps {
   categories: Category[];
@@ -14,45 +13,21 @@ interface CategoryFilterProps {
 }
 
 const CategoryFilter: React.FC<CategoryFilterProps> = ({
-  categories,
+  categories: propCategories,
   selectedCategory,
   onCategoryChange,
   onManageCategories,
 }) => {
-  // Create local state to ensure we always use the latest category data with correct colors
-  const [localCategories, setLocalCategories] = useState<Category[]>(categories);
-
-  // Refresh categories from the database directly - bypass cache to ensure fresh colors
+  // Use the centralized hook for category colors
+  const { categories, getCategoryColor, refreshCategories } = useCategoryColors();
+  
+  // Refresh categories when component mounts
   useEffect(() => {
-    const fetchFreshCategories = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('categories')
-          .select('*')
-          .order('name');
-        
-        if (!error && data) {
-          // Ensure all categories have valid colors
-          const updatedCategories = data.map(cat => ({
-            ...cat,
-            color: cat.color || 'bg-[#8B5CF6] text-white' // Default color if none is set
-          }));
-          setLocalCategories(updatedCategories);
-        }
-      } catch (err) {
-        console.error('Error fetching fresh categories:', err);
-      }
-    };
+    refreshCategories();
+  }, [refreshCategories]);
 
-    fetchFreshCategories();
-  }, []);
-
-  // Update localCategories when category props change
-  useEffect(() => {
-    if (categories.length > 0) {
-      setLocalCategories(categories);
-    }
-  }, [categories]);
+  // Use categories from the hook, falling back to prop categories if needed
+  const displayCategories = categories.length > 0 ? categories : propCategories;
 
   return (
     <div className="pb-4 overflow-x-auto">
@@ -65,11 +40,11 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         >
           All Exercises
         </Button>
-        {localCategories.map((category) => {
+        {displayCategories.map((category) => {
           const isSelected = selectedCategory === category.id;
           
-          // Extract color classes from the category color string
-          const colorClasses = category.color || 'bg-[#8B5CF6] text-white';
+          // Get color from centralized hook
+          const colorClasses = getCategoryColor(category.id);
           
           return (
             <Button
