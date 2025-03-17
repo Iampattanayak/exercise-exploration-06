@@ -6,7 +6,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from '@/components/ui/context-menu';
-import { Edit, Trash, ImageOff, Sparkles, Flame, Dumbbell } from 'lucide-react';
+import { Edit, Trash, ImageOff, Flame, Dumbbell } from 'lucide-react';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -86,19 +86,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
               isHovered && "opacity-30"
             )} />
             
-            {/* Category badge repositioned for better visibility */}
-            {category && (
-              <div className="absolute top-3 right-3 z-10">
-                <span className={cn(
-                  'text-xs px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm backdrop-blur-sm',
-                  category.color,
-                  "border border-white/20"
-                )}>
-                  {category.name}
-                </span>
-              </div>
-            )}
-            
             {/* Action buttons that appear on hover with improved styling */}
             <div className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100">
               {onEdit && (
@@ -124,16 +111,27 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </div>
           </AspectRatio>
           
-          {/* Redesigned content area with better centering and effects */}
-          <div className="p-5 flex-grow flex flex-col justify-between relative overflow-hidden">
-            {/* Decorative icon */}
-            <Flame className="absolute right-3 bottom-3 h-12 w-12 text-purple-100 rotate-12 opacity-50" />
+          {/* Redesigned content area with better centering */}
+          <div className="p-4 flex-grow flex flex-col justify-center items-center relative overflow-hidden">
+            {/* Category badge redesigned and centered at the top */}
+            {category && (
+              <div className="mb-2">
+                <span className={cn(
+                  'text-xs font-medium px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm border border-white/20 inline-flex items-center gap-1.5',
+                  getCategoryStyle(category.color)
+                )}>
+                  {category.name}
+                </span>
+              </div>
+            )}
             
-            {/* Title with improved styling and icon */}
-            <div className="flex items-center justify-between relative z-10">
-              <h3 className="font-semibold text-lg truncate pr-2 text-gradient group-hover:scale-[1.02] transition-all duration-300 flex items-center gap-1.5">
+            {/* Decorative icon */}
+            <Flame className="absolute right-3 bottom-3 h-12 w-12 text-purple-100 rotate-12 opacity-40" />
+            
+            {/* Title with improved styling and centering */}
+            <div className="relative z-10 text-center w-full px-2">
+              <h3 className="font-semibold text-lg text-gradient group-hover:scale-[1.02] transition-all duration-300">
                 {exercise.name}
-                <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
               </h3>
             </div>
           </div>
@@ -155,6 +153,26 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
       </ContextMenuContent>
     </ContextMenu>
   );
+};
+
+// New helper function to get stylish category colors based on the category color
+const getCategoryStyle = (color: string): string => {
+  // Map original color classes to more attractive gradient-based styling
+  const colorMap: Record<string, string> = {
+    'bg-red-100 text-red-800': 'bg-gradient-to-r from-red-500/90 to-pink-500/90 text-white',
+    'bg-blue-100 text-blue-800': 'bg-gradient-to-r from-blue-500/90 to-indigo-500/90 text-white',
+    'bg-green-100 text-green-800': 'bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white',
+    'bg-yellow-100 text-yellow-800': 'bg-gradient-to-r from-amber-500/90 to-yellow-500/90 text-white',
+    'bg-purple-100 text-purple-800': 'bg-gradient-to-r from-purple-500/90 to-violet-500/90 text-white',
+    'bg-pink-100 text-pink-800': 'bg-gradient-to-r from-pink-500/90 to-rose-500/90 text-white',
+    'bg-indigo-100 text-indigo-800': 'bg-gradient-to-r from-indigo-500/90 to-blue-500/90 text-white',
+    'bg-gray-100 text-gray-800': 'bg-gradient-to-r from-gray-500/90 to-slate-500/90 text-white',
+    'bg-orange-100 text-orange-800': 'bg-gradient-to-r from-orange-500/90 to-amber-500/90 text-white',
+    'bg-teal-100 text-teal-800': 'bg-gradient-to-r from-teal-500/90 to-cyan-500/90 text-white',
+  };
+
+  // Default to a nice purple gradient if color not found in map
+  return colorMap[color] || 'bg-gradient-to-r from-indigo-500/90 to-purple-500/90 text-white';
 };
 
 export default ExerciseCard;
