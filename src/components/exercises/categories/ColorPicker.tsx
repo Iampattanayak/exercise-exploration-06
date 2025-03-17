@@ -25,6 +25,10 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     { value: 'bg-purple-100 text-purple-800', label: 'Purple' },
     { value: 'bg-orange-100 text-orange-800', label: 'Orange' },
     { value: 'bg-pink-100 text-pink-800', label: 'Pink' },
+    { value: 'bg-indigo-100 text-indigo-800', label: 'Indigo' },
+    { value: 'bg-teal-100 text-teal-800', label: 'Teal' },
+    { value: 'bg-cyan-100 text-cyan-800', label: 'Cyan' },
+    { value: 'bg-violet-100 text-violet-800', label: 'Violet' },
     { value: 'bg-gray-100 text-gray-800', label: 'Gray' },
   ];
 
@@ -35,9 +39,9 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
           key={color.value}
           type="button"
           className={cn(
-            'flex items-center justify-center h-10 rounded-md border',
+            'flex items-center justify-center h-10 rounded-lg border transition-all duration-200 hover:scale-105',
             color.value,
-            selectedColor === color.value && 'ring-2 ring-offset-2 ring-ring'
+            selectedColor === color.value && 'ring-2 ring-offset-2 ring-indigo-400 shadow-md'
           )}
           onClick={() => onChange(color.value)}
         >

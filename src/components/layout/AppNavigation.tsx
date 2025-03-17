@@ -4,7 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, 
   Dumbbell, 
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -29,12 +30,15 @@ const AppNavigation: React.FC = () => {
           <Button
             variant={isActive(item.href) ? "default" : "ghost"}
             className={cn(
-              "flex items-center px-4",
-              isActive(item.href) ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              "flex items-center px-4 rounded-full",
+              isActive(item.href) 
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-glow" 
+                : "text-muted-foreground hover:text-foreground hover:bg-indigo-50"
             )}
           >
             {item.icon}
             {item.label}
+            {isActive(item.href) && <Sparkles className="h-3 w-3 ml-2 text-white/70" />}
           </Button>
         </Link>
       ))}

@@ -6,7 +6,8 @@ import {
   Dumbbell, 
   Calendar as CalendarIcon, 
   Menu, 
-  X 
+  X, 
+  Sparkles 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -39,14 +40,16 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="border-b border-border bg-white/80 backdrop-blur-md sticky top-0 z-40 w-full">
+    <header className="border-b border-indigo-100 bg-white/80 backdrop-blur-md sticky top-0 z-40 w-full shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link 
           to="/" 
-          className="flex items-center font-semibold text-xl text-primary hover:opacity-80 transition-opacity"
+          className="flex items-center font-semibold text-xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-80 transition-opacity"
         >
-          <Dumbbell className="h-6 w-6 mr-2 text-primary" />
-          FitTrack
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-1.5 rounded-full text-white shadow-glow mr-2">
+            <Dumbbell className="h-5 w-5" />
+          </div>
+          FitTrack <Sparkles className="h-4 w-4 ml-1 text-indigo-400" />
         </Link>
 
         {/* Desktop Nav */}
@@ -56,12 +59,15 @@ const Navbar = () => {
               <Button
                 variant={location.pathname === item.href ? "default" : "ghost"}
                 className={cn(
-                  "flex items-center px-4",
-                  location.pathname === item.href ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                  "flex items-center px-4 rounded-full",
+                  location.pathname === item.href 
+                    ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-glow" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-indigo-50"
                 )}
               >
                 {item.icon}
                 {item.label}
+                {location.pathname === item.href && <Sparkles className="h-3 w-3 ml-2 text-white/70" />}
               </Button>
             </Link>
           ))}
@@ -70,17 +76,17 @@ const Navbar = () => {
         {/* Mobile Nav Toggle */}
         <Button 
           variant="ghost" 
-          className="md:hidden" 
+          className="md:hidden p-1 rounded-full hover:bg-indigo-50" 
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
-          {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {isOpen ? <X className="h-5 w-5 text-indigo-600" /> : <Menu className="h-5 w-5 text-indigo-600" />}
         </Button>
       </div>
 
       {/* Mobile Nav Menu */}
       {isOpen && (
-        <div className="md:hidden animate-fade-in fixed inset-0 top-16 bg-background/95 backdrop-blur-sm z-30">
+        <div className="md:hidden animate-fade-in fixed inset-0 top-16 bg-white/95 backdrop-blur-sm z-30">
           <div className="container mx-auto px-4 pt-4 pb-8">
             <nav className="flex flex-col space-y-2">
               {navItems.map((item) => (
@@ -88,12 +94,15 @@ const Navbar = () => {
                   <Button
                     variant={location.pathname === item.href ? "default" : "ghost"}
                     className={cn(
-                      "w-full justify-start text-lg py-6",
-                      location.pathname === item.href ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                      "w-full justify-start text-lg py-6 rounded-xl",
+                      location.pathname === item.href 
+                        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-indigo-50"
                     )}
                   >
                     {item.icon}
                     {item.label}
+                    {location.pathname === item.href && <Sparkles className="h-3.5 w-3.5 ml-2 text-white/70" />}
                   </Button>
                 </Link>
               ))}

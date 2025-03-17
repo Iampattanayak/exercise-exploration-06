@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import ExerciseForm from './ExerciseForm';
 import { Button } from '@/components/ui/button';
-import { Trash } from 'lucide-react';
+import { Trash, Sparkles } from 'lucide-react';
 
 interface EditExerciseDialogProps {
   isOpen: boolean;
@@ -52,8 +52,11 @@ const EditExerciseDialog: React.FC<EditExerciseDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader className="pb-4 border-b mb-4">
-          <DialogTitle className="text-xl font-bold text-primary">Edit Exercise</DialogTitle>
-          <DialogDescription className="mt-1 text-sm">
+          <DialogTitle className="text-xl font-bold flex items-center justify-center">
+            Edit Exercise 
+            <Sparkles className="h-4 w-4 ml-2 text-indigo-400" />
+          </DialogTitle>
+          <DialogDescription className="mt-1 text-sm text-center">
             Update the details and image of this exercise
           </DialogDescription>
         </DialogHeader>
