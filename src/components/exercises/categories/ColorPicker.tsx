@@ -19,19 +19,19 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   onChange,
 }) => {
   const colorOptions: ColorOption[] = [
-    // Modern color palette based on provided color styles
-    { value: 'bg-[#5f22d9] text-white', label: 'Purple Heart', hex: '#5f22d9' },
-    { value: 'bg-[#2c016d] text-white', label: 'Christalle', hex: '#2c016d' },
-    { value: 'bg-[#0c58c6] text-white', label: 'Denim', hex: '#0c58c6' },
-    { value: 'bg-[#6a93d9] text-white', label: 'Danube', hex: '#6a93d9' },
-    { value: 'bg-[#85d2d8] text-white', label: 'Bermuda', hex: '#85d2d8' },
-    { value: 'bg-[#51d6ca] text-white', label: 'Viking', hex: '#51d6ca' },
-    { value: 'bg-[#ecb20d] text-white', label: 'Buttercup', hex: '#ecb20d' },
-    { value: 'bg-[#d7ad0d] text-white', label: 'Galliano', hex: '#d7ad0d' },
-    { value: 'bg-[#fc5110] text-white', label: 'Orange', hex: '#fc5110' },
-    { value: 'bg-[#f14c36] text-white', label: 'Flamingo', hex: '#f14c36' },
-    { value: 'bg-[#c82b28] text-white', label: 'Persian Red', hex: '#c82b28' },
-    { value: 'bg-[#dd95c3] text-white', label: 'Light Orchid', hex: '#dd95c3' },
+    // New modern color palette with unique, vibrant colors
+    { value: 'bg-[#8B5CF6] text-white', label: 'Vivid Purple', hex: '#8B5CF6' },
+    { value: 'bg-[#D946EF] text-white', label: 'Magenta Pink', hex: '#D946EF' },
+    { value: 'bg-[#F97316] text-white', label: 'Bright Orange', hex: '#F97316' },
+    { value: 'bg-[#0EA5E9] text-white', label: 'Ocean Blue', hex: '#0EA5E9' },
+    { value: 'bg-[#10B981] text-white', label: 'Emerald Green', hex: '#10B981' },
+    { value: 'bg-[#EC4899] text-white', label: 'Hot Pink', hex: '#EC4899' },
+    { value: 'bg-[#EF4444] text-white', label: 'Bright Red', hex: '#EF4444' },
+    { value: 'bg-[#14B8A6] text-white', label: 'Teal', hex: '#14B8A6' },
+    { value: 'bg-[#F59E0B] text-white', label: 'Amber', hex: '#F59E0B' },
+    { value: 'bg-[#6366F1] text-white', label: 'Indigo', hex: '#6366F1' },
+    { value: 'bg-[#84CC16] text-white', label: 'Lime', hex: '#84CC16' },
+    { value: 'bg-[#7C3AED] text-white', label: 'Violet', hex: '#7C3AED' },
   ];
 
   return (

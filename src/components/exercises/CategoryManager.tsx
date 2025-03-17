@@ -29,7 +29,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [newCategory, setNewCategory] = useState<Partial<Category>>({
     name: '',
-    color: 'bg-[#5f22d9] text-white',
+    color: 'bg-[#8B5CF6] text-white',
   });
 
   const handleOpenDialog = (category?: Category) => {
@@ -43,7 +43,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       setEditingCategory(null);
       setNewCategory({
         name: '',
-        color: 'bg-[#5f22d9] text-white',
+        color: 'bg-[#8B5CF6] text-white',
       });
     }
     setFormDialogOpen(true);

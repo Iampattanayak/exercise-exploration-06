@@ -31,12 +31,12 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         {categories.map((category) => (
           <Button
             key={category.id}
-            variant={selectedCategory === category.id ? "default" : "outline"}
+            variant="outline"
             size="sm"
             onClick={() => onCategoryChange(category.id)}
             className={cn(
               "rounded-full",
-              selectedCategory === category.id ? category.color : "hover:bg-gray-100"
+              selectedCategory === category.id && category.color
             )}
           >
             {category.name}
