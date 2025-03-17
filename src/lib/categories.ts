@@ -41,6 +41,9 @@ export const getAllCategories = async (): Promise<Category[]> => {
 
 export const addCategory = async (category: Omit<Category, 'id'>): Promise<Category> => {
   try {
+    // Clear cache to ensure fresh data
+    Object.keys(categoryCache).forEach(key => delete categoryCache[key]);
+    
     const newCategory = {
       id: uuidv4(),
       ...category,
@@ -68,6 +71,9 @@ export const addCategory = async (category: Omit<Category, 'id'>): Promise<Categ
 
 export const updateCategory = async (category: Category): Promise<void> => {
   try {
+    // Clear cache to ensure fresh data
+    Object.keys(categoryCache).forEach(key => delete categoryCache[key]);
+    
     // Ensure color is set
     const updatedCategory = {
       ...category,
@@ -97,6 +103,9 @@ export const updateCategory = async (category: Category): Promise<void> => {
 
 export const deleteCategory = async (id: string): Promise<void> => {
   try {
+    // Clear cache to ensure fresh data
+    Object.keys(categoryCache).forEach(key => delete categoryCache[key]);
+    
     // Update exercises that use this category to have no category
     const { error: updateError } = await supabase
       .from('exercises')

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Plus, Pencil, Trash, ArrowLeft } from 'lucide-react';
@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { toast } from 'sonner';
 import CategoryForm from './categories/CategoryForm';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -31,6 +32,39 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
     name: '',
     color: 'bg-[#8B5CF6] text-white',
   });
+  const [localCategories, setLocalCategories] = useState<Category[]>(categories);
+  
+  // Fetch fresh categories directly from database to ensure we have the latest colors
+  useEffect(() => {
+    const fetchFreshCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .order('name');
+          
+        if (!error && data) {
+          // Ensure all categories have valid colors
+          const updatedCategories = data.map(cat => ({
+            ...cat,
+            color: cat.color || 'bg-[#8B5CF6] text-white'
+          }));
+          setLocalCategories(updatedCategories);
+        }
+      } catch (err) {
+        console.error('Error fetching fresh categories:', err);
+      }
+    };
+    
+    fetchFreshCategories();
+  }, []);
+  
+  // Update local state when props change
+  useEffect(() => {
+    if (categories.length > 0) {
+      setLocalCategories(categories);
+    }
+  }, [categories]);
 
   const handleOpenDialog = (category?: Category) => {
     if (category) {
@@ -64,6 +98,11 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       };
       
       await onCategoryUpdate?.(updatedCategory);
+      
+      // Update local state immediately
+      setLocalCategories(prev => 
+        prev.map(cat => cat.id === updatedCategory.id ? updatedCategory : cat)
+      );
     } else {
       // Add new category
       const category = {
@@ -72,6 +111,8 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       };
       
       await onCategoryAdd?.(category);
+      
+      // We'll let the useEffect refresh categories from the server
     }
     
     setFormDialogOpen(false);
@@ -83,6 +124,8 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
     const confirmed = window.confirm('Are you sure you want to delete this category? This will affect all exercises using this category.');
     if (confirmed) {
       await onCategoryDelete?.(categoryId);
+      // Update local state immediately
+      setLocalCategories(prev => prev.filter(cat => cat.id !== categoryId));
     }
   };
 
@@ -102,7 +145,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       </div>
 
       <div className="space-y-2">
-        {categories.map((category) => (
+        {localCategories.map((category) => (
           <div key={category.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors">
             <div className="flex items-center space-x-3">
               <div className={cn('px-3 py-1.5 rounded-md text-sm shadow-sm', category.color)}>
@@ -128,7 +171,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
           </div>
         ))}
 
-        {categories.length === 0 && (
+        {localCategories.length === 0 && (
           <div className="text-center py-8 border rounded-lg">
             <p className="text-muted-foreground">No categories found. Create your first category.</p>
           </div>

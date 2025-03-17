@@ -66,10 +66,12 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         </Button>
         {localCategories.map((category) => {
           const isSelected = selectedCategory === category.id;
+          
+          // Directly apply the color classes from the category
           return (
             <Button
               key={category.id}
-              variant="outline"
+              variant={isSelected ? "default" : "outline"}
               size="sm"
               onClick={() => onCategoryChange(category.id)}
               className={cn(
