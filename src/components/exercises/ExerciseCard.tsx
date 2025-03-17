@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from '@/components/ui/context-menu';
 import { Edit, Trash, ImageOff, Dumbbell } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ExerciseCardProps {
   exercise: Exercise;
