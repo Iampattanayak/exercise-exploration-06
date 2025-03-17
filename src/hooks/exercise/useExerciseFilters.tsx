@@ -57,9 +57,9 @@ export function useExerciseFilters(exercises: Exercise[]) {
             return nameB.localeCompare(nameA);
           }
         } else if (sortType === 'category') {
-          // Get category names for sorting (or use ID if name not available)
-          const categoryA = a.categoryName?.toLowerCase() || a.category?.toLowerCase() || '';
-          const categoryB = b.categoryName?.toLowerCase() || b.category?.toLowerCase() || '';
+          // Get category IDs for sorting since we don't have categoryName
+          const categoryA = a.category?.toLowerCase() || '';
+          const categoryB = b.category?.toLowerCase() || '';
           
           if (sortOrder === 'asc') {
             return categoryA.localeCompare(categoryB);

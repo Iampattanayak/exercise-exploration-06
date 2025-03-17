@@ -41,11 +41,13 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4">
-        <SearchBar 
-          searchTerm={searchTerm} 
-          onSearchChange={onSearchChange} 
-        />
-        <div className="flex items-center justify-end gap-2">
+        <div className="w-full sm:flex-1">
+          <SearchBar 
+            searchTerm={searchTerm} 
+            onSearchChange={onSearchChange} 
+          />
+        </div>
+        <div className="flex items-center justify-end gap-2 h-10">
           <AlphabeticalFilter 
             sortOrder={sortOrder}
             sortType={sortType}
@@ -56,7 +58,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               variant="outline"
               size="sm"
               onClick={handleClearFilters}
-              className="rounded-full whitespace-nowrap"
+              className="rounded-full whitespace-nowrap h-10"
             >
               <X className="h-4 w-4 mr-1" />
               Clear

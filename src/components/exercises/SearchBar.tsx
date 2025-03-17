@@ -15,7 +15,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange }) => 
   };
 
   return (
-    <div className="relative w-full flex-1">
+    <div className="relative w-full h-10">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
         <Search className="h-4 w-4 text-muted-foreground" />
       </div>
@@ -30,7 +30,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange }) => 
         <Button
           variant="ghost"
           size="icon"
-          className="absolute inset-y-0 right-0 flex items-center pr-3"
+          className="absolute inset-y-0 right-0 flex items-center pr-3 h-10"
           onClick={handleClear}
         >
           <X className="h-4 w-4" />
