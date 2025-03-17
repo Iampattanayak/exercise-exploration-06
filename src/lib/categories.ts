@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Category } from './types';
 import { v4 as uuidv4 } from 'uuid';
@@ -135,7 +134,6 @@ export const getCategoryById = async (categoryId: string): Promise<Category | nu
   }
 };
 
-// Helper for synchronous access with fallback for UI rendering
 export const getCategoryByIdSync = (categoryId: string): Category => {
   // If we have this category in our cache, return it
   if (categoryCache[categoryId]) {
@@ -146,6 +144,6 @@ export const getCategoryByIdSync = (categoryId: string): Category => {
   return { 
     id: categoryId, 
     name: 'Loading...', 
-    color: 'bg-gray-100 text-gray-800' 
+    color: 'bg-[#5f22d9] text-white' 
   };
 };

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Exercise } from '@/lib/types';
 import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
@@ -83,7 +84,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <div className="absolute bottom-3 left-3 z-10">
                 <span className={cn(
                   'text-xs font-medium px-3 py-1.5 rounded-md shadow-sm',
-                  getCategoryBadgeStyle(category.color || category.name.toLowerCase())
+                  category.color
                 )}>
                   {category.name}
                 </span>
@@ -136,34 +137,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
       </ContextMenuContent>
     </ContextMenu>
   );
-};
-
-const getCategoryBadgeStyle = (categoryIdentifier: string): string => {
-  if (categoryIdentifier.startsWith('bg-[#')) {
-    return categoryIdentifier;
-  }
-
-  const categoryMap: Record<string, string> = {
-    'back': 'bg-[#0c58c6] text-white',
-    'arms': 'bg-[#5f22d9] text-white',
-    'chest': 'bg-[#6a93d9] text-white',
-    'shoulders': 'bg-[#51d6ca] text-white',
-    'legs': 'bg-[#2c016d] text-white',
-    'core': 'bg-[#ecb20d] text-white',
-    'glutes': 'bg-[#dd95c3] text-white',
-    'cardio': 'bg-[#85d2d8] text-white',
-    'strength': 'bg-[#c82b28] text-white',
-    'flexibility': 'bg-[#fc5110] text-white',
-    'balance': 'bg-[#d7ad0d] text-white',
-  };
-
-  for (const [key, value] of Object.entries(categoryMap)) {
-    if (categoryIdentifier.includes(key)) {
-      return value;
-    }
-  }
-
-  return 'bg-[#f14c36] text-white';
 };
 
 export default ExerciseCard;
