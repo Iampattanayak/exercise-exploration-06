@@ -2,7 +2,7 @@
 import React from 'react';
 import SearchBar from '@/components/exercises/SearchBar';
 import CategoryFilter from '@/components/exercises/CategoryFilter';
-import AlphabeticalFilter, { SortOrder } from '@/components/exercises/AlphabeticalFilter';
+import AlphabeticalFilter, { SortOrder, SortType } from '@/components/exercises/AlphabeticalFilter';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
@@ -11,10 +11,11 @@ interface FilterSectionProps {
   searchTerm: string;
   selectedCategory: string | null;
   sortOrder: SortOrder;
+  sortType: SortType;
   categories: Category[];
   onSearchChange: (value: string) => void;
   onCategoryChange: (categoryId: string | null) => void;
-  onSortChange: (order: SortOrder) => void;
+  onSortChange: (order: SortOrder, type: SortType) => void;
   onManageCategories: () => void;
 }
 
@@ -22,6 +23,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   searchTerm,
   selectedCategory,
   sortOrder,
+  sortType,
   categories,
   onSearchChange,
   onCategoryChange,
@@ -33,21 +35,20 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   const handleClearFilters = () => {
     onSearchChange('');
     onCategoryChange(null);
-    onSortChange(null);
+    onSortChange(null, null);
   };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1">
-          <SearchBar 
-            searchTerm={searchTerm} 
-            onSearchChange={onSearchChange} 
-          />
-        </div>
-        <div className="flex items-center justify-end gap-2 min-w-[180px]">
+        <SearchBar 
+          searchTerm={searchTerm} 
+          onSearchChange={onSearchChange} 
+        />
+        <div className="flex items-center justify-end gap-2">
           <AlphabeticalFilter 
             sortOrder={sortOrder}
+            sortType={sortType}
             onSortChange={onSortChange}
           />
           {hasActiveFilters && (

@@ -4,6 +4,7 @@ import { useExerciseFilters } from './exercise/useExerciseFilters';
 import { useExerciseMutations } from './exercise/useExerciseMutations';
 import { Exercise } from '@/lib/types';
 import { useEffect } from 'react';
+import { SortType } from '@/components/exercises/AlphabeticalFilter';
 
 export function useExerciseData() {
   // Get query-related data and operations
@@ -30,6 +31,7 @@ export function useExerciseData() {
     searchTerm,
     selectedCategory,
     sortOrder,
+    sortType,
     filteredExercises,
     handleSearchChange,
     handleCategoryChange,
@@ -62,6 +64,7 @@ export function useExerciseData() {
     searchTerm,
     selectedCategory,
     sortOrder,
+    sortType,
     handleSearchChange,
     handleCategoryChange,
     handleSortChange,

@@ -11,6 +11,7 @@ import ExerciseLibraryHeader from '@/components/exercises/ExerciseLibraryHeader'
 import ExerciseContent from '@/components/exercises/ExerciseContent';
 import CategoryManager from '@/components/exercises/CategoryManager';
 import ExerciseDialogs from '@/components/exercises/ExerciseDialogs';
+import { SortType } from '@/components/exercises/AlphabeticalFilter';
 
 const ExerciseLibrary: React.FC = () => {
   const {
@@ -24,6 +25,7 @@ const ExerciseLibrary: React.FC = () => {
     searchTerm,
     selectedCategory,
     sortOrder,
+    sortType,
     handleSearchChange,
     handleCategoryChange,
     handleSortChange,
@@ -72,8 +74,8 @@ const ExerciseLibrary: React.FC = () => {
 
   const handleClearFilters = () => {
     handleSearchChange('');
-    handleCategoryChange('');
-    handleSortChange(null);
+    handleCategoryChange(null);
+    handleSortChange(null, null);
   };
 
   // Display error states if present
@@ -108,6 +110,7 @@ const ExerciseLibrary: React.FC = () => {
               searchTerm={searchTerm}
               selectedCategory={selectedCategory}
               sortOrder={sortOrder}
+              sortType={sortType as SortType}
               onSearchChange={handleSearchChange}
               onCategoryChange={handleCategoryChange}
               onSortChange={handleSortChange}

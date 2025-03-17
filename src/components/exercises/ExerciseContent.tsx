@@ -5,7 +5,7 @@ import FilterSection from './FilterSection';
 import ExerciseGrid from './ExerciseGrid';
 import EmptyExerciseState from './EmptyExerciseState';
 import { Card } from '@/components/ui/card';
-import { SortOrder } from './AlphabeticalFilter';
+import { SortOrder, SortType } from './AlphabeticalFilter';
 
 interface ExerciseContentProps {
   exercises: Exercise[];
@@ -15,9 +15,10 @@ interface ExerciseContentProps {
   searchTerm: string;
   selectedCategory: string | null;
   sortOrder: SortOrder;
+  sortType: SortType;
   onSearchChange: (value: string) => void;
   onCategoryChange: (categoryId: string | null) => void;
-  onSortChange: (order: SortOrder) => void;
+  onSortChange: (order: SortOrder, type: SortType) => void;
   onManageCategories: () => void;
   onOpenAddExercise: () => void;
   onEditExercise: (exercise: Exercise) => void;
@@ -33,6 +34,7 @@ const ExerciseContent: React.FC<ExerciseContentProps> = ({
   searchTerm,
   selectedCategory,
   sortOrder,
+  sortType,
   onSearchChange,
   onCategoryChange,
   onSortChange,
@@ -48,6 +50,7 @@ const ExerciseContent: React.FC<ExerciseContentProps> = ({
         searchTerm={searchTerm}
         selectedCategory={selectedCategory}
         sortOrder={sortOrder}
+        sortType={sortType}
         categories={categories}
         onSearchChange={onSearchChange}
         onCategoryChange={onCategoryChange}
