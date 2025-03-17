@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Exercise, Category } from '@/lib/types';
 import ExerciseCard from './ExerciseCard';
@@ -46,7 +45,6 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({
   useEffect(() => {
     const loadCategory = async () => {
       if (selectedExercise?.category) {
-        // First check if we already have the category in our categories prop
         if (categories.length > 0) {
           const category = categories.find(c => c.id === selectedExercise.category);
           if (category) {
@@ -55,7 +53,6 @@ const ExerciseGrid: React.FC<ExerciseGridProps> = ({
           }
         }
         
-        // If not found in props, load from API
         const loadedCategory = await getCategoryById(selectedExercise.category);
         if (loadedCategory) {
           setSelectedCategory(loadedCategory);

@@ -34,7 +34,10 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
             variant={selectedCategory === category.id ? "default" : "outline"}
             size="sm"
             onClick={() => onCategoryChange(category.id)}
-            className="rounded-full"
+            className={cn(
+              "rounded-full",
+              selectedCategory === category.id ? category.color : "hover:bg-gray-100"
+            )}
           >
             {category.name}
           </Button>

@@ -44,7 +44,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
       <div className="grid gap-2">
         <Label className="text-sm font-medium text-gray-700">Color</Label>
         <ColorPicker
-          selectedColor={category.color || 'bg-gray-100 text-gray-800'}
+          selectedColor={category.color || 'bg-[#5f22d9] text-white'}
           onChange={(color) => onCategoryChange({ ...category, color })}
         />
       </div>
