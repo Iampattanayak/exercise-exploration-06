@@ -145,31 +145,36 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       </div>
 
       <div className="space-y-2">
-        {localCategories.map((category) => (
-          <div key={category.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors">
-            <div className="flex items-center space-x-3">
-              <div className={cn('px-3 py-1.5 rounded-md text-sm shadow-sm', category.color)}>
-                {category.name}
+        {localCategories.map((category) => {
+          // Extract color classes directly
+          const colorClasses = category.color || 'bg-[#8B5CF6] text-white';
+          
+          return (
+            <div key={category.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors">
+              <div className="flex items-center space-x-3">
+                <div className={cn('px-3 py-1.5 rounded-md text-sm shadow-sm', colorClasses)}>
+                  {category.name}
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => handleOpenDialog(category)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => handleDeleteCategory(category.id)}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
               </div>
             </div>
-            <div className="flex space-x-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handleOpenDialog(category)}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => handleDeleteCategory(category.id)}
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
 
         {localCategories.length === 0 && (
           <div className="text-center py-8 border rounded-lg">

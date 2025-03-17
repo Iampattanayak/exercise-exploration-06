@@ -4,6 +4,7 @@ import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { Badge } from '@/components/ui/badge';
 
 interface CategoryFilterProps {
   categories: Category[];
@@ -67,16 +68,18 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         {localCategories.map((category) => {
           const isSelected = selectedCategory === category.id;
           
-          // Directly apply the color classes from the category
+          // Extract color classes from the category color string
+          const colorClasses = category.color || 'bg-[#8B5CF6] text-white';
+          
           return (
             <Button
               key={category.id}
-              variant={isSelected ? "default" : "outline"}
+              variant="outline"
               size="sm"
               onClick={() => onCategoryChange(category.id)}
               className={cn(
                 "rounded-full",
-                isSelected && category.color 
+                isSelected && colorClasses // Only apply color when selected
               )}
             >
               {category.name}
