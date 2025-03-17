@@ -5,7 +5,7 @@ import { Workout } from '@/lib/types';
 import WorkoutCard from '@/components/workout/WorkoutCard';
 import SectionHeader from '@/components/layout/SectionHeader';
 import { Button } from '@/components/ui/button';
-import { History, ArrowRight } from 'lucide-react';
+import { History, ArrowRight, TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
 
@@ -55,23 +55,31 @@ const RecentWorkouts: React.FC = () => {
   }
 
   return (
-    <div className="mb-10 bg-gray-50 p-6 rounded-xl shadow-sm">
-      <SectionHeader 
-        title="Recent Workouts" 
-        description="Your most recent workout sessions" 
-        action={
-          <Link to="/workout-history">
-            <Button variant="outline" size="sm" className="gap-1">
-              View All
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          </Link>
-        }
-      />
+    <div className="mb-10 bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50 p-6 rounded-xl shadow-md border border-teal-100 hover:shadow-xl transition-all duration-500">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center">
+          <div className="mr-4 bg-gradient-to-r from-teal-600 to-cyan-600 p-2 rounded-full text-white shadow-glow">
+            <TrendingUp className="h-5 w-5" />
+          </div>
+          <SectionHeader 
+            title="Recent Workouts" 
+            description="Your most recent workout sessions" 
+          />
+        </div>
+        <Link to="/workout-history">
+          <Button variant="outline" size="sm" className="gap-1 bg-white/50 border-teal-200 hover:bg-white hover:border-teal-300 text-teal-700 rounded-full">
+            View All
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </Link>
+      </div>
 
       {workouts.length === 0 ? (
-        <div className="bg-muted/50 rounded-lg p-8 text-center">
-          <h3 className="text-lg font-medium mb-2">No recent workouts</h3>
+        <div className="glass-card p-8 text-center rounded-2xl shadow-inner">
+          <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-teal-100 to-cyan-100 rounded-full text-teal-600 mb-4">
+            <History className="h-6 w-6" />
+          </div>
+          <h3 className="text-xl font-bold mb-2 text-gradient-teal">No recent workouts</h3>
           <p className="text-muted-foreground">Complete a workout to see it here.</p>
         </div>
       ) : (

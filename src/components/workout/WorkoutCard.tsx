@@ -10,12 +10,15 @@ import {
   Dumbbell,
   ArrowRight,
   Archive,
-  Sparkles
+  Sparkles,
+  Flame,
+  Gem
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { archiveWorkout } from '@/lib/workouts';
 import { toast } from '@/components/ui/use-toast';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 
 interface WorkoutCardProps {
   workout: Workout;
@@ -62,38 +65,40 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
   }
 
   return (
-    <div className="workout-card flex flex-col border border-slate-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-white to-slate-50">
-      <div className="p-5 flex-grow">
-        <div className="flex items-center justify-between mb-3">
+    <Card className="workout-card border-none overflow-hidden hover:translate-y-[-5px] transition-all duration-300 cool-shadow rounded-xl bg-gradient-to-b from-white to-indigo-50/40">
+      <CardHeader className="p-5 pb-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center text-sm text-muted-foreground">
             <CalendarIcon className="h-4 w-4 mr-1" />
             <span>{formattedDate}</span>
           </div>
           <div className="flex items-center">
             {workout.completed ? (
-              <div className="flex items-center text-sm text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
-                <CheckCircle className="h-4 w-4 mr-1" />
+              <div className="flex items-center text-sm text-green-600 font-medium bg-gradient-to-r from-green-50 to-green-100 px-3 py-1 rounded-full border border-green-200">
+                <CheckCircle className="h-3.5 w-3.5 mr-1" />
                 <span>Completed</span>
               </div>
             ) : (
-              <div className="flex items-center text-sm text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
-                <Circle className="h-4 w-4 mr-1" />
+              <div className="flex items-center text-sm text-blue-600 font-medium bg-gradient-to-r from-blue-50 to-indigo-100 px-3 py-1 rounded-full border border-blue-200">
+                <Circle className="h-3.5 w-3.5 mr-1" />
                 <span>Pending</span>
               </div>
             )}
           </div>
         </div>
 
-        <h3 className="font-bold text-xl mb-2 text-slate-800">{workout.name}</h3>
+        <h3 className="font-bold text-xl mt-2 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">{workout.name}</h3>
         
         {workout.description && (
-          <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+          <p className="text-muted-foreground text-sm mt-1 mb-1 line-clamp-2">
             {workout.description}
           </p>
         )}
+      </CardHeader>
 
-        <div className="flex items-center mb-4 text-sm text-muted-foreground bg-slate-100 p-2 rounded-lg">
-          <Dumbbell className="h-4 w-4 mr-2 text-primary" />
+      <CardContent className="p-5 pt-0">
+        <div className="flex items-center mb-4 text-sm text-slate-700 bg-gradient-to-r from-slate-100 to-blue-50 p-2.5 rounded-xl">
+          <Dumbbell className="h-4 w-4 mr-2 text-indigo-500" />
           <span>
             {exerciseCount} {exerciseCount === 1 ? 'exercise' : 'exercises'} 
             {' • '}
@@ -105,17 +110,17 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
           <div className="mt-2 mb-1">
             <div className="flex justify-between text-xs mb-1 font-medium">
               <span>Progress</span>
-              <span className="text-primary">{workout.progress}%</span>
+              <span className="text-indigo-600">{workout.progress}%</span>
             </div>
-            <Progress className="h-2 bg-slate-200" value={workout.progress} />
+            <Progress className="h-2.5 bg-slate-100 rounded-full" value={workout.progress} />
           </div>
         )}
-      </div>
+      </CardContent>
 
-      <div className="border-t p-3 bg-slate-100 flex justify-between items-center">
+      <CardFooter className="border-t p-3 bg-gradient-to-r from-slate-50 to-indigo-50/50 flex justify-between items-center">
         <div className="flex gap-2">
           <Link to={`/workout/${workout.id}`}>
-            <Button variant="ghost" size="sm" className="text-sm hover:bg-slate-200">
+            <Button variant="ghost" size="sm" className="text-sm hover:bg-indigo-100/50 text-slate-700">
               View Details
             </Button>
           </Link>
@@ -123,7 +128,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-sm text-muted-foreground hover:bg-slate-200" 
+            className="text-sm text-muted-foreground hover:bg-indigo-100/50" 
             onClick={handleArchive}
           >
             <Archive className="h-3.5 w-3.5 mr-1" />
@@ -133,14 +138,17 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
         
         {!workout.completed && (
           <Link to={`/workout-session/${workout.id}`}>
-            <Button size="sm" className="text-sm flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg">
+            <Button size="sm" className="text-sm flex items-center bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 transition-all duration-300 shadow-md hover:shadow-lg rounded-full">
               Start Workout
-              <Sparkles className="h-3.5 w-3.5 ml-1" />
+              {workout.exercises.length > 3 ? 
+                <Flame className="h-3.5 w-3.5 ml-1 text-amber-200" /> : 
+                <Sparkles className="h-3.5 w-3.5 ml-1" />
+              }
             </Button>
           </Link>
         )}
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 };
 

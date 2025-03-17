@@ -7,7 +7,7 @@ import SectionHeader from '@/components/layout/SectionHeader';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Plus, Sparkles, Calendar } from 'lucide-react';
+import { Plus, Sparkles, Calendar, Gem } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const TodayWorkouts: React.FC = () => {
@@ -62,10 +62,10 @@ const TodayWorkouts: React.FC = () => {
   }
 
   return (
-    <div className="mb-10 bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-xl shadow-sm border border-slate-200">
+    <div className="mb-10 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 p-6 rounded-xl shadow-md border border-indigo-100 hover:shadow-xl transition-all duration-500">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
-          <div className="mr-4 bg-blue-100 p-2 rounded-full text-blue-600">
+          <div className="mr-4 bg-gradient-to-r from-blue-600 to-violet-600 p-2 rounded-full text-white shadow-glow">
             <Calendar className="h-5 w-5" />
           </div>
           <SectionHeader 
@@ -74,7 +74,7 @@ const TodayWorkouts: React.FC = () => {
           />
         </div>
         <Link to="/workout/new">
-          <Button className="flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg">
+          <Button className="flex items-center bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 transition-all duration-300 shadow-md hover:shadow-lg rounded-full">
             <Plus className="mr-2 h-4 w-4" />
             Add Workout
           </Button>
@@ -82,15 +82,15 @@ const TodayWorkouts: React.FC = () => {
       </div>
 
       {workouts.length === 0 ? (
-        <div className="bg-white rounded-xl p-8 text-center border border-slate-200 shadow-inner">
-          <div className="inline-flex items-center justify-center p-3 bg-blue-100 rounded-full text-blue-600 mb-4">
-            <Sparkles className="h-6 w-6" />
+        <div className="glass-card p-8 text-center rounded-2xl shadow-inner">
+          <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-600 mb-4">
+            <Gem className="h-6 w-6" />
           </div>
-          <h3 className="text-xl font-bold mb-2 text-slate-800">No workouts scheduled for today</h3>
+          <h3 className="text-xl font-bold mb-2 text-gradient">No workouts scheduled for today</h3>
           <p className="text-muted-foreground mb-6">Start your fitness journey by adding a workout for today.</p>
           <Link to="/workout/new">
-            <Button className="animate-pulse bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              <Plus className="h-4 w-4 mr-2" />
+            <Button className="animate-pulse bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-full">
+              <Sparkles className="h-4 w-4 mr-2" />
               Create Your First Workout
             </Button>
           </Link>
