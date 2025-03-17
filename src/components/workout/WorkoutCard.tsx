@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { format, parseISO } from 'date-fns';
 import { Workout } from '@/lib/types';
@@ -8,7 +9,8 @@ import {
   Circle, 
   Dumbbell,
   ArrowRight,
-  Archive
+  Archive,
+  Sparkles
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -60,7 +62,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
   }
 
   return (
-    <div className="workout-card flex flex-col border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+    <div className="workout-card flex flex-col border border-slate-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-white to-slate-50">
       <div className="p-5 flex-grow">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center text-sm text-muted-foreground">
@@ -69,12 +71,12 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
           </div>
           <div className="flex items-center">
             {workout.completed ? (
-              <div className="flex items-center text-sm text-green-600 font-medium">
+              <div className="flex items-center text-sm text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
                 <CheckCircle className="h-4 w-4 mr-1" />
                 <span>Completed</span>
               </div>
             ) : (
-              <div className="flex items-center text-sm text-muted-foreground font-medium">
+              <div className="flex items-center text-sm text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
                 <Circle className="h-4 w-4 mr-1" />
                 <span>Pending</span>
               </div>
@@ -82,7 +84,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
           </div>
         </div>
 
-        <h3 className="font-semibold text-lg mb-1">{workout.name}</h3>
+        <h3 className="font-bold text-xl mb-2 text-slate-800">{workout.name}</h3>
         
         {workout.description && (
           <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
@@ -90,8 +92,8 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
           </p>
         )}
 
-        <div className="flex items-center mb-3 text-sm text-muted-foreground">
-          <Dumbbell className="h-4 w-4 mr-1" />
+        <div className="flex items-center mb-4 text-sm text-muted-foreground bg-slate-100 p-2 rounded-lg">
+          <Dumbbell className="h-4 w-4 mr-2 text-primary" />
           <span>
             {exerciseCount} {exerciseCount === 1 ? 'exercise' : 'exercises'} 
             {' • '}
@@ -101,19 +103,19 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
 
         {workout.progress !== undefined && (
           <div className="mt-2 mb-1">
-            <div className="flex justify-between text-xs mb-1">
+            <div className="flex justify-between text-xs mb-1 font-medium">
               <span>Progress</span>
-              <span>{workout.progress}%</span>
+              <span className="text-primary">{workout.progress}%</span>
             </div>
-            <Progress className="h-1.5" value={workout.progress} />
+            <Progress className="h-2 bg-slate-200" value={workout.progress} />
           </div>
         )}
       </div>
 
-      <div className="border-t p-3 bg-muted/30 flex justify-between items-center">
+      <div className="border-t p-3 bg-slate-100 flex justify-between items-center">
         <div className="flex gap-2">
           <Link to={`/workout/${workout.id}`}>
-            <Button variant="ghost" size="sm" className="text-sm">
+            <Button variant="ghost" size="sm" className="text-sm hover:bg-slate-200">
               View Details
             </Button>
           </Link>
@@ -121,7 +123,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-sm text-muted-foreground" 
+            className="text-sm text-muted-foreground hover:bg-slate-200" 
             onClick={handleArchive}
           >
             <Archive className="h-3.5 w-3.5 mr-1" />
@@ -131,9 +133,9 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onArchive }) => {
         
         {!workout.completed && (
           <Link to={`/workout-session/${workout.id}`}>
-            <Button size="sm" className="text-sm flex items-center bg-green-600 hover:bg-green-700">
+            <Button size="sm" className="text-sm flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg">
               Start Workout
-              <ArrowRight className="h-3.5 w-3.5 ml-1" />
+              <Sparkles className="h-3.5 w-3.5 ml-1" />
             </Button>
           </Link>
         )}
