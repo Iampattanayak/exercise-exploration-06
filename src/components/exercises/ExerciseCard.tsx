@@ -30,21 +30,28 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   useEffect(() => {
     const loadCategory = async () => {
       if (exercise.category) {
-        // Skip the cache to ensure we get fresh data
-        const { data, error } = await supabase
-          .from('categories')
-          .select('*')
-          .eq('id', exercise.category)
-          .maybeSingle();
-          
-        if (data && !error) {
-          setCategory({
-            id: data.id,
-            name: data.name,
-            color: data.color || 'bg-[#8B5CF6] text-white'
-          });
-        } else {
-          // Fallback to the sync method if direct query fails
+        try {
+          // Always get fresh data directly from Supabase to ensure we have the latest colors
+          const { data, error } = await supabase
+            .from('categories')
+            .select('*')
+            .eq('id', exercise.category)
+            .maybeSingle();
+            
+          if (data && !error) {
+            setCategory({
+              id: data.id,
+              name: data.name,
+              color: data.color || 'bg-[#8B5CF6] text-white' // Ensure default if not set
+            });
+          } else {
+            // Fallback to the sync method if direct query fails
+            const syncCategory = getCategoryByIdSync(exercise.category);
+            setCategory(syncCategory);
+          }
+        } catch (err) {
+          console.error("Error loading category data:", err);
+          // Fallback to sync method on error
           const syncCategory = getCategoryByIdSync(exercise.category);
           setCategory(syncCategory);
         }
@@ -52,7 +59,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     };
     
     loadCategory();
-    // Add exercise.category as a dependency to re-run when it changes
   }, [exercise.category]);
   
   const handleEdit = (e: React.MouseEvent) => {
@@ -101,7 +107,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <div className="absolute bottom-3 left-3 z-10">
                 <span className={cn(
                   'text-xs font-medium px-3 py-1.5 rounded-md shadow-sm',
-                  category.color // Apply the category color directly
+                  category.color // Apply the category color directly from our fresh state
                 )}>
                   {category.name}
                 </span>

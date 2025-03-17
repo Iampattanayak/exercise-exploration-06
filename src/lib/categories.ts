@@ -3,9 +3,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { Category } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
+// Clear cache on each function call to ensure we don't use stale data
+const categoryCache: Record<string, Category> = {};
+
 // CATEGORY FUNCTIONS
 export const getAllCategories = async (): Promise<Category[]> => {
   try {
+    // Clear cache to ensure we get fresh data
+    Object.keys(categoryCache).forEach(key => delete categoryCache[key]);
+    
     const { data, error } = await supabase
       .from('categories')
       .select('*')
@@ -16,11 +22,17 @@ export const getAllCategories = async (): Promise<Category[]> => {
       throw new Error(error.message);
     }
     
-    // Ensure all categories have the new color format
-    return data.map(cat => ({
-      ...cat,
-      color: cat.color || 'bg-[#8B5CF6] text-white'
-    }));
+    // Ensure all categories have the new color format and store in cache
+    return data.map(cat => {
+      const category = {
+        ...cat,
+        color: cat.color || 'bg-[#8B5CF6] text-white'
+      };
+      
+      // Update cache with this fresh data
+      categoryCache[cat.id] = category;
+      return category;
+    });
   } catch (error) {
     console.error('Error in getAllCategories:', error);
     throw error;
@@ -31,7 +43,8 @@ export const addCategory = async (category: Omit<Category, 'id'>): Promise<Categ
   try {
     const newCategory = {
       id: uuidv4(),
-      ...category
+      ...category,
+      color: category.color || 'bg-[#8B5CF6] text-white' // Ensure color is set
     };
     
     const { error } = await supabase
@@ -43,6 +56,9 @@ export const addCategory = async (category: Omit<Category, 'id'>): Promise<Categ
       throw new Error(error.message);
     }
     
+    // Update the cache with the new category
+    categoryCache[newCategory.id] = newCategory;
+    
     return newCategory;
   } catch (error) {
     console.error('Error in addCategory:', error);
@@ -52,18 +68,27 @@ export const addCategory = async (category: Omit<Category, 'id'>): Promise<Categ
 
 export const updateCategory = async (category: Category): Promise<void> => {
   try {
+    // Ensure color is set
+    const updatedCategory = {
+      ...category,
+      color: category.color || 'bg-[#8B5CF6] text-white'
+    };
+    
     const { error } = await supabase
       .from('categories')
       .update({
-        name: category.name,
-        color: category.color
+        name: updatedCategory.name,
+        color: updatedCategory.color
       })
-      .eq('id', category.id);
+      .eq('id', updatedCategory.id);
     
     if (error) {
       console.error('Error updating category:', error);
       throw new Error(error.message);
     }
+    
+    // Update the cache with the updated category
+    categoryCache[updatedCategory.id] = updatedCategory;
   } catch (error) {
     console.error('Error in updateCategory:', error);
     throw error;
@@ -93,15 +118,14 @@ export const deleteCategory = async (id: string): Promise<void> => {
       console.error('Error deleting category:', error);
       throw new Error(error.message);
     }
+    
+    // Remove from cache
+    delete categoryCache[id];
   } catch (error) {
     console.error('Error in deleteCategory:', error);
     throw error;
   }
 };
-
-// Create a dynamic cache for categories that will be populated at runtime
-// Clear cache on each page refresh to ensure we don't use stale data
-const categoryCache: Record<string, Category> = {};
 
 export const getCategoryById = async (categoryId: string): Promise<Category | null> => {
   try {
@@ -145,6 +169,6 @@ export const getCategoryByIdSync = (categoryId: string): Category => {
   return { 
     id: categoryId, 
     name: 'Loading...', 
-    color: 'bg-[#8B5CF6] text-white' // Default to new vibrant purple
+    color: 'bg-[#8B5CF6] text-white' // Default to vibrant purple
   };
 };

@@ -21,7 +21,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   // Create local state to ensure we always use the latest category data with correct colors
   const [localCategories, setLocalCategories] = useState<Category[]>(categories);
 
-  // Refresh categories from the database on mount to ensure we have latest colors
+  // Refresh categories from the database directly - bypass cache to ensure fresh colors
   useEffect(() => {
     const fetchFreshCategories = async () => {
       try {
@@ -34,7 +34,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
           // Ensure all categories have valid colors
           const updatedCategories = data.map(cat => ({
             ...cat,
-            color: cat.color || 'bg-[#8B5CF6] text-white'
+            color: cat.color || 'bg-[#8B5CF6] text-white' // Default color if none is set
           }));
           setLocalCategories(updatedCategories);
         }
@@ -46,7 +46,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     fetchFreshCategories();
   }, []);
 
-  // Update local categories when prop changes
+  // Update localCategories when category props change
   useEffect(() => {
     if (categories.length > 0) {
       setLocalCategories(categories);

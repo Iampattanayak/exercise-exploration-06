@@ -11,7 +11,9 @@ export function useCategoryData() {
   const addCategoryMutation = useMutation({
     mutationFn: (category: Category) => addCategory(category),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      // Force immediate refresh of category data with no delay
+      queryClient.invalidateQueries({ queryKey: ['categories'], refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['exercises'], refetchType: 'active' });
       toast.success('Category added successfully');
     },
     onError: (error) => {
@@ -22,7 +24,9 @@ export function useCategoryData() {
   const updateCategoryMutation = useMutation({
     mutationFn: (category: Category) => updateCategory(category),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      // Force immediate refresh of all relevant query data
+      queryClient.invalidateQueries({ queryKey: ['categories'], refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['exercises'], refetchType: 'active' });
       toast.success('Category updated successfully');
     },
     onError: (error) => {
@@ -33,7 +37,8 @@ export function useCategoryData() {
   const deleteCategoryMutation = useMutation({
     mutationFn: (categoryId: string) => deleteCategory(categoryId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['categories'], refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['exercises'], refetchType: 'active' });
       toast.success('Category deleted successfully');
     },
     onError: (error) => {
@@ -52,9 +57,9 @@ export function useCategoryData() {
       
       await addCategoryMutation.mutateAsync(newCategory);
       
-      // Force refresh of all categories data
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      // Force immediate refresh of all data
+      queryClient.resetQueries({ queryKey: ['categories'], exact: true });
+      queryClient.resetQueries({ queryKey: ['exercises'] });
       
       return true;
     } catch (error) {
@@ -73,9 +78,9 @@ export function useCategoryData() {
       
       await updateCategoryMutation.mutateAsync(updatedCategory);
       
-      // Force refresh of all relevant data
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      // Force immediate refresh of all relevant data
+      queryClient.resetQueries({ queryKey: ['categories'], exact: true });
+      queryClient.resetQueries({ queryKey: ['exercises'] });
       
       return true;
     } catch (error) {
@@ -93,9 +98,9 @@ export function useCategoryData() {
       
       await deleteCategoryMutation.mutateAsync(categoryId);
       
-      // Force refresh all data
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      // Force immediate refresh of all data
+      queryClient.resetQueries({ queryKey: ['categories'], exact: true });
+      queryClient.resetQueries({ queryKey: ['exercises'] });
       
       return true;
     } catch (error) {
