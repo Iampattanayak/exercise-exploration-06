@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CategoryFilterProps {
   categories: Category[];
@@ -17,6 +18,41 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   onCategoryChange,
   onManageCategories,
 }) => {
+  // Create local state to ensure we always use the latest category data with correct colors
+  const [localCategories, setLocalCategories] = useState<Category[]>(categories);
+
+  // Refresh categories from the database on mount to ensure we have latest colors
+  useEffect(() => {
+    const fetchFreshCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .order('name');
+        
+        if (!error && data) {
+          // Ensure all categories have valid colors
+          const updatedCategories = data.map(cat => ({
+            ...cat,
+            color: cat.color || 'bg-[#8B5CF6] text-white'
+          }));
+          setLocalCategories(updatedCategories);
+        }
+      } catch (err) {
+        console.error('Error fetching fresh categories:', err);
+      }
+    };
+
+    fetchFreshCategories();
+  }, []);
+
+  // Update local categories when prop changes
+  useEffect(() => {
+    if (categories.length > 0) {
+      setLocalCategories(categories);
+    }
+  }, [categories]);
+
   return (
     <div className="pb-4 overflow-x-auto">
       <div className="flex space-x-2 min-w-max">
@@ -28,7 +64,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         >
           All Exercises
         </Button>
-        {categories.map((category) => {
+        {localCategories.map((category) => {
           const isSelected = selectedCategory === category.id;
           return (
             <Button
@@ -38,7 +74,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
               onClick={() => onCategoryChange(category.id)}
               className={cn(
                 "rounded-full",
-                isSelected && category.color
+                isSelected && category.color 
               )}
             >
               {category.name}

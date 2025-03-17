@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Category } from './types';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,7 +16,11 @@ export const getAllCategories = async (): Promise<Category[]> => {
       throw new Error(error.message);
     }
     
-    return data;
+    // Ensure all categories have the new color format
+    return data.map(cat => ({
+      ...cat,
+      color: cat.color || 'bg-[#8B5CF6] text-white'
+    }));
   } catch (error) {
     console.error('Error in getAllCategories:', error);
     throw error;
@@ -95,16 +100,12 @@ export const deleteCategory = async (id: string): Promise<void> => {
 };
 
 // Create a dynamic cache for categories that will be populated at runtime
+// Clear cache on each page refresh to ensure we don't use stale data
 const categoryCache: Record<string, Category> = {};
 
 export const getCategoryById = async (categoryId: string): Promise<Category | null> => {
-  // If we have this category in our cache, return it
-  if (categoryCache[categoryId]) {
-    return categoryCache[categoryId];
-  }
-  
   try {
-    // Fetch the category from the database
+    // Always fetch from database to ensure fresh data
     const { data, error } = await supabase
       .from('categories')
       .select('*')
@@ -117,11 +118,11 @@ export const getCategoryById = async (categoryId: string): Promise<Category | nu
     }
     
     if (data) {
-      // Store in cache for future use
+      // Store in cache with proper color format
       const category: Category = {
         id: data.id,
         name: data.name,
-        color: data.color
+        color: data.color || 'bg-[#8B5CF6] text-white' // Ensure color is set properly
       };
       categoryCache[categoryId] = category;
       return category;
@@ -144,6 +145,6 @@ export const getCategoryByIdSync = (categoryId: string): Category => {
   return { 
     id: categoryId, 
     name: 'Loading...', 
-    color: 'bg-[#5f22d9] text-white' 
+    color: 'bg-[#8B5CF6] text-white' // Default to new vibrant purple
   };
 };

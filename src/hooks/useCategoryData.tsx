@@ -51,6 +51,11 @@ export function useCategoryData() {
       };
       
       await addCategoryMutation.mutateAsync(newCategory);
+      
+      // Force refresh of all categories data
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      
       return true;
     } catch (error) {
       console.error('Error adding category:', error);
@@ -67,6 +72,11 @@ export function useCategoryData() {
       };
       
       await updateCategoryMutation.mutateAsync(updatedCategory);
+      
+      // Force refresh of all relevant data
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      
       return true;
     } catch (error) {
       console.error('Error updating category:', error);
@@ -82,6 +92,11 @@ export function useCategoryData() {
       }
       
       await deleteCategoryMutation.mutateAsync(categoryId);
+      
+      // Force refresh all data
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      
       return true;
     } catch (error) {
       console.error('Error deleting category:', error);

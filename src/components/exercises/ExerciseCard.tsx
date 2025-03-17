@@ -21,21 +21,37 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onEdit,
   onDelete 
 }) => {
-  const [category, setCategory] = useState(getCategoryByIdSync(exercise.category));
+  // Force refresh of category data on component mount to get latest colors
+  const [category, setCategory] = useState<any>(null);
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   
   useEffect(() => {
     const loadCategory = async () => {
       if (exercise.category) {
-        const loadedCategory = await getCategoryById(exercise.category);
-        if (loadedCategory) {
-          setCategory(loadedCategory);
+        // Skip the cache to ensure we get fresh data
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .eq('id', exercise.category)
+          .maybeSingle();
+          
+        if (data && !error) {
+          setCategory({
+            id: data.id,
+            name: data.name,
+            color: data.color || 'bg-[#8B5CF6] text-white'
+          });
+        } else {
+          // Fallback to the sync method if direct query fails
+          const syncCategory = getCategoryByIdSync(exercise.category);
+          setCategory(syncCategory);
         }
       }
     };
     
     loadCategory();
+    // Add exercise.category as a dependency to re-run when it changes
   }, [exercise.category]);
   
   const handleEdit = (e: React.MouseEvent) => {
@@ -84,7 +100,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <div className="absolute bottom-3 left-3 z-10">
                 <span className={cn(
                   'text-xs font-medium px-3 py-1.5 rounded-md shadow-sm',
-                  category.color
+                  category.color // Apply the category color directly
                 )}>
                   {category.name}
                 </span>
