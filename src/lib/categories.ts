@@ -44,6 +44,8 @@ export const addCategory = async (category: Omit<Category, 'id'>): Promise<Categ
     // Clear cache to ensure fresh data
     Object.keys(categoryCache).forEach(key => delete categoryCache[key]);
     
+    console.log("Adding category with color:", category.color);
+    
     const newCategory = {
       id: uuidv4(),
       ...category,
@@ -73,6 +75,8 @@ export const updateCategory = async (category: Category): Promise<void> => {
   try {
     // Clear cache to ensure fresh data
     Object.keys(categoryCache).forEach(key => delete categoryCache[key]);
+    
+    console.log("Updating category with color:", category.color);
     
     // Ensure color is set
     const updatedCategory = {

@@ -45,10 +45,11 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
 
   const handleOpenDialog = (category?: Category) => {
     if (category) {
+      console.log("Editing category:", category);
       setEditingCategory(category);
       setNewCategory({
         name: category.name,
-        color: category.color,
+        color: category.color || 'bg-[#8B5CF6] text-white',
       });
     } else {
       setEditingCategory(null);
@@ -65,6 +66,8 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       toast.error('Category name is required');
       return;
     }
+
+    console.log("Saving category with color:", newCategory.color);
 
     if (editingCategory) {
       // Update existing category

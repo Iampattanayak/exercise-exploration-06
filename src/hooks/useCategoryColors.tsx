@@ -53,6 +53,7 @@ export function useCategoryColors() {
       }, () => {
         // Invalidate queries when the categories table changes
         queryClient.invalidateQueries({ queryKey: ['category-colors'] });
+        queryClient.invalidateQueries({ queryKey: ['categories'] });
         refetch();
       })
       .subscribe();
@@ -62,7 +63,7 @@ export function useCategoryColors() {
     };
   }, [queryClient, refetch]);
   
-  // Get category by ID with fresh data
+  // Get category color by ID with fresh data
   const getCategoryColor = (categoryId: string): string => {
     const category = categories.find(c => c.id === categoryId);
     return category?.color || 'bg-[#8B5CF6] text-white';
@@ -76,8 +77,9 @@ export function useCategoryColors() {
   // Refresh categories data
   const refreshCategories = async () => {
     try {
+      await queryClient.invalidateQueries({ queryKey: ['categories'] });
+      await queryClient.invalidateQueries({ queryKey: ['category-colors'] });
       await refetch();
-      await queryClient.resetQueries({ queryKey: ['category-colors'] });
     } catch (err) {
       console.error("Error refreshing category colors:", err);
       toast.error("Failed to refresh category data");

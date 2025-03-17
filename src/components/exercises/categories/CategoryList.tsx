@@ -30,36 +30,34 @@ const CategoryList: React.FC<CategoryListProps> = ({
 
   return (
     <div className="space-y-2">
-      {categories.map((category) => {
-        // Get color from centralized hook to ensure consistency
-        const colorClasses = getCategoryColor(category.id);
-        
-        return (
-          <div key={category.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors">
-            <div className="flex items-center space-x-3">
-              <div className={cn('px-3 py-1.5 rounded-md text-sm shadow-sm', colorClasses)}>
-                {category.name}
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => onEditCategory(category)}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => onDeleteCategory(category.id)}
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
+      {categories.map((category) => (
+        <div key={category.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors">
+          <div className="flex items-center space-x-3">
+            <div className={cn(
+              'px-3 py-1.5 rounded-md text-sm shadow-sm',
+              category.color || 'bg-[#8B5CF6] text-white'
+            )}>
+              {category.name}
             </div>
           </div>
-        );
-      })}
+          <div className="flex space-x-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => onEditCategory(category)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => onDeleteCategory(category.id)}
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

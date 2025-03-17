@@ -13,6 +13,7 @@ export function useCategoryData() {
     onSuccess: () => {
       // Force immediate refresh of category data with no delay
       queryClient.invalidateQueries({ queryKey: ['categories'], refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['category-colors'], refetchType: 'active' });
       queryClient.invalidateQueries({ queryKey: ['exercises'], refetchType: 'active' });
       toast.success('Category added successfully');
     },
@@ -26,6 +27,7 @@ export function useCategoryData() {
     onSuccess: () => {
       // Force immediate refresh of all relevant query data
       queryClient.invalidateQueries({ queryKey: ['categories'], refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['category-colors'], refetchType: 'active' });
       queryClient.invalidateQueries({ queryKey: ['exercises'], refetchType: 'active' });
       toast.success('Category updated successfully');
     },
@@ -38,6 +40,7 @@ export function useCategoryData() {
     mutationFn: (categoryId: string) => deleteCategory(categoryId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'], refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['category-colors'], refetchType: 'active' });
       queryClient.invalidateQueries({ queryKey: ['exercises'], refetchType: 'active' });
       toast.success('Category deleted successfully');
     },
@@ -48,6 +51,8 @@ export function useCategoryData() {
 
   const handleAddCategory = async (category: Omit<Category, 'id'> & { id?: string }): Promise<boolean> => {
     try {
+      console.log("Adding category with color:", category.color);
+      
       // Generate a proper UUID for the category
       const newCategory: Category = {
         ...category,
@@ -59,6 +64,7 @@ export function useCategoryData() {
       
       // Force immediate refresh of all data
       queryClient.resetQueries({ queryKey: ['categories'], exact: true });
+      queryClient.resetQueries({ queryKey: ['category-colors'], exact: true });
       queryClient.resetQueries({ queryKey: ['exercises'] });
       
       return true;
@@ -70,6 +76,8 @@ export function useCategoryData() {
   
   const handleUpdateCategory = async (category: Category): Promise<boolean> => {
     try {
+      console.log("Updating category with color:", category.color);
+      
       // Ensure the color is valid
       const updatedCategory = {
         ...category,
@@ -80,6 +88,7 @@ export function useCategoryData() {
       
       // Force immediate refresh of all relevant data
       queryClient.resetQueries({ queryKey: ['categories'], exact: true });
+      queryClient.resetQueries({ queryKey: ['category-colors'], exact: true });
       queryClient.resetQueries({ queryKey: ['exercises'] });
       
       return true;
@@ -100,6 +109,7 @@ export function useCategoryData() {
       
       // Force immediate refresh of all data
       queryClient.resetQueries({ queryKey: ['categories'], exact: true });
+      queryClient.resetQueries({ queryKey: ['category-colors'], exact: true });
       queryClient.resetQueries({ queryKey: ['exercises'] });
       
       return true;

@@ -22,6 +22,12 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
   onCancel,
   isEditing,
 }) => {
+  // Handle color selection
+  const handleColorChange = (color: string) => {
+    console.log("Selected color:", color);
+    onCategoryChange({ ...category, color });
+  };
+
   return (
     <div className="grid gap-4 py-4 animate-fade-in">
       <div className="flex items-center justify-center mb-2">
@@ -45,7 +51,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
         <Label className="text-sm font-medium text-gray-700">Color</Label>
         <ColorPicker
           selectedColor={category.color || 'bg-[#8B5CF6] text-white'}
-          onChange={(color) => onCategoryChange({ ...category, color })}
+          onChange={handleColorChange}
         />
       </div>
 
@@ -60,7 +66,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
         </Button>
         <Button 
           onClick={onSave}
-          className="rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+          className={`rounded-full ${category.color?.split(' ')[0] || 'bg-[#8B5CF6]'} hover:opacity-90`}
         >
           <Save className="mr-2 h-4 w-4" />
           {isEditing ? 'Update Category' : 'Add Category'}
