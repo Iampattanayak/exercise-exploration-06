@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 interface ColorOption {
   value: string;
   label: string;
+  hex: string;
 }
 
 interface ColorPickerProps {
@@ -18,19 +19,19 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   onChange,
 }) => {
   const colorOptions: ColorOption[] = [
-    // Unified color palette that matches our exercise categories
-    { value: 'bg-indigo-100 text-indigo-800', label: 'Indigo' },
-    { value: 'bg-purple-100 text-purple-800', label: 'Purple' },
-    { value: 'bg-blue-100 text-blue-800', label: 'Blue' },
-    { value: 'bg-teal-100 text-teal-800', label: 'Teal' },
-    { value: 'bg-emerald-100 text-emerald-800', label: 'Emerald' },
-    { value: 'bg-amber-100 text-amber-800', label: 'Amber' },
-    { value: 'bg-rose-100 text-rose-800', label: 'Rose' },
-    { value: 'bg-sky-100 text-sky-800', label: 'Sky' },
-    { value: 'bg-slate-100 text-slate-800', label: 'Slate' },
-    { value: 'bg-cyan-100 text-cyan-800', label: 'Cyan' },
-    { value: 'bg-orange-100 text-orange-800', label: 'Orange' },
-    { value: 'bg-gray-100 text-gray-800', label: 'Gray' },
+    // Modern color palette based on provided color styles
+    { value: 'bg-[#5f22d9] text-white', label: 'Purple Heart', hex: '#5f22d9' },
+    { value: 'bg-[#2c016d] text-white', label: 'Christalle', hex: '#2c016d' },
+    { value: 'bg-[#0c58c6] text-white', label: 'Denim', hex: '#0c58c6' },
+    { value: 'bg-[#6a93d9] text-white', label: 'Danube', hex: '#6a93d9' },
+    { value: 'bg-[#85d2d8] text-white', label: 'Bermuda', hex: '#85d2d8' },
+    { value: 'bg-[#51d6ca] text-white', label: 'Viking', hex: '#51d6ca' },
+    { value: 'bg-[#ecb20d] text-white', label: 'Buttercup', hex: '#ecb20d' },
+    { value: 'bg-[#d7ad0d] text-white', label: 'Galliano', hex: '#d7ad0d' },
+    { value: 'bg-[#fc5110] text-white', label: 'Orange', hex: '#fc5110' },
+    { value: 'bg-[#f14c36] text-white', label: 'Flamingo', hex: '#f14c36' },
+    { value: 'bg-[#c82b28] text-white', label: 'Persian Red', hex: '#c82b28' },
+    { value: 'bg-[#dd95c3] text-white', label: 'Light Orchid', hex: '#dd95c3' },
   ];
 
   return (
@@ -45,6 +46,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             selectedColor === color.value && 'ring-2 ring-offset-2 ring-indigo-400 shadow-md'
           )}
           onClick={() => onChange(color.value)}
+          title={color.label}
         >
           {selectedColor === color.value && <Check className="h-4 w-4" />}
         </button>

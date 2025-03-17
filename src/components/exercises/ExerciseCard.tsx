@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Exercise } from '@/lib/types';
 import { getCategoryById, getCategoryByIdSync } from '@/lib/categories';
@@ -75,25 +74,22 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
               </div>
             )}
             
-            {/* Overlay on hover */}
             <div className={cn(
               "absolute inset-0 bg-black/0 transition-all duration-300",
               isHovered && "bg-black/20"
             )} />
 
-            {/* Category badge positioned at bottom of image */}
             {category && (
               <div className="absolute bottom-3 left-3 z-10">
                 <span className={cn(
                   'text-xs font-medium px-3 py-1.5 rounded-md shadow-sm',
-                  getCategoryBadgeStyle(category.name.toLowerCase())
+                  getCategoryBadgeStyle(category.color || category.name.toLowerCase())
                 )}>
                   {category.name}
                 </span>
               </div>
             )}
             
-            {/* Action buttons that appear on hover */}
             <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 transition-opacity duration-300" 
                  style={{ opacity: isHovered ? 1 : 0 }}>
               {onEdit && (
@@ -119,7 +115,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </div>
           </AspectRatio>
           
-          {/* Title area at bottom with clean design */}
           <div className="p-4 flex flex-col items-center justify-center text-center">
             <h3 className="font-medium text-gray-900 text-base">{exercise.name}</h3>
           </div>
@@ -143,32 +138,32 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   );
 };
 
-// Function to get specialized badge styles based on muscle group/category
-const getCategoryBadgeStyle = (category: string): string => {
+const getCategoryBadgeStyle = (categoryIdentifier: string): string => {
+  if (categoryIdentifier.startsWith('bg-[#')) {
+    return categoryIdentifier;
+  }
+
   const categoryMap: Record<string, string> = {
-    // Modern themed palette - all colors have matching text contrast
-    'back': 'bg-indigo-100 text-indigo-800',
-    'arms': 'bg-purple-100 text-purple-800', 
-    'chest': 'bg-blue-100 text-blue-800',
-    'shoulders': 'bg-teal-100 text-teal-800',
-    'legs': 'bg-emerald-100 text-emerald-800',
-    'core': 'bg-amber-100 text-amber-800',
-    'glutes': 'bg-rose-100 text-rose-800',
-    'cardio': 'bg-sky-100 text-sky-800',
-    'strength': 'bg-slate-100 text-slate-800',
-    'flexibility': 'bg-cyan-100 text-cyan-800',
-    'balance': 'bg-orange-100 text-orange-800',
+    'back': 'bg-[#0c58c6] text-white',
+    'arms': 'bg-[#5f22d9] text-white',
+    'chest': 'bg-[#6a93d9] text-white',
+    'shoulders': 'bg-[#51d6ca] text-white',
+    'legs': 'bg-[#2c016d] text-white',
+    'core': 'bg-[#ecb20d] text-white',
+    'glutes': 'bg-[#dd95c3] text-white',
+    'cardio': 'bg-[#85d2d8] text-white',
+    'strength': 'bg-[#c82b28] text-white',
+    'flexibility': 'bg-[#fc5110] text-white',
+    'balance': 'bg-[#d7ad0d] text-white',
   };
 
-  // Check if the category name contains any of the keys as a substring
   for (const [key, value] of Object.entries(categoryMap)) {
-    if (category.includes(key)) {
+    if (categoryIdentifier.includes(key)) {
       return value;
     }
   }
 
-  // Default badge style
-  return 'bg-gray-100 text-gray-800';
+  return 'bg-[#f14c36] text-white';
 };
 
 export default ExerciseCard;
