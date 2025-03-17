@@ -12,6 +12,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { FormField, FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { cn } from '@/lib/utils';
 
 interface DetailsSectionProps {
   form: UseFormReturn<any>;
@@ -59,11 +60,21 @@ const DetailsSection: React.FC<DetailsSectionProps> = ({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {categories.map(category => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
+                {categories.map(category => {
+                  const categoryClass = cn(
+                    "inline-block w-3 h-3 rounded-full mr-2",
+                    category.color.split(' ')[0] // Extract just the background color
+                  );
+                  
+                  return (
+                    <SelectItem key={category.id} value={category.id}>
+                      <div className="flex items-center">
+                        <span className={categoryClass}></span>
+                        {category.name}
+                      </div>
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
             <FormMessage />

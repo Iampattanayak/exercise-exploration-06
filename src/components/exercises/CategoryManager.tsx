@@ -60,7 +60,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       const updatedCategory = {
         ...editingCategory,
         name: newCategory.name || '',
-        color: newCategory.color || 'bg-[#5f22d9] text-white',
+        color: newCategory.color || 'bg-[#8B5CF6] text-white',
       };
       
       await onCategoryUpdate?.(updatedCategory);
@@ -68,7 +68,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
       // Add new category
       const category = {
         name: newCategory.name || '',
-        color: newCategory.color || 'bg-[#5f22d9] text-white',
+        color: newCategory.color || 'bg-[#8B5CF6] text-white',
       };
       
       await onCategoryAdd?.(category);
@@ -76,7 +76,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({
     
     setFormDialogOpen(false);
     setEditingCategory(null);
-    setNewCategory({ name: '', color: 'bg-[#5f22d9] text-white' });
+    setNewCategory({ name: '', color: 'bg-[#8B5CF6] text-white' });
   };
 
   const handleDeleteCategory = async (categoryId: string) => {

@@ -46,7 +46,8 @@ export function useCategoryData() {
       // Generate a proper UUID for the category
       const newCategory: Category = {
         ...category,
-        id: uuidv4()
+        id: uuidv4(),
+        color: category.color || 'bg-[#8B5CF6] text-white' // Ensure new color default
       };
       
       await addCategoryMutation.mutateAsync(newCategory);
@@ -59,7 +60,13 @@ export function useCategoryData() {
   
   const handleUpdateCategory = async (category: Category): Promise<boolean> => {
     try {
-      await updateCategoryMutation.mutateAsync(category);
+      // Ensure the color is valid
+      const updatedCategory = {
+        ...category,
+        color: category.color || 'bg-[#8B5CF6] text-white'
+      };
+      
+      await updateCategoryMutation.mutateAsync(updatedCategory);
       return true;
     } catch (error) {
       console.error('Error updating category:', error);

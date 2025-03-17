@@ -28,20 +28,23 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         >
           All Exercises
         </Button>
-        {categories.map((category) => (
-          <Button
-            key={category.id}
-            variant="outline"
-            size="sm"
-            onClick={() => onCategoryChange(category.id)}
-            className={cn(
-              "rounded-full",
-              selectedCategory === category.id && category.color
-            )}
-          >
-            {category.name}
-          </Button>
-        ))}
+        {categories.map((category) => {
+          const isSelected = selectedCategory === category.id;
+          return (
+            <Button
+              key={category.id}
+              variant="outline"
+              size="sm"
+              onClick={() => onCategoryChange(category.id)}
+              className={cn(
+                "rounded-full",
+                isSelected && category.color
+              )}
+            >
+              {category.name}
+            </Button>
+          );
+        })}
         {onManageCategories && (
           <Button
             variant="outline"
